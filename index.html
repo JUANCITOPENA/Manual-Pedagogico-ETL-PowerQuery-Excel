@@ -138,7 +138,7 @@
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
     }
 
-    /* Bloques de código M y DAX */
+    /* Bloques de código M y Fórmulas */
     .m-code-box {
       background: #f8fafc;
       border-left: 5px solid #008272;
@@ -209,7 +209,7 @@
           <div class="flex items-center gap-2">
             <span class="text-base sm:text-lg font-black text-slate-900 tracking-tight">DataForge Enterprise</span>
             <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
-              v4.9 PRO
+              v6.0 PRO
             </span>
           </div>
           <p class="text-[11px] text-slate-500 font-medium hidden sm:block">Power Query &middot; Excel 365 &middot; Gobernanza</p>
@@ -258,8 +258,12 @@
         </button>
       </nav>
 
-      <!-- Acción Rápida: Descarga Directa -->
+      <!-- Acción Rápida: Descarga Directa & Repositorio GitHub -->
       <div class="flex items-center gap-2 shrink-0">
+        <a href="https://github.com/JUANCITOPENA/Manual-Pedagogico-ETL-PowerQuery-Excel" target="_blank" rel="noopener noreferrer" title="Ver Repositorio Oficial en GitHub" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-black active:scale-95 text-white text-xs font-bold shadow-sm transition-all">
+          <i class="fa-brands fa-github text-sm"></i>
+          <span class="hidden sm:inline">GitHub</span>
+        </a>
         <button onclick="downloadExcel()" title="Descargar libro Excel con datos y receta" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold shadow-sm transition-all">
           <i class="fa-regular fa-file-excel text-sm"></i>
           <span class="hidden sm:inline">Descargar Excel</span>
@@ -278,6 +282,302 @@
          TAB 1: FUNDAMENTOS, GOBERNANZA & LA REALIDAD DEL ERP CON CARRUSEL
     ============================================================== -->
     <section id="tab-fundamentos" class="space-y-10">
+
+      <!-- ============================================================
+           BLOQUE MAGISTRAL: MICROSOFT EXCEL #1 EN EL MUNDO & EVOLUCIÓN
+      ============================================================ -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-excel-card space-y-8">
+        
+        <!-- Header con Icono Oficial Excel & Logo Microsoft -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+          <div class="flex items-start sm:items-center gap-5">
+            <!-- Icono Oficial Vectorial Moderno de Microsoft Excel -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#107c41] to-[#0a4d28] p-3 flex items-center justify-center shadow-lg shadow-emerald-700/20 shrink-0 border border-emerald-400/30">
+              <svg class="w-full h-full drop-shadow-md" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M29 6H13C11.8954 6 11 6.89543 11 8V40C11 41.1046 11.8954 42 13 42H35C36.1046 42 37 41.1046 37 40V14L29 6Z" fill="#107C41"/>
+                <path d="M28 6V14H37L28 6Z" fill="#33C481"/>
+                <path d="M37 25H27V21H37V25ZM37 27V31H27V27H37ZM25 21V25H15V21H25ZM25 27V31H15V27H25ZM37 33V37H27V33H37ZM25 33V37H15V33H25Z" fill="#185C37" fill-opacity="0.35"/>
+                <rect x="6" y="15" width="18" height="18" rx="3.5" fill="#107C41" stroke="#ffffff" stroke-width="1.6" filter="drop-shadow(0 3px 6px rgba(0,0,0,0.25))"/>
+                <path d="M10.5 19.5L14 24L10.5 28.5H12.8L15.1 25.2L17.4 28.5H19.7L16.2 24L19.7 19.5H17.4L15.1 22.8L12.8 19.5H10.5Z" fill="white"/>
+              </svg>
+            </div>
+            
+            <div class="space-y-1.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- Logo Corporativo de Microsoft Oficial -->
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black bg-slate-100 text-slate-800 border border-slate-300">
+                  <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="1" width="10" height="10" fill="#f25022"/>
+                    <rect x="12" y="1" width="10" height="10" fill="#7fba00"/>
+                    <rect x="1" y="12" width="10" height="10" fill="#00a4ef"/>
+                    <rect x="12" y="12" width="10" height="10" fill="#ffb900"/>
+                  </svg>
+                  Microsoft Corporation
+                </span>
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black bg-emerald-100 text-emerald-900 border border-emerald-300">
+                  <i class="fa-solid fa-trophy text-amber-500"></i> Herramienta #1 Global
+                </span>
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-mono font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                  <i class="fa-solid fa-users"></i> +1,200M Usuarios
+                </span>
+              </div>
+              <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+                Microsoft Excel: El Motor Universal Indiscutible del Procesamiento & Análisis de Datos
+              </h1>
+            </div>
+          </div>
+
+          <!-- Insignia de Impacto Financiero Global -->
+          <div class="bg-gradient-to-br from-emerald-50 to-slate-50 border border-emerald-200 rounded-2xl p-4 shrink-0 lg:max-w-xs text-left shadow-xs">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5 mb-1">
+              <i class="fa-solid fa-chart-line text-emerald-600"></i> Dominio Corporativo
+            </div>
+            <div class="text-2xl font-black text-emerald-950 font-mono">99.9%</div>
+            <p class="text-xs text-slate-600 mt-0.5 leading-snug">
+              de las empresas Fortune 500 consolidan y validan sus modelos financieros estratégicos en Excel.
+            </p>
+          </div>
+        </div>
+
+        <!-- Narrativa de Bondades y Fortalezas Clave -->
+        <div class="space-y-4">
+          <p class="text-slate-700 text-base sm:text-lg leading-relaxed">
+            Desde su creación por <strong class="text-slate-900">Microsoft</strong>, Excel se ha consolidado como el software de productividad y cálculo más influyente de la historia digital. No existe industria, laboratorio científico, banco de inversión ni departamento corporativo en la Tierra que no dependa de su cuadrícula reactiva. Su verdadera genialidad reside en su capacidad para actuar como una hoja de cálculo intuitiva para un principiante y, simultáneamente, como un <span class="bg-emerald-100 px-1.5 py-0.5 rounded font-extrabold text-emerald-950">motor de analítica avanzada in-memory, modelado relacional y orquestación de datos a escala empresarial</span>.
+          </p>
+
+          <!-- 4 Pilares de Poder de Excel -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+            
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 hover:border-emerald-500 hover:shadow-xs transition-all">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-lg font-bold mb-3">
+                <i class="fa-solid fa-table-cells"></i>
+              </div>
+              <h4 class="text-sm font-black text-slate-900 mb-1.5">Cuadrícula Reactiva Instantánea</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Cálculo atómico e interactivo. Cualquier cambio en un parámetro recalcula millones de celdas dependientes en milisegundos con fluidez táctil inigualable.
+              </p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 hover:border-emerald-500 hover:shadow-xs transition-all">
+              <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center text-lg font-bold mb-3">
+                <i class="fa-solid fa-filter"></i>
+              </div>
+              <h4 class="text-sm font-black text-slate-900 mb-1.5">Power Query & Motor M Integrado</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                La joya de la corona ETL. Conecta carpetas completas, APIs y bases de datos, desinfectando y modelando millones de filas con un solo clic (<code class="font-mono text-emerald-700">Ctrl+Alt+F5</code>).
+              </p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 hover:border-emerald-500 hover:shadow-xs transition-all">
+              <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-lg font-bold mb-3">
+                <i class="fa-solid fa-cubes-stacked"></i>
+              </div>
+              <h4 class="text-sm font-black text-slate-900 mb-1.5">Power Pivot & VertiPaq en Memoria</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Supera el límite tradicional de filas. Modelo relacional columnar comprimido con lenguaje DAX para calcular agregaciones multidimensionales al vuelo.
+              </p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 hover:border-emerald-500 hover:shadow-xs transition-all">
+              <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center text-lg font-bold mb-3">
+                <i class="fa-brands fa-python"></i>
+              </div>
+              <h4 class="text-sm font-black text-slate-900 mb-1.5">Python Nativo & Fórmulas Dinámicas</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Ejecuta librerías de Data Science (<code class="font-mono text-blue-700">pandas</code>, <code class="font-mono text-blue-700">seaborn</code>) en celdas con <code class="font-mono text-blue-700">=PY()</code>, junto a matrices derramadas y funciones avanzadas (<code class="font-mono">LAMBDA</code>, <code class="font-mono">XLOOKUP</code>).
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- LÍNEA DE TIEMPO Y EVOLUCIÓN HISTÓRICA DE VERSIONES (1985 - 2026) -->
+        <div class="space-y-4 pt-4 border-t border-slate-200">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-clock-rotate-left"></i> Cronología Oficial de Innovación
+              </div>
+              <h3 class="text-xl font-bold text-slate-900 mt-1">
+                4 Décadas de Evolución: La Historia y Versiones Revolucionarias de Microsoft Excel
+              </h3>
+            </div>
+            <span class="text-xs font-bold px-3 py-1 bg-slate-100 text-slate-700 rounded-full border border-slate-200 self-start sm:self-auto">
+              1985 &mdash; 2026 (39+ Años)
+            </span>
+          </div>
+
+          <!-- Timeline Grid Interactivo -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 pt-2">
+            
+            <!-- Hito 1: 1985 -->
+            <div class="bg-gradient-to-b from-slate-50 to-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:border-emerald-500 transition-all">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono font-black text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">1985</span>
+                  <span class="text-[10px] font-bold text-slate-400 uppercase">Macintosh</span>
+                </div>
+                <h5 class="text-sm font-black text-slate-900">Excel 1.0</h5>
+                <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                  Lanzamiento pionero con interfaz gráfica, menús desplegables y uso del mouse antes que existiera Windows comercial masivo.
+                </p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-slate-100 text-[10px] font-bold text-slate-500">
+                Pionero Gráfico
+              </div>
+            </div>
+
+            <!-- Hito 2: 1987-1993 -->
+            <div class="bg-gradient-to-b from-slate-50 to-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:border-emerald-500 transition-all">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono font-black text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">1987 &ndash; 1993</span>
+                  <span class="text-[10px] font-bold text-slate-400 uppercase">Windows & VBA</span>
+                </div>
+                <h5 class="text-sm font-black text-slate-900">Excel 2.0 a 5.0</h5>
+                <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                  Llega a Windows superando a Lotus 1-2-3. En 1993 revoluciona la automatización corporativa introduciendo <strong class="text-slate-800">VBA</strong>.
+                </p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-slate-100 text-[10px] font-bold text-slate-500">
+                Nace la Programación
+              </div>
+            </div>
+
+            <!-- Hito 3: 1997-2003 -->
+            <div class="bg-gradient-to-b from-slate-50 to-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:border-emerald-500 transition-all">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono font-black text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">1997 &ndash; 2003</span>
+                  <span class="text-[10px] font-bold text-slate-400 uppercase">Tablas Dinámicas</span>
+                </div>
+                <h5 class="text-sm font-black text-slate-900">Excel 97 a 2003</h5>
+                <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                  La era dorada de las <strong class="text-slate-800">Pivot Tables</strong>, formato condicional, validación de datos y el estándar <code class="font-mono text-[10px]">.xls</code> (65,536 filas).
+                </p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-slate-100 text-[10px] font-bold text-slate-500">
+                Estandarización Global
+              </div>
+            </div>
+
+            <!-- Hito 4: 2007-2010 -->
+            <div class="bg-gradient-to-b from-slate-50 to-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:border-emerald-500 transition-all">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono font-black text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">2007 &ndash; 2010</span>
+                  <span class="text-[10px] font-bold text-emerald-700 uppercase font-black">1M Filas & BI</span>
+                </div>
+                <h5 class="text-sm font-black text-slate-900">Excel 2007 & 2010</h5>
+                <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                  Cinta Ribbon, formato abierto <code class="font-mono text-[10px]">.xlsx</code>, expansión a <strong class="text-slate-900">1,048,576 filas</strong> y nacimiento del motor columnar <strong class="text-slate-900">Power Pivot</strong>.
+                </p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-slate-100 text-[10px] font-bold text-emerald-700">
+                La Gran Revolución
+              </div>
+            </div>
+
+            <!-- Hito 5: 2016-2026 -->
+            <div class="bg-gradient-to-b from-emerald-50/50 to-white border border-emerald-300 rounded-2xl p-4 flex flex-col justify-between hover:border-emerald-600 transition-all shadow-xs">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono font-black text-white bg-emerald-700 px-2.5 py-0.5 rounded-full">2016 &ndash; 2026</span>
+                  <span class="text-[10px] font-extrabold text-emerald-800 uppercase">Power Query & AI</span>
+                </div>
+                <h5 class="text-sm font-black text-emerald-950">Excel 365 & Copilot</h5>
+                <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                  Integración nativa de <strong class="text-slate-900">Power Query</strong>, matrices dinámicas (<code class="font-mono text-[10px]">XLOOKUP</code>), Python nativo en celdas y <strong class="text-emerald-900">Copilot AI</strong>.
+                </p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-emerald-200 text-[10px] font-black text-emerald-800">
+                Era de la Inteligencia Artificial
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- EL SALTO AL 100% DE POTENCIAL: INTELIGENCIA ARTIFICIAL, MCP & AGENTES AUTÓNOMOS -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-700/80 pb-5">
+            <div class="space-y-1">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> El Salto Cuántico Tecnológico
+              </div>
+              <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Cómo la Inteligencia Artificial, el Protocolo MCP & los Agentes Llevan tus Habilidades al 100% de tu Potencial
+              </h3>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="px-3 py-1.5 rounded-xl bg-white/10 text-emerald-300 font-mono text-xs font-black border border-white/10">
+                <i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Multiplicador x50
+              </span>
+            </div>
+          </div>
+
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            Existe una falsa creencia de que la Inteligencia Artificial reemplazará a los analistas de Excel. La realidad corporativa es la contraria: <strong class="text-white">la IA democratiza el poder de la ingeniería de datos en manos del usuario de negocio</strong>. Al combinar Microsoft Excel con <span class="text-emerald-300 font-extrabold">Model Context Protocol (MCP)</span> y <span class="text-emerald-300 font-extrabold">Agentes y Subagentes Autónomos</span>, tus habilidades técnicas y tu capacidad de resolución analítica alcanzan el <span class="bg-emerald-500/30 text-emerald-200 px-2 py-0.5 rounded font-black">100% de su potencial máximo</span>.
+          </p>
+
+          <!-- Tríada de Poder: IA + MCP + Agentes -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+            
+            <!-- Componente 1: IA Generativa -->
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm hover:border-emerald-400/50 transition-all space-y-2.5">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-lg font-bold border border-purple-500/30">
+                <i class="fa-solid fa-brain"></i>
+              </div>
+              <h4 class="text-base font-bold text-white">1. Inteligencia Artificial Cognitiva</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Modelos avanzados que interpretan requerimientos en lenguaje natural y redactan al instante código M óptimo para Power Query, medidas analíticas DAX y fórmulas matriciales dinámicas sin errores sintácticos.
+              </p>
+            </div>
+
+            <!-- Componente 2: MCP Protocol -->
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm hover:border-emerald-400/50 transition-all space-y-2.5">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-lg font-bold border border-emerald-500/30">
+                <i class="fa-solid fa-plug-circle-bolt"></i>
+              </div>
+              <h4 class="text-base font-bold text-white">2. Protocolo MCP (Model Context Protocol)</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                El nuevo estándar abierto de la industria que conecta de forma atómica y bidireccional los asistentes de IA con tus libros de Excel, APIs y bases de datos. Los agentes leen esquemas de datos, validan calidad y ejecutan acciones seguras.
+              </p>
+            </div>
+
+            <!-- Componente 3: Agentes y Subagentes -->
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm hover:border-emerald-400/50 transition-all space-y-2.5">
+              <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center text-lg font-bold border border-blue-500/30">
+                <i class="fa-solid fa-people-group"></i>
+              </div>
+              <h4 class="text-base font-bold text-white">3. Agentes & Subagentes Autónomos</h4>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Equipos de subagentes especializados que operan en segundo plano: un agente curador desinfecta texto (leetspeak, espacios, nulos), un agente arquitecto diseña el modelo en estrella y un agente DevOps publica en GitHub Pages.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Conclusión Estratégica: De Operador a Arquitecto -->
+          <div class="bg-emerald-950/60 border border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-user-astronaut text-base"></i>
+              </div>
+              <div class="text-slate-200">
+                <strong class="text-emerald-300 font-bold uppercase tracking-wider block">Transformación del Perfil Profesional:</strong>
+                Ya no pasas horas transcribiendo celdas ni arreglando errores tipográficos; ahora actúas como un <strong class="text-white">Arquitecto y Director de Soluciones Analíticas</strong>, multiplicando tu impacto directivo por 100.
+              </div>
+            </div>
+            <a href="#tab-recetaEtl" onclick="switchTab('recetaEtl')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold shrink-0 transition-all shadow-md active:scale-95">
+              <span>Explorar Manual ETL</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
 
       <!-- Hero Banner de Alto Impacto -->
       <div class="bg-gradient-to-br from-white via-slate-50 to-emerald-50/50 border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-excel-card space-y-4">
@@ -521,401 +821,403 @@
     </section>
 
     <!-- ==============================================================
-         TAB 2: RECETA ETL PASO A PASO & DAX INSIGHTS (ANCHO COMPLETO)
+         TAB 2: MASTER ETL: CONEXIÓN, LIMPIEZA & COLUMNAS PERSONALIZADAS
     ============================================================== -->
     <section id="tab-recetaEtl" class="hidden space-y-10">
 
-      <!-- Header de la Sección -->
+      <!-- Header Principal -->
       <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-3">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-extrabold bg-teal-100 text-teal-800 border border-teal-300">
-          <i class="fa-solid fa-code"></i> Ingeniería Inmutable en Lenguaje M & DAX
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+          <i class="fa-solid fa-bolt text-emerald-600"></i> Flujo Maestro de Datos en Power Query
         </div>
-        <h2 class="text-3xl font-extrabold text-slate-900">
-          Manual Maestro de Transformación ETL: 10 Pasos Secuenciales sin Pantallas Divididas
+        <h2 class="text-3xl font-black text-slate-900 tracking-tight">
+          Master ETL: Conexión, Limpieza & Cálculos con Columnas Personalizadas
         </h2>
-        <p class="text-slate-600 text-base leading-relaxed">
-          Cada paso se detalla de extremo a extremo: diagnóstico del síntoma, ruta exacta en la cinta de opciones de Excel/Power Query, expresión auditable en código M, y la posterior construcción de Tablas Dinámicas y KPIs.
+        <p class="text-slate-600 text-base leading-relaxed max-w-4xl font-medium">
+          Paso a paso definitivo para conectarte a diferentes fuentes, purificar datos basura <span class="text-base">🗑️</span> y construir tus métricas financieras directamente en Power Query con columnas calculadas listas para Tablas Dinámicas y KPIs.
         </p>
       </div>
 
-      <!-- PASOS SECUENCIALES (100% ANCHO CADA UNO) -->
-      <div class="space-y-8">
-
-        <!-- PASO 1 -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-7 shadow-excel-card space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-base shadow-xs">1</span>
-              <div>
-                <h3 class="text-xl font-bold text-slate-900">Depuración Profunda de Espacios y Caracteres Invisibles (Trim & Clean)</h3>
-                <span class="text-xs text-slate-500 font-semibold">Pestaña Transformar &rarr; Formato &rarr; Recortar / Limpiar</span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 self-start sm:self-auto">
-              Higiene Textual
-            </span>
-          </div>
-
-          <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
-            <p>
-              <strong class="text-rose-700 font-extrabold">🔴 Diagnóstico:</strong> Los usuarios al tipear en sistemas CRUD introducen tabuladores invisibles (<code class="font-mono text-xs">\t</code>), saltos de línea (<code class="font-mono text-xs">\n</code>) o dobles espacios internos (<code class="bg-slate-100 px-1 font-mono text-xs">"  Santo   Domingo  "</code>). En Excel tradicional, esto provoca que las fórmulas <code class="font-mono text-xs">=BUSCARX</code> fallen al comparar textos idénticos visualmente pero dispares en longitud binaria.
-            </p>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5 text-xs text-slate-800 font-medium">
-              <div class="font-extrabold text-slate-900 uppercase tracking-wider mb-1"><i class="fa-solid fa-mouse-pointer text-emerald-600 mr-1.5"></i>Clics en la Cinta de Opciones:</div>
-              <p>1. Selecciona con <kbd class="px-1.5 py-0.5 bg-white border rounded">Ctrl</kbd> las columnas de texto: <span class="font-bold">REGION</span>, <span class="font-bold">CLIENTE</span> y <span class="font-bold">VENDEDOR</span>.</p>
-              <p>2. Menú superior &rarr; <span class="font-bold text-emerald-800">Transformar &rarr; Formato &rarr; Recortar</span> (elimina espacios al inicio y final).</p>
-              <p>3. Inmediatamente haz clic en: <span class="font-bold text-emerald-800">Transformar &rarr; Formato &rarr; Limpiar</span> (elimina caracteres no imprimibles).</p>
-              <p>4. Clic derecho en el encabezado &rarr; <span class="font-bold text-emerald-800">Reemplazar los valores</span> &rarr; Buscar <code class="bg-white border px-1 text-rose-600">"  "</code> (doble espacio) y reemplazar por <code class="bg-white border px-1 text-emerald-600">" "</code> (un espacio).</p>
-            </div>
-            <div class="m-code-box">
-= Table.TransformColumns(#"Paso_Anterior", {
-    {"REGION", Text.Trim, type text},
-    {"CLIENTE", Text.Clean, type text},
-    {"VENDEDOR", Text.Trim, type text}
-})
-            </div>
-          </div>
-        </div>
-
-        <!-- PASO 2 -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-7 shadow-excel-card space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-blue-600 text-white font-extrabold flex items-center justify-center text-base shadow-xs">2</span>
-              <div>
-                <h3 class="text-xl font-bold text-slate-900">Aislamiento de Llave Primaria (ID) y Corrección de Tipografía Leetspeak</h3>
-                <span class="text-xs text-slate-500 font-semibold">Pestaña Inicio &rarr; Dividir Columna &rarr; Por Delimitador</span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-md text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300 self-start sm:self-auto">
-              Integridad Referencial
-            </span>
-          </div>
-
-          <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
-            <p>
-              <strong class="text-rose-700 font-extrabold">🔴 Diagnóstico:</strong> La columna <code class="font-mono text-xs">CLIENTE</code> viene concatenada con el nombre y el código de cuenta (ejemplo: <span class="font-mono text-slate-900 font-bold">"Comercial Banileja-CLI-401"</span>), e incluye errores tipográficos de digitación manual como números sustituyendo vocales (<code class="bg-slate-100 px-1 font-mono text-xs">C0m3rc1@l</code>).
-            </p>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5 text-xs text-slate-800 font-medium">
-              <div class="font-extrabold text-slate-900 uppercase tracking-wider mb-1"><i class="fa-solid fa-mouse-pointer text-blue-600 mr-1.5"></i>Clics en la Cinta de Opciones:</div>
-              <p>1. Clic derecho en el encabezado <span class="font-bold">CLIENTE</span> &rarr; <span class="font-bold text-blue-800">Dividir columna &rarr; Por delimitador</span>.</p>
-              <p>2. Delimitador: guion (<code class="font-bold text-rose-600">-</code>) &rarr; Seleccionar: <span class="font-bold">Delimitador situado más a la derecha</span>.</p>
-              <p>3. Renombra las columnas resultantes a: <code class="bg-white border px-1 rounded font-bold text-emerald-800">CLIENTE_NOMBRE</code> y <code class="bg-white border px-1 rounded font-bold text-emerald-800">ID_CLIENTE</code>.</p>
-              <p>4. En <span class="font-bold">CLIENTE_NOMBRE</span>, ve a <em>Reemplazar los valores</em> y sustituye: <span class="font-bold">@ &rarr; a</span>, <span class="font-bold">4 &rarr; a</span>, <span class="font-bold">3 &rarr; e</span>, <span class="font-bold">0 &rarr; o</span>. Borra el símbolo <code class="font-bold text-rose-600">#</code> dejándolo vacío.</p>
-              <p>5. Aplica: <em>Transformar &rarr; Formato &rarr; Poner en Mayúsculas Cada Palabra</em>.</p>
-            </div>
-            <div class="m-code-box">
-= Table.SplitColumn(#"Paso_Anterior", "CLIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, true), {"CLIENTE_NOMBRE", "ID_CLIENTE"})
-            </div>
-          </div>
-        </div>
-
-        <!-- PASO 3 -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-7 shadow-excel-card space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-purple-600 text-white font-extrabold flex items-center justify-center text-base shadow-xs">3</span>
-              <div>
-                <h3 class="text-xl font-bold text-slate-900">Desacoplamiento de Fechas y Fraccionamiento de Horarios</h3>
-                <span class="text-xs text-slate-500 font-semibold">Pestaña Inicio &rarr; Dividir por Delimitador Espacio &rarr; Cambiar Tipo a Fecha</span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-md text-xs font-bold bg-purple-100 text-purple-800 border border-purple-300 self-start sm:self-auto">
-              Inteligencia de Tiempo
-            </span>
-          </div>
-
-          <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
-            <p>
-              <strong class="text-rose-700 font-extrabold">🔴 Diagnóstico:</strong> La columna <code class="font-mono text-xs">FECHA_Y_HORA</code> exporta un texto mixto (<span class="font-mono text-slate-900 font-bold">"2026-07-21 08:30AM-12:15PM"</span>) que destruye cualquier capacidad de relacionar la tabla de hechos con una tabla calendario DAX o agrupar por mes/año en Excel.
-            </p>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5 text-xs text-slate-800 font-medium">
-              <div class="font-extrabold text-slate-900 uppercase tracking-wider mb-1"><i class="fa-solid fa-mouse-pointer text-purple-600 mr-1.5"></i>Clics en la Cinta de Opciones:</div>
-              <p>1. Selecciona <span class="font-bold">FECHA_Y_HORA</span> &rarr; Dividir columna por delimitador Espacio.</p>
-              <p>2. A la columna de fecha resultante, cambia el tipo de dato en la esquina izquierda a: <span class="font-bold text-emerald-800">Fecha</span> (tipo date).</p>
-              <p>3. Renómbrala a <code class="bg-white border px-1 rounded font-bold">FECHA_DOCUMENTO</code>.</p>
-              <p>4. A la columna de horario restante, aplica dividir por guion (<code class="font-bold text-rose-600">-</code>) para generar <code class="bg-white border px-1 rounded">HORA_INICIO</code> y <code class="bg-white border px-1 rounded">HORA_FIN</code>.</p>
-            </div>
-            <div class="m-code-box">
-= Table.TransformColumnTypes(#"Paso_Dividido", {{"FECHA_DOCUMENTO", type date}, {"HORA_INICIO", type text}, {"HORA_FIN", type text}})
-            </div>
-          </div>
-        </div>
-
-        <!-- PASO 4 -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-7 shadow-excel-card space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-rose-600 text-white font-extrabold flex items-center justify-center text-base shadow-xs">4</span>
-              <div>
-                <h3 class="text-xl font-bold text-slate-900">Erradicación de Valores Nulos (null), Vacíos y Configuración Regional Decimal</h3>
-                <span class="text-xs text-slate-500 font-semibold">Transformar &rarr; Reemplazar Valores &rarr; Usar Configuración Regional</span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-md text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 self-start sm:self-auto">
-              Regla Cero-Nulos (DAX Safe)
-            </span>
-          </div>
-
-          <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
-            <p>
-              <strong class="text-rose-700 font-extrabold">🔴 Diagnóstico:</strong> Celdas con valor <code class="bg-rose-50 text-rose-700 px-1 font-mono text-xs font-bold">null</code> provocan que los filtros muestren la opción "(en blanco)" y que funciones DAX de división arrojen error. Asimismo, si las coordenadas geográficas (<code class="font-mono text-xs">LATITUD / LONGITUD</code>) vienen con punto decimal y tu Windows está en español (usa coma), el número se convertirá en texto o multiplicará por 10,000.
-            </p>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5 text-xs text-slate-800 font-medium">
-              <div class="font-extrabold text-slate-900 uppercase tracking-wider mb-1"><i class="fa-solid fa-mouse-pointer text-rose-600 mr-1.5"></i>Clics en la Cinta de Opciones:</div>
-              <p>1. En <span class="font-bold">TIPO_COMPRA</span>: Reemplaza los <code class="font-bold text-rose-600">null</code> y celdas vacías por <span class="font-bold text-emerald-800">"Preventa Móvil"</span>.</p>
-              <p>2. En <span class="font-bold">PRECIO_VENTAS</span>: Sustituye los <code class="font-bold text-rose-600">null</code> por el número <code class="font-bold text-blue-700">0</code>.</p>
-              <p>3. En <span class="font-bold">LATITUD</span> y <span class="font-bold">LONGITUD</span>: Clic derecho &rarr; <em>Cambiar tipo &rarr; Usar configuración regional &rarr; Número decimal &rarr; Inglés (Estados Unidos)</em>.</p>
-            </div>
-            <div class="m-code-box">
-= Table.ReplaceValue(#"Paso_Anterior", null, "Preventa Móvil", Replacer.ReplaceValue, {"TIPO_COMPRA"})
-            </div>
-          </div>
-        </div>
-
-        <!-- PASO 5 -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-7 shadow-excel-card space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-amber-500 text-white font-extrabold flex items-center justify-center text-base shadow-xs">5</span>
-              <div>
-                <h3 class="text-xl font-bold text-slate-900">Lógica Financiera de Negocio: Columna Condicional de [Ingreso_Real]</h3>
-                <span class="text-xs text-slate-500 font-semibold">Pestaña Agregar Columna &rarr; Columna Condicional</span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-md text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 self-start sm:self-auto">
-              Regla Financiera
-            </span>
-          </div>
-
-          <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
-            <p>
-              <strong class="text-rose-700 font-extrabold">🔴 Diagnóstico:</strong> Facturas con estatus <span class="font-bold text-rose-700">"Cancelado"</span> no representan cobro de dinero. Sumar directamente la columna [TOTAL] distorsiona las comisiones de los vendedores y la proyección de flujo de caja de la gerencia general.
-            </p>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5 text-xs text-slate-800 font-medium">
-              <div class="font-extrabold text-slate-900 uppercase tracking-wider mb-1"><i class="fa-solid fa-mouse-pointer text-amber-600 mr-1.5"></i>Clics en la Cinta de Opciones:</div>
-              <p>1. Menú superior &rarr; <span class="font-bold text-amber-800">Agregar columna &rarr; Columna condicional</span>.</p>
-              <p>2. Nombre de la nueva columna: <code class="bg-white border px-1 rounded font-bold text-blue-700">Ingreso_Real</code>.</p>
-              <p>3. Condición: <em>Si <strong>ESTATUS</strong> es igual a <strong>Cancelado</strong> &rarr; Salida: <strong>0</strong> &rarr; De lo contrario (Else): Seleccionar columna <strong>TOTAL</strong></em>.</p>
-              <p>4. Tipado indispensable: Cambiar el tipo de dato de <code class="font-bold">Ingreso_Real</code> a <span class="font-bold text-emerald-800">Número decimal fijo (Moneda)</span>.</p>
-            </div>
-            <div class="m-code-box">
-= Table.AddColumn(#"Paso_Anterior", "Ingreso_Real", each if [ESTATUS] = "Cancelado" then 0 else [TOTAL], Currency.Type)
-            </div>
-          </div>
-        </div>
-
-        <!-- PASO 6: CIERRE Y CARGA AL MODELO -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-7 shadow-excel-card space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-teal-600 text-white font-extrabold flex items-center justify-center text-base shadow-xs">6</span>
-              <div>
-                <h3 class="text-xl font-bold text-slate-900">Cierre e Inyección en el Modelo de Datos VertiPaq / Power Pivot</h3>
-                <span class="text-xs text-slate-500 font-semibold">Pestaña Inicio &rarr; Cerrar y Cargar en...</span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-md text-xs font-bold bg-teal-100 text-teal-800 border border-teal-300 self-start sm:self-auto">
-              Optimización de Memoria
-            </span>
-          </div>
-
-          <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
-            <p>
-              <strong class="text-emerald-800 font-extrabold">💡 Mejor Práctica:</strong> No cargues cientos de miles de filas directamente en una hoja cuadriculada de Excel. El libro se volverá pesado, lento para enviar por correo y propenso a corromperse.
-            </p>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5 text-xs text-slate-800 font-medium">
-              <p>1. En Power Query, despliega la flecha debajo del botón <em>Cerrar y cargar</em> y escoge: <span class="font-bold text-teal-800">Cerrar y cargar en...</span></p>
-              <p>2. Selecciona: <strong class="text-slate-900">Crear únicamente la conexión</strong>.</p>
-              <p>3. Marca la casilla de verificación: <strong class="text-emerald-800 font-bold">"Agregar estos datos al Modelo de datos"</strong>.</p>
-              <p>4. Con esto, el motor columnar de compresión de Excel (xVelocity) almacenará los datos de forma ultracompacta.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- PASO 7: CONSTRUCCIÓN DE LA TABLA DINÁMICA CON SIMULACIÓN 3D DE PANELES -->
-        <div class="bg-white border-2 border-emerald-500/30 rounded-2xl p-7 shadow-excel-card space-y-5">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-emerald-700 text-white font-extrabold flex items-center justify-center text-base shadow-xs">7</span>
-              <div>
-                <h3 class="text-xl font-bold text-slate-900">Simulación del Panel de Campos de Tabla Dinámica en Excel</h3>
-                <span class="text-xs text-slate-500 font-semibold">Insertar &rarr; Tabla Dinámica &rarr; Desde Modelo de Datos</span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 self-start sm:self-auto">
-              Diseño de Matriz
-            </span>
-          </div>
-
-          <p class="text-sm text-slate-700 leading-relaxed">
-            A continuación se emula la interfaz real del <strong>Panel de Campos de Tabla Dinámica de Microsoft Excel</strong>. Arrastra mentalmente o visualiza la distribución de los 4 cuadrantes para estructurar el reporte de ingresos comerciales:
-          </p>
-
-          <!-- Simulador Visual de los 4 Cuadrantes de Excel -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-200 font-mono text-xs">
-            
-            <!-- Cuadrante 1: Filtros -->
-            <div class="pivot-quadrant">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-filter text-blue-600"></i> Cuadrante 1: Filtros de Informe
-              </div>
-              <div class="flex flex-wrap gap-1">
-                <span class="pivot-field-chip"><i class="fa-solid fa-check text-emerald-600"></i> AÑO</span>
-                <span class="pivot-field-chip"><i class="fa-solid fa-check text-emerald-600"></i> CONDICION_PAGO</span>
-              </div>
-            </div>
-
-            <!-- Cuadrante 2: Columnas -->
-            <div class="pivot-quadrant">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-table-columns text-purple-600"></i> Cuadrante 2: Columnas (Series)
-              </div>
-              <div class="flex flex-wrap gap-1">
-                <span class="pivot-field-chip"><i class="fa-solid fa-check text-emerald-600"></i> CATEGORIA</span>
-                <span class="pivot-field-chip"><i class="fa-solid fa-check text-emerald-600"></i> TIPO_COMPRA</span>
-              </div>
-            </div>
-
-            <!-- Cuadrante 3: Filas -->
-            <div class="pivot-quadrant">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-bars text-amber-600"></i> Cuadrante 3: Filas (Dimensiones)
-              </div>
-              <div class="flex flex-wrap gap-1">
-                <span class="pivot-field-chip"><i class="fa-solid fa-check text-emerald-600"></i> REGION</span>
-                <span class="pivot-field-chip"><i class="fa-solid fa-check text-emerald-600"></i> VENDEDOR</span>
-              </div>
-            </div>
-
-            <!-- Cuadrante 4: Valores -->
-            <div class="pivot-quadrant">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-calculator text-emerald-700"></i> Cuadrante 4: Valores (Métricas)
-              </div>
-              <div class="flex flex-wrap gap-1">
-                <span class="pivot-field-chip bg-emerald-50 border-emerald-300 text-emerald-900"><i class="fa-solid fa-sigma text-emerald-700"></i> Suma de Ingreso_Real</span>
-                <span class="pivot-field-chip bg-emerald-50 border-emerald-300 text-emerald-900"><i class="fa-solid fa-sigma text-emerald-700"></i> Suma de Margen</span>
-                <span class="pivot-field-chip bg-emerald-50 border-emerald-300 text-emerald-900"><i class="fa-solid fa-hashtag text-emerald-700"></i> Cuenta de Factura</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- PASO 8: CREACIÓN DE MEDIDAS DAX PARA KPIS -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-7 shadow-excel-card space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-extrabold flex items-center justify-center text-base shadow-xs">8</span>
-              <div>
-                <h3 class="text-xl font-bold text-slate-900">Creación de Medidas DAX de Alto Desempeño para los KPIs</h3>
-                <span class="text-xs text-slate-500 font-semibold">Pestaña Power Pivot en Excel &rarr; Medidas &rarr; Nueva Medida</span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-300 self-start sm:self-auto">
-              DAX & Negocio
-            </span>
-          </div>
-
-          <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
-            <p>
-              Nunca calcules porcentajes sumando promedios de filas. En DAX y Tablas Dinámicas se utilizan <strong>Medidas Explícitas</strong> con agregaciones seguras:
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <span class="text-xs font-extrabold text-indigo-700 uppercase">1. Margen % Efectivo</span>
-                <div class="m-code-box text-xs">
-Margen_% = 
-DIVIDE(
-    SUM(Ventas[MARGEN]), 
-    SUM(Ventas[SUBTOTAL]), 
-    0
-)
-                </div>
-              </div>
-
-              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <span class="text-xs font-extrabold text-indigo-700 uppercase">2. Tasa de Cancelación</span>
-                <div class="m-code-box text-xs">
-Tasa_Cancel = 
-DIVIDE(
-    CALCULATE(COUNTROWS(Ventas), Ventas[ESTATUS] = "Cancelado"),
-    COUNTROWS(Ventas),
-    0
-)
-                </div>
-              </div>
-
-              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <span class="text-xs font-extrabold text-indigo-700 uppercase">3. Cumplimiento Meta</span>
-                <div class="m-code-box text-xs">
-Cumplimiento_Meta_% = 
-DIVIDE(
-    SUM(Ventas[SUBTOTAL]), 
-    SUM(Ventas[META]), 
-    0
-)
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PASO 9: INSERCIÓN Y CONEXIÓN DE SLICERS -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-7 shadow-excel-card space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-amber-600 text-white font-extrabold flex items-center justify-center text-base shadow-xs">9</span>
-              <div>
-                <h3 class="text-xl font-bold text-slate-900">Inserción y Conexión de Segmentadores (Slicers) Multiobjeto</h3>
-                <span class="text-xs text-slate-500 font-semibold">Análisis de Tabla Dinámica &rarr; Segmentación de Datos &rarr; Conexiones de Informes</span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-md text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 self-start sm:self-auto">
-              Interactividad Cruzada
-            </span>
-          </div>
-
-          <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
-            <p>
-              Para que un segmentador de <span class="font-bold text-slate-900">Región</span> filtre simultáneamente 3 gráficos diferentes y la tabla dinámica principal, debes habilitar la <strong>Conexión de Informes</strong>:
-            </p>
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-medium space-y-1.5 text-slate-800">
-              <p>1. Clic dentro de la Tabla Dinámica &rarr; <em>Análisis de tabla dinámica &rarr; Insertar segmentación de datos</em> &rarr; Marca: <strong>REGION, ESTATUS, TIPO_COMPRA</strong>.</p>
-              <p>2. Clic derecho en el borde del segmentador insertado &rarr; Escoge: <strong class="text-amber-800">Conexiones de informes...</strong></p>
-              <p>3. Marca las casillas de todas las Tablas Dinámicas y Gráficos Dinámicos del libro para sincronizarlos al 100%.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- PASO 10: INSIGHTS & STORYTELLING CON DATOS -->
-        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 rounded-2xl p-7 shadow-excel-card space-y-4">
+      <!-- SECCIÓN 1: CONEXIÓN A FUENTES DE DATOS -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-6">
+        <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center text-lg font-bold">
-              <i class="fa-solid fa-bullhorn"></i>
-            </div>
+            <span class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-sm shadow-xs">1</span>
             <div>
-              <h3 class="text-xl font-bold text-emerald-950">Paso 10: Storytelling & Comunicación de Hallazgos a la Junta Directiva</h3>
-              <span class="text-xs text-emerald-800 font-bold">Cómo convertir gráficos en decisiones financieras</span>
+              <h3 class="text-xl font-bold text-slate-900">Conexión a Fuentes de Datos 🌐</h3>
+              <p class="text-xs text-slate-500 font-semibold">Abre Excel o Power BI &rarr; Pestaña Datos (u Obtener Datos)</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+            Fase de Ingesta
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- A. Por Carpeta -->
+          <div class="p-5 rounded-2xl bg-slate-50 border-2 border-emerald-300 space-y-3 shadow-xs">
+            <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
+              <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs">A</span>
+              <span>Por Carpeta (La Mejor Práctica 🏆)</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Crea una carpeta en tu equipo (ej. <code class="font-mono bg-white px-1 border rounded text-emerald-800 font-bold">Datos_Empresa</code>) y guarda tus archivos ahí.
+            </p>
+            <div class="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-200 font-medium">
+              <p>1. Ve a <strong>Obtener Datos &rarr; Desde una carpeta</strong>.</p>
+              <p>2. Selecciona la carpeta y presiona <strong>Abrir</strong>.</p>
+              <p>3. Clic en el botón desplegable: <span class="font-bold text-emerald-700">"Combinar y Transformar Datos"</span>.</p>
+            </div>
+            <div class="text-[11px] text-emerald-800 bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 font-semibold">
+              💡 <strong>Regla de Oro:</strong> Si agregas más archivos mañana, Power Query los unirá automáticamente al pulsar <strong>Actualizar Todo</strong>.
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
-            <div class="p-4 bg-white rounded-xl border border-emerald-200 space-y-1.5">
-              <span class="font-bold text-emerald-900 flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600"></i> Insight de Margen Territorial:</span>
-              <p>Compara no solo el total vendido sino el margen neto porcentual. A menudo la región con mayor venta bruta tiene el costo logístico más alto y aporta menor rentabilidad.</p>
+          <!-- B. Por CSV o TXT directo -->
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 shadow-xs">
+            <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
+              <span class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs">B</span>
+              <span>Por CSV o TXT directo 📄</span>
             </div>
-            <div class="p-4 bg-white rounded-xl border border-emerald-200 space-y-1.5">
-              <span class="font-bold text-emerald-900 flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-600"></i> Detección de Quiebres Operativos:</span>
-              <p>Monitorea la correlación entre la Tasa de Cancelación y el Canal de Venta. Si el canal "App Móvil" tiene el doble de cancelaciones que "Sucursal", indica fallos en la sincronización del inventario en tiempo real.</p>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Para extraer un reporte plano individual exportado desde tu sistema o base de datos.
+            </p>
+            <div class="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-200 font-medium">
+              <p>1. Ve a <strong>Obtener Datos &rarr; Texto/CSV</strong>.</p>
+              <p>2. Busca tu archivo en el disco.</p>
+              <p>3. El sistema detectará el delimitador (Coma para CSV, Tabulador para TXT).</p>
+              <p>4. Haz clic directo en <strong class="text-blue-700">"Transformar Datos"</strong>.</p>
+            </div>
+          </div>
+
+          <!-- C. Por JSON -->
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 shadow-xs">
+            <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
+              <span class="w-6 h-6 rounded-lg bg-amber-600 text-white flex items-center justify-center text-xs">C</span>
+              <span>Por JSON o Web API 🗂️</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Para archivos anidados o respuestas de servicios web en la nube.
+            </p>
+            <div class="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-200 font-medium">
+              <p>1. Ve a <strong>Obtener Datos &rarr; JSON</strong>.</p>
+              <p>2. Power Query lo cargará como un registro o lista.</p>
+              <p>3. Haz clic en el botón <strong class="text-amber-800">"A la tabla"</strong> en la cinta.</p>
+              <p>4. Usa el icono de las dos flechas <strong class="text-amber-800">(Expandir)</strong> en la cabecera para revelar todos los campos.</p>
             </div>
           </div>
         </div>
+      </div>
 
+      <!-- SECCIÓN 2: LIMPIAR ESPACIOS FANTASMAS -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-5">
+        <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center text-sm shadow-xs">2</span>
+            <div>
+              <h3 class="text-xl font-bold text-slate-900">Limpiar Espacios Fantasmas 👻 (Recortar y Limpiar)</h3>
+              <p class="text-xs text-slate-500 font-semibold">Transformar &rarr; Formato &rarr; Recortar / Limpiar</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            Higiene de Texto
+          </span>
+        </div>
+
+        <div class="bg-emerald-50/70 border-l-4 border-emerald-600 p-4 rounded-r-xl text-xs text-emerald-950 font-medium leading-relaxed">
+          <strong>Paso a paso:</strong> Mantén presionada la tecla <kbd class="px-1.5 py-0.5 bg-white border rounded font-mono font-bold">Ctrl</kbd> y haz clic izquierdo para seleccionar tus columnas de texto: <span class="font-bold">REGION</span>, <span class="font-bold">CLIENTE</span>, <span class="font-bold">VENDEDOR</span>, <span class="font-bold">PRODUCTO</span>.<br>
+          <span class="text-slate-600">¿Por qué se hace?: Los espacios en blanco arruinan los filtros y tablas dinámicas. Un filtro verá <code class="bg-white px-1 rounded text-rose-600">"Nacional"</code> y <code class="bg-white px-1 rounded text-rose-600">" Nacional "</code> como dos clientes totalmente distintos.</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium text-slate-700">
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <div class="font-bold text-slate-900 flex items-center gap-1.5">
+              <i class="fa-solid fa-scissors text-emerald-600"></i> A. Recortar y Limpiar Básicos:
+            </div>
+            <p>1. Ve a la pestaña superior <strong class="text-slate-900">Transformar</strong>.</p>
+            <p>2. Clic en el botón <strong class="text-emerald-800">Formato &rarr; Recortar</strong> (Elimina espacios accidentales al inicio y final de la palabra).</p>
+            <p>3. Clic nuevamente en <strong class="text-emerald-800">Formato &rarr; Limpiar</strong> (Elimina saltos de línea ocultos y caracteres de control invisibles).</p>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <div class="font-bold text-slate-900 flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-left-right text-blue-600"></i> B. Doble Espacio en los Nombres:
+            </div>
+            <p>1. Haz clic derecho sobre el encabezado de la columna y elige <strong class="text-slate-900">Reemplazar los valores...</strong></p>
+            <p>2. En <strong>"Valor que buscar"</strong> pulsa dos veces la barra espaciadora (<code class="bg-white border px-1">"  "</code>).</p>
+            <p>3. En <strong>"Reemplazar con"</strong> pulsa un solo espacio (<code class="bg-white border px-1">" "</code>) y presiona <strong>Aceptar</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 3: REPARAR CARACTERES CORRUPTOS -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-5">
+        <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-9 h-9 rounded-xl bg-amber-600 text-white font-black flex items-center justify-center text-sm shadow-xs">3</span>
+            <div>
+              <h3 class="text-xl font-bold text-slate-900">Reparar Caracteres Corruptos 🛠️ (Reemplazar)</h3>
+              <p class="text-xs text-slate-500 font-semibold">Clic Derecho en la Cabecera &rarr; Reemplazar los Valores</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+            Corrección Leetspeak
+          </span>
+        </div>
+
+        <p class="text-xs text-slate-700 leading-relaxed font-medium">
+          <strong>Paso a paso:</strong> Selecciona la columna de texto sucia (ej: <span class="font-bold">CLIENTE</span> o <span class="font-bold">PRODUCTO</span>), haz clic derecho sobre su título y elige <strong>Reemplazar los valores...</strong> Ejecuta la siguiente secuencia de sanación:
+        </p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 font-mono text-xs">
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+            <span class="text-rose-600 font-bold">Buscar: @</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+            <span class="text-rose-600 font-bold">Buscar: 4</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+            <span class="text-rose-600 font-bold">Buscar: 3</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: e</span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+            <span class="text-rose-600 font-bold">Buscar: 0</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: o</span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+            <span class="text-rose-600 font-bold">Buscar: #</span><br>&darr;<br><span class="text-slate-400 font-bold">Reemplazar: (vacío)</span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+            <span class="text-rose-600 font-bold">Buscar: $$</span><br>&darr;<br><span class="text-slate-400 font-bold">Reemplazar: (vacío)</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-950 font-medium">
+          ⚠️ <strong>Advertencia Crítica:</strong> Aplica el reemplazo de ceros por "o" <strong>SOLO a columnas de texto</strong> (Cliente, Producto, Región), ¡nunca a columnas de números (Precios, Cantidades) porque corromperías los importes financieros!
+        </div>
+      </div>
+
+      <!-- SECCIÓN 4: NORMALIZACIÓN Y TIPOS DE DATOS -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-5">
+        <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-9 h-9 rounded-xl bg-purple-600 text-white font-black flex items-center justify-center text-sm shadow-xs">4</span>
+            <div>
+              <h3 class="text-xl font-bold text-slate-900">Normalización y Tipos de Datos 🎯 (El Toque Final)</h3>
+              <p class="text-xs text-slate-500 font-semibold">Transformar &rarr; Poner En Mayúsculas Cada Palabra &rarr; Tipado Estricto</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">
+            Estandarización
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- 1. Mayúsculas Correctas -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <div class="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
+              <i class="fa-solid fa-font text-purple-600"></i> 1. Mayúsculas Correctas (Formato Propio)
+            </div>
+            <p class="text-slate-600 leading-relaxed font-medium">
+              Selecciona tus columnas de texto (<span class="font-bold">CLIENTE</span>, <span class="font-bold">VENDEDOR</span>, <span class="font-bold">PRODUCTO</span>). Ve a:
+            </p>
+            <div class="p-2 bg-white border rounded font-mono font-bold text-purple-900">
+              Transformar &rarr; Formato &rarr; Poner En Mayúsculas Cada Palabra
+            </div>
+            <p class="text-slate-500 text-[11px]">
+              Esto unifica "juan perez" y "JUAN PEREZ" a <strong class="text-slate-800">"Juan Perez"</strong> automáticamente.
+            </p>
+          </div>
+
+          <!-- 2. Tipos de Datos Críticos -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <div class="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
+              <i class="fa-solid fa-hashtag text-emerald-600"></i> 2. Tipos de Datos Críticos 🔢
+            </div>
+            <p class="text-slate-600 leading-relaxed font-medium">
+              Haz clic en el pequeño icono <code class="font-mono bg-white px-1 border rounded">ABC/123</code> al lado del nombre de cada cabecera:
+            </p>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div>📅 <span class="text-slate-700">FECHA_VENTA</span> &rarr; <strong class="text-emerald-700">Fecha (type date)</strong></div>
+              <div>📦 <span class="text-slate-700">CANTIDAD</span> &rarr; <strong class="text-blue-700">Número Entero (Int64.Type)</strong></div>
+              <div>🏷️ <span class="text-slate-700">CLIENTE, PRODUCTO</span> &rarr; <strong class="text-slate-700">Texto (type text)</strong></div>
+              <div>💰 <span class="text-slate-700">PRECIO, SUBTOTAL, TOTAL</span> &rarr; <strong class="text-emerald-800 font-bold">Número Decimal Fijo (Moneda)</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 5: HOJA DE RUTA CON NUESTROS DATOS REALES (COLUMNAS PERSONALIZADAS) -->
+      <div class="bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/60 border-2 border-emerald-500/40 rounded-3xl p-8 shadow-excel-card space-y-6">
+        <div class="border-b border-emerald-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-emerald-700 text-white font-black flex items-center justify-center text-base shadow-sm">5</span>
+            <div>
+              <h3 class="text-2xl font-black text-slate-900 tracking-tight">
+                Hoja de Ruta en Power Query: Cálculos con Columnas Personalizadas 💡
+              </h3>
+              <p class="text-xs text-emerald-900 font-extrabold uppercase tracking-wider">
+                Cálculos directos sobre nuestros datos reales &bull; Cero Fórmulas DAX &bull; Listos para Tablas Dinámicas y Cards
+              </p>
+            </div>
+          </div>
+          <span class="px-3.5 py-1.5 rounded-full text-xs font-black bg-emerald-600 text-white shadow-xs self-start sm:self-auto">
+            Datos Reales del Proyecto
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+          Sigue estos pasos para crear las columnas calculadas que alimentarán tus tarjetas de KPI y el área de <em>Valores</em> de la Tabla Dinámica. En Power Query, ve a la pestaña:  
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-lg font-bold text-xs ml-1">
+            <i class="fa-solid fa-plus text-emerald-700"></i> Agregar columna &rarr; Columna personalizada
+          </span>
+        </p>
+
+        <!-- TARJETAS DE LOS CÁLCULOS REALES -->
+        <div class="space-y-4">
+          
+          <!-- Cálculo 1: Subtotal Calculado -->
+          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
+            <div class="flex items-center justify-between border-b pb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-800 font-black flex items-center justify-center text-xs">1</span>
+                <h4 class="text-sm font-black text-slate-900">Columna: Subtotal Calculado ($)</h4>
+              </div>
+              <span class="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Multiplicación Básica</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed font-medium">
+              <strong>Paso a paso:</strong> Multiplicaremos la cantidad de unidades vendidas por el precio unitario del producto para asegurar el subtotal antes de impuestos.
+            </p>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">SUBTOTAL_CALCULADO</strong></div>
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula:</span> <strong class="text-emerald-700">=[CANTIDAD] * [PRECIO_VENTA]</strong></div>
+              <div class="text-[11px] font-sans text-slate-500 pt-1">
+                📌 <em>No olvides cambiar el icono de tipo de dato a: <strong>Número Decimal Fijo (Moneda $)</strong>.</em>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cálculo 2: Margen Bruto -->
+          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
+            <div class="flex items-center justify-between border-b pb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-md bg-blue-100 text-blue-800 font-black flex items-center justify-center text-xs">2</span>
+                <h4 class="text-sm font-black text-slate-900">Columna: Margen Bruto de Ganancia ($)</h4>
+              </div>
+              <span class="text-[10px] font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">Rentabilidad Líquida</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed font-medium">
+              <strong>Paso a paso:</strong> Restamos el costo total al subtotal de la venta para conocer la ganancia monetaria neta de cada transacción.
+            </p>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">MARGEN_BRUTO</strong></div>
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula:</span> <strong class="text-emerald-700">=[SUBTOTAL] - [COSTO_TOTAL]</strong></div>
+              <div class="text-[11px] font-sans text-slate-500 pt-1">
+                📌 <em>Formato: <strong>Número Decimal Fijo (Moneda $)</strong>. Listo para arrastrar a Valores de la Tabla Dinámica.</em>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cálculo 3: Total con ITBIS 18% -->
+          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
+            <div class="flex items-center justify-between border-b pb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-md bg-amber-100 text-amber-800 font-black flex items-center justify-center text-xs">3</span>
+                <h4 class="text-sm font-black text-slate-900">Columna: Total Factura con Impuestos (ITBIS 18%)</h4>
+              </div>
+              <span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Facturación Final</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed font-medium">
+              <strong>Paso a paso:</strong> Sumamos el impuesto de ley del 18% al subtotal de la factura para conocer el monto exigible al cliente.
+            </p>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">TOTAL_CON_ITBIS</strong></div>
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula:</span> <strong class="text-emerald-700">=[SUBTOTAL] + [ITBIS_18]</strong> &nbsp;<span class="text-slate-400 font-sans text-[11px]">(o también: =[SUBTOTAL] * 1.18)</span></div>
+              <div class="text-[11px] font-sans text-slate-500 pt-1">
+                📌 <em>Formato: <strong>Número Decimal Fijo (Moneda $)</strong>.</em>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cálculo 4: Ingreso Real Efectivo -->
+          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
+            <div class="flex items-center justify-between border-b pb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-md bg-rose-100 text-rose-800 font-black flex items-center justify-center text-xs">4</span>
+                <h4 class="text-sm font-black text-slate-900">Columna: Ingreso Real Efectivo (Excluyendo Cancelaciones)</h4>
+              </div>
+              <span class="text-[10px] font-bold text-rose-800 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Control de Caja</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed font-medium">
+              <strong>Paso a paso:</strong> Si la factura tiene estatus "Cancelado", no ingresó dinero a la empresa; su aporte real debe ser 0.
+            </p>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">INGRESO_REAL</strong></div>
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula M:</span> <strong class="text-emerald-700">if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA]</strong></div>
+              <div class="text-[11px] font-sans text-slate-500 pt-1">
+                📌 <em>Formato: <strong>Número Decimal Fijo (Moneda $)</strong>. Alimenta tu tarjeta de KPI principal.</em>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cálculo 5: % de Margen -->
+          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
+            <div class="flex items-center justify-between border-b pb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-md bg-purple-100 text-purple-800 font-black flex items-center justify-center text-xs">5</span>
+                <h4 class="text-sm font-black text-slate-900">Columna: % de Margen sobre Venta</h4>
+              </div>
+              <span class="text-[10px] font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">Rentabilidad Porcentual</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed font-medium">
+              <strong>Paso a paso:</strong> Calcularemos el porcentaje de rendimiento protegiendo la operación contra división por cero si una venta es 0.
+            </p>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">PORC_MARGEN</strong></div>
+              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula M:</span> <strong class="text-emerald-700">if [SUBTOTAL] <> 0 and [SUBTOTAL] <> null then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0</strong></div>
+              <div class="text-[11px] font-sans text-slate-500 pt-1">
+                📌 <em>No olvides cambiar el tipo de dato a: <strong>Porcentaje (%)</strong>.</em>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SECCIÓN 6: CIERRE Y CARGA ÓPTIMA -->
+      <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-3xl p-8 shadow-excel-card space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-white">6. Cerrar y Cargar: La Mejor Opción de Rendimiento 🚀</h3>
+            <span class="text-xs text-emerald-100 font-semibold uppercase tracking-wider">Tu trabajo queda guardado e inmune a errores manuales</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium text-emerald-50 leading-relaxed pt-1">
+          <div class="p-4 bg-white/10 rounded-xl border border-white/20 space-y-2">
+            <strong class="text-white font-bold flex items-center gap-1.5 text-sm">
+              <i class="fa-solid fa-check-circle text-emerald-300"></i> En Excel:
+            </strong>
+            <p>1. Ve a la pestaña <strong>Inicio &rarr; Cerrar y Cargar en...</strong></p>
+            <p>2. Selecciona <strong class="text-white">Crear únicamente la conexión</strong> y marca <strong class="text-white">Agregar al Modelo de Datos</strong>.</p>
+            <p>3. ¡Cero hojas congeladas! Tu libro pesará megabytes mínimos y podrás armar Tablas Dinámicas al instante.</p>
+          </div>
+
+          <div class="p-4 bg-white/10 rounded-xl border border-white/20 space-y-2">
+            <strong class="text-white font-bold flex items-center gap-1.5 text-sm">
+              <i class="fa-solid fa-arrows-rotate text-emerald-300"></i> Automatización Total Mensual:
+            </strong>
+            <p>Cuando llegue el archivo del próximo mes o semana, <strong>¡no repitas nada!</strong></p>
+            <p>1. Cópialo dentro de la carpeta que configuraste en el Paso 1.</p>
+            <p>2. Abre tu Excel y pulsa <kbd class="px-2 py-0.5 bg-white/20 rounded font-mono font-bold text-white">Ctrl + Alt + F5</kbd> (Actualizar Todo).</p>
+            <p>3. Todo se recalcula automáticamente en 2 segundos.</p>
+          </div>
+        </div>
       </div>
 
     </section>
+
 
     <!-- ==============================================================
          TAB 3: GENERADOR & SIMULADOR DE LOS 5 DATASETS EMPRESARIALES
@@ -1444,14 +1746,15 @@ DIVIDE(
         </p>
       </div>
 
-      <!-- Columna 2: Ecosistema Tecnológico -->
+      <!-- Columna 2: Ecosistema Tecnológico & IA -->
       <div class="space-y-2">
-        <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-900">Ecosistema</h4>
+        <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-900">Ecosistema & IA</h4>
         <ul class="space-y-1.5 text-xs text-slate-500">
-          <li><i class="fa-brands fa-microsoft text-[#107c41] mr-1.5"></i> Microsoft Excel 365</li>
+          <li><i class="fa-brands fa-microsoft text-[#107c41] mr-1.5"></i> Microsoft Excel 365 & Copilot</li>
           <li><i class="fa-solid fa-bolt text-[#008272] mr-1.5"></i> Power Query Mashup Engine (M)</li>
-          <li><i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> Power BI Tabular Modeling</li>
-          <li><i class="fa-brands fa-python text-blue-600 mr-1.5"></i> Python & Pandas Integration</li>
+          <li><i class="fa-solid fa-plug-circle-bolt text-emerald-600 mr-1.5"></i> Protocolo MCP (Model Context Protocol)</li>
+          <li><i class="fa-solid fa-robot text-purple-600 mr-1.5"></i> Agentes & Subagentes Autónomos</li>
+          <li><i class="fa-brands fa-python text-blue-600 mr-1.5"></i> Python Nativo & Power BI</li>
         </ul>
       </div>
 
@@ -1480,12 +1783,16 @@ DIVIDE(
 
     </div>
 
-    <div class="master-wrapper flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3">
+    <div class="master-wrapper flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
       <div>
-        <span>&copy; 2026 DataForge Suite &middot; Manual Maestro de Ingeniería ETL & Gobernanza de Datos.</span>
+        <span>&copy; 2026 DataForge Suite &middot; Manual Maestro ETL, Power Query & Microsoft Excel 365 &middot; Autor: <strong>Ing. Juancito Peña Vizcaíno</strong></span>
       </div>
       <div class="flex items-center gap-4">
-        <span>Diseñado para Docencia & Toma de Decisiones Directivas</span>
+        <a href="https://github.com/JUANCITOPENA/Manual-Pedagogico-ETL-PowerQuery-Excel" target="_blank" class="hover:text-emerald-700 font-bold flex items-center gap-1.5 text-slate-700">
+          <i class="fa-brands fa-github text-sm"></i> Repositorio GitHub
+        </a>
+        <span>&middot;</span>
+        <span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check"></i> GitHub Pages Ready</span>
       </div>
     </div>
   </footer>
@@ -3203,14 +3510,17 @@ DIVIDE(
         const wsData = XLSX.utils.json_to_sheet(cleanData);
         XLSX.utils.book_append_sheet(wb, wsData, "Datos_Crudos_ETL");
 
-        const guiaData = [
-          { Paso: 1, Titulo: "Depurar Espacios y Texto Fantasma", Accion_PowerQuery: "Transformar -> Formato -> Recortar (Trim) y Limpiar (Clean). Reemplazar dobles espacios por espacio simple.", Codigo_M: "= Table.TransformColumns(#\"Paso\", {{\"REGION\", Text.Trim, type text}})" },
-          { Paso: 2, Titulo: "Aislar ID de Entidad / Cliente", Accion_PowerQuery: "Inicio -> Dividir columna -> Por delimitador ('-') más a la derecha. Renombrar a CLIENTE_NOMBRE e ID_CLIENTE.", Codigo_M: "= Table.SplitColumn(#\"Paso\", \"CLIENTE\", Splitter.SplitTextByEachDelimiter({\"-\"}, QuoteStyle.Csv, true))" },
-          { Paso: 3, Titulo: "Sanar Ortografía Leetspeak", Accion_PowerQuery: "Reemplazar Valores: @->a, 4->a, 3->e, 0->o. Eliminar '#'. Poner en Mayúsculas Cada Palabra.", Codigo_M: "= Table.ReplaceValue(#\"Paso\", \"@\", \"a\", Replacer.ReplaceText, {\"CLIENTE_NOMBRE\"})" },
-          { Paso: 4, Titulo: "Fracturar Fecha y Horarios", Accion_PowerQuery: "Dividir por delimitador Espacio para Fecha. Cambiar tipo a Fecha pura. Dividir horario por guión.", Codigo_M: "= Table.TransformColumnTypes(#\"Paso\", {{\"FECHA_DOCUMENTO\", type date}})" },
-          { Paso: 5, Titulo: "Regla Cero Nulos (DAX Safe)", Accion_PowerQuery: "Reemplazar nulls en canal por 'Canal Principal'. Reemplazar nulls en precio por 0.", Codigo_M: "= Table.ReplaceValue(#\"Paso\", null, \"Canal Principal\", Replacer.ReplaceValue, {\"CANAL_VENTA\"})" },
-          { Paso: 6, Titulo: "Columna Condicional Ingreso Real", Accion_PowerQuery: "Agregar Columna Condicional: Si ESTATUS indica cancelación entonces 0 sino [TOTAL]. Tipo: Número Decimal Fijo.", Codigo_M: "= Table.AddColumn(#\"Paso\", \"Ingreso_Real\", each if [ESTATUS] = \"Cancelado\" then 0 else [TOTAL], Currency.Type)" },
-          { Paso: 7, Titulo: "Conexión y Carpeta Dinámica", Accion_PowerQuery: "Cerrar y Cargar en... Crear únicamente la conexión y Agregar al Modelo de Datos. Actualizar Todo con Ctrl + Alt + F5.", Codigo_M: "Folder.Files(\"C:\\Carpeta_Empresa\")" }
+                const guiaData = [
+          { Paso: 1, Titulo: 'Conexión a Fuentes de Datos', Accion_PowerQuery: 'Datos -> Obtener datos -> Desde una carpeta (o Texto/CSV o JSON) -> Combinar y transformar.', Codigo_M: '= Folder.Files("C:\\Carpeta_Empresa")' },
+          { Paso: 2, Titulo: 'Limpiar Espacios Fantasmas (Recortar y Limpiar)', Accion_PowerQuery: 'Seleccionar texto con Ctrl. Pestaña Transformar -> Formato -> Recortar y Limpiar. Reemplazar doble espacio.', Codigo_M: '= Table.TransformColumns(#"Paso", {{"REGION", Text.Trim, type text}, {"CLIENTE", Text.Clean, type text}})' },
+          { Paso: 3, Titulo: 'Reparar Caracteres Corruptos (Leetspeak)', Accion_PowerQuery: 'Reemplazar @, 4, 3, 0 por vocales y #, $$ por vacío. SOLO en columnas de texto.', Codigo_M: '= Table.ReplaceValue(#"Paso", "@", "a", Replacer.ReplaceText, {"CLIENTE"})' },
+          { Paso: 4, Titulo: 'Normalización y Tipos de Datos', Accion_PowerQuery: 'Poner en Mayúsculas Cada Palabra. Asignar Fecha, Entero, Texto y Número Decimal Fijo.', Codigo_M: '= Table.TransformColumnTypes(#"Paso", {{"FECHA_VENTA", type date}, {"CANTIDAD", Int64.Type}, {"TOTAL_FACTURA", Currency.Type}})' },
+          { Paso: 5, Titulo: 'Columna: Subtotal Calculado ($)', Accion_PowerQuery: 'Agregar columna -> Columna personalizada -> =[CANTIDAD] * [PRECIO_VENTA]. Tipo Moneda.', Codigo_M: '= Table.AddColumn(#"Paso", "SUBTOTAL_CALCULADO", each [CANTIDAD] * [PRECIO_VENTA], Currency.Type)' },
+          { Paso: 6, Titulo: 'Columna: Margen Bruto ($)', Accion_PowerQuery: 'Agregar columna -> Columna personalizada -> =[SUBTOTAL] - [COSTO_TOTAL]. Tipo Moneda.', Codigo_M: '= Table.AddColumn(#"Paso", "MARGEN_BRUTO", each [SUBTOTAL] - [COSTO_TOTAL], Currency.Type)' },
+          { Paso: 7, Titulo: 'Columna: Total con ITBIS (18%)', Accion_PowerQuery: 'Agregar columna -> Columna personalizada -> =[SUBTOTAL] + [ITBIS_18]. Tipo Moneda.', Codigo_M: '= Table.AddColumn(#"Paso", "TOTAL_CON_ITBIS", each [SUBTOTAL] + [ITBIS_18], Currency.Type)' },
+          { Paso: 8, Titulo: 'Columna: Ingreso Real Efectivo', Accion_PowerQuery: 'Columna personalizada: if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA].', Codigo_M: '= Table.AddColumn(#"Paso", "INGRESO_REAL", each if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA], Currency.Type)' },
+          { Paso: 9, Titulo: 'Columna: % de Margen sobre Venta', Accion_PowerQuery: 'Columna personalizada: if [SUBTOTAL] <> 0 and [SUBTOTAL] <> null then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0. Tipo Porcentaje.', Codigo_M: '= Table.AddColumn(#"Paso", "PORC_MARGEN", each if [SUBTOTAL] <> 0 and [SUBTOTAL] <> null then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0, Percentage.Type)' },
+          { Paso: 10, Titulo: 'Cerrar y Cargar al Modelo de Datos', Accion_PowerQuery: 'Inicio -> Cerrar y Cargar en... -> Crear únicamente la conexión y Agregar al Modelo de Datos.', Codigo_M: 'Consolidación automática mensual pulsando Ctrl + Alt + F5 (Actualizar Todo).' }
         ];
         const wsGuia = XLSX.utils.json_to_sheet(guiaData);
         XLSX.utils.book_append_sheet(wb, wsGuia, "Receta_Maestra_PowerQuery");
