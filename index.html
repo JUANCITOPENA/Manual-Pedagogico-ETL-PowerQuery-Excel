@@ -3804,19 +3804,22 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      if (tabId === 'dashboard') {
-        requestAnimationFrame(() => {
-          renderDashboard();
-          renderDashboardTable();
-        });
-      } else if (tabId === 'generador') {
-        renderRawTable();
-      } else if (tabId === 'pivot') {
-        renderPivotTable();
-      } else if (tabId === 'fundamentos') {
-        requestAnimationFrame(() => {
-          initSeniorityCharts();
-        });
+      try {
+        if (tabId === 'dashboard') {
+          requestAnimationFrame(() => {
+            try { renderDashboard(); renderDashboardTable(); } catch(e) { console.warn(e); }
+          });
+        } else if (tabId === 'generador') {
+          try { renderRawTable(); } catch(e) { console.warn(e); }
+        } else if (tabId === 'pivot') {
+          try { renderPivotTable(); } catch(e) { console.warn(e); }
+        } else if (tabId === 'fundamentos') {
+          requestAnimationFrame(() => {
+            try { initSeniorityCharts(); } catch(e) { console.warn(e); }
+          });
+        }
+      } catch(err) {
+        console.warn('Error in post-switch tab hooks:', err);
       }
     }
 
@@ -4343,7 +4346,6 @@
         groups[key].real += (row._metricReal || 0);
       });
 
-      const tbody = document.getElementById('pivotTableBody');
       const tfoot = document.getElementById('pivotTableFoot');
       if (!tbody || !tfoot) return;
 
@@ -4644,6 +4646,7 @@
     let DEMAND_CHART_INSTANCE = null;
 
     function initSeniorityCharts() {
+      if (typeof Chart === 'undefined') return;
       const salaryCanvas = document.getElementById('salaryComparisonChart');
       if (salaryCanvas) {
         if (SALARY_CHART_INSTANCE) SALARY_CHART_INSTANCE.destroy();
