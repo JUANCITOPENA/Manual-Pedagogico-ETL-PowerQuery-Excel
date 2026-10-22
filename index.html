@@ -274,6 +274,27 @@
       margin: 3px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
+      /* ==============================================================
+       MODELADO 3D Y PERSPECTIVA PARA TABLAS DINÁMICAS (100% LIGHT MODE)
+    ============================================================== */
+    .pivot-3d-scene {
+      perspective: 1400px;
+    }
+    .pivot-3d-card {
+      transform-style: preserve-3d;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+    }
+    .pivot-3d-card:hover {
+      transform: translateY(-5px) rotateX(3deg) rotateY(-2deg);
+      box-shadow: 0 20px 35px -5px rgba(16, 124, 65, 0.12), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+    .quadrant-3d {
+      transform: translateZ(10px);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+    .quadrant-3d:hover {
+      transform: translateZ(25px) scale(1.02);
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-[#f8fafc] text-slate-800 antialiased selection:bg-emerald-100 selection:text-emerald-900">
@@ -1162,7 +1183,7 @@
           
           <div class="relative group cursor-pointer overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white" onclick="openLightboxModal('img/img1.png', 'Mapa Jerárquico de Seniority y Competencias de Datos en Excel & IA')">
             <img src="img/img1.png" alt="Mapa Jerárquico de Seniority y Competencias de Datos en Excel & IA" class="w-full h-auto max-h-[540px] object-contain mx-auto group-hover:scale-[1.01] transition-transform duration-300">
-            <div class="absolute inset-0 bg-slate-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+            <div class="absolute inset-0 bg-emerald-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
               <span class="px-4 py-2 rounded-xl bg-white/90 backdrop-blur-md text-slate-900 font-extrabold text-xs shadow-lg flex items-center gap-2">
                 <i class="fa-solid fa-magnifying-glass-plus text-emerald-600"></i> Clic para Ampliar Pantalla Completa (95%)
               </span>
@@ -1311,7 +1332,7 @@
             <div class="space-y-3">
               <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white aspect-[4/3] flex items-center justify-center">
                 <img src="img/img2.png" alt="Fase 1: Conexión y Purificación ETL" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div class="absolute inset-0 bg-emerald-900/15 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span class="px-3 py-1.5 rounded-lg bg-white/90 backdrop-blur-md text-slate-900 font-bold text-xs shadow-md">
                     <i class="fa-solid fa-expand text-emerald-600 mr-1"></i> Ampliar 95%
                   </span>
@@ -1337,7 +1358,7 @@
             <div class="space-y-3">
               <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white aspect-[4/3] flex items-center justify-center">
                 <img src="img/img3.png" alt="Fase 2: Desinfección y Motor M" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div class="absolute inset-0 bg-emerald-900/15 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span class="px-3 py-1.5 rounded-lg bg-white/90 backdrop-blur-md text-slate-900 font-bold text-xs shadow-md">
                     <i class="fa-solid fa-expand text-emerald-600 mr-1"></i> Ampliar 95%
                   </span>
@@ -1363,7 +1384,7 @@
             <div class="space-y-3">
               <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white aspect-[4/3] flex items-center justify-center">
                 <img src="img/img4.png" alt="Fase 3: Columnas Calculadas y Tablas Dinámicas" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div class="absolute inset-0 bg-emerald-900/15 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span class="px-3 py-1.5 rounded-lg bg-white/90 backdrop-blur-md text-slate-900 font-bold text-xs shadow-md">
                     <i class="fa-solid fa-expand text-emerald-600 mr-1"></i> Ampliar 95%
                   </span>
@@ -2137,22 +2158,490 @@
 
     </section>
 
-    <!-- ==============================================================
-         TAB 5: TABLA DINÁMICA ANALÍTICA & GUÍA TUTORIAL DEFINITIVA
+        <!-- ==============================================================
+         TAB 5: TABLA DINÁMICA ANALÍTICA & GUÍA TUTORIAL DEFINITIVA TUTSPLUS
     ============================================================== -->
     <section id="tab-pivot" class="hidden space-y-10">
 
-      <!-- Tabla Dinámica en Vivo -->
+      <!-- ============================================================
+           HEADER MAGISTRAL: GUÍA TUTORIAL TUTSPLUS & SUPERMERCADO
+      ============================================================ -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-excel-card space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+          <div class="space-y-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-900 border border-emerald-300">
+                <i class="fa-solid fa-graduation-cap text-emerald-700"></i> Metodología Envato Tuts+ Adaptada
+              </span>
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-900 border border-blue-200">
+                <i class="fa-solid fa-cart-shopping"></i> Caso 1: Supermercado & Retail Masivo
+              </span>
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-800 border border-slate-300">
+                Atajo Maestro: Alt + N + V
+              </span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+              Manual Maestro Ilustrado de Tablas Dinámicas (PivotTables) en Microsoft Excel 365
+            </h1>
+            <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-5xl">
+              Aprende a dominar la herramienta analítica más potente del mundo empresarial. Basado en el estándar pedagógico de <strong class="text-slate-900">Envato Tuts+</strong> y modelado al 100% sobre nuestro <strong class="text-emerald-900">Dataset de Ventas de Supermercado & Retail Masivo</strong> (Facturas, Clientes, Categorías, Unidades, ITBIS y Margen Bruto), sin escribir fórmulas complejas.
+            </p>
+          </div>
+
+          <!-- Insignia de Beneficio -->
+          <div class="bg-emerald-50/80 border border-emerald-300 rounded-2xl p-5 shrink-0 lg:max-w-xs text-left shadow-xs">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5 mb-1">
+              <i class="fa-solid fa-bolt text-amber-500"></i> Poder de Agregación
+            </div>
+            <div class="text-2xl font-black text-emerald-950 font-mono">0 Fórmulas</div>
+            <p class="text-xs text-slate-600 mt-1 leading-snug">
+              Resume 50,000 transacciones de supermercado en un reporte de rentabilidad cruzada en menos de 10 segundos.
+            </p>
+          </div>
+        </div>
+
+        <!-- Barra de Ventajas de las Tablas Dinámicas según TutsPlus -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="text-xs font-black text-emerald-800 flex items-center gap-2">
+              <i class="fa-solid fa-arrows-split-up-and-left text-emerald-600"></i> 1. Multidimensionalidad
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Cruza filas (Vendedores) con columnas (Categorías) y obtén subtotales automáticos sin romper la hoja.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="text-xs font-black text-blue-800 flex items-center gap-2">
+              <i class="fa-solid fa-calculator text-blue-600"></i> 2. Agregaciones Al Vuelo
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Alterna entre Suma de Ventas, Margen Bruto, Promedio por Ticket o % de Participación con un solo clic derecho.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="text-xs font-black text-purple-800 flex items-center gap-2">
+              <i class="fa-solid fa-calendar-days text-purple-600"></i> 3. Agrupación Temporal
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Agrupa fechas de ventas de supermercado en Años, Trimestres y Meses automáticamente sin fórmulas de fecha.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="text-xs font-black text-amber-800 flex items-center gap-2">
+              <i class="fa-solid fa-rotate text-amber-600"></i> 4. Actualización Instantánea
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Ingresas 500 facturas nuevas y con <kbd class="px-1.5 py-0.5 bg-white border rounded font-mono text-[10px]">Alt + F5</kbd> todo el reporte gerencial se recalcula solo.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           MODELADO 3D DE LAS PARTES DE UNA TABLA DINÁMICA (ISOMÉTRICO)
+      ============================================================ -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-excel-card space-y-8 pivot-3d-scene">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-cubes text-emerald-600"></i> Anatomía Tridimensional de Excel 365
+            </div>
+            <h3 class="text-2xl font-black text-slate-900 mt-1">
+              Modelado 3D de las Partes de la Tabla Dinámica para el Supermercado
+            </h3>
+            <p class="text-slate-500 text-sm mt-0.5">
+              Entiende el flujo espacial de cómo los datos crudos se transforman a través de la Lista de Campos y los 4 Cuadrantes.
+            </p>
+          </div>
+          <button onclick="openLightboxModal('img/img4.png', 'Modelado 3D de Cuadrantes y Tablas Dinámicas en Excel')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-emerald-900 border border-emerald-300 text-xs font-bold shadow-xs transition-all active:scale-95 self-start sm:self-auto">
+            <i class="fa-solid fa-expand text-emerald-600"></i>
+            <span>Ver Diagrama HD al 95%</span>
+          </button>
+        </div>
+
+        <!-- ESCENA TRIDIMENSIONAL: 3 CAPAS EN RELIEVE -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Capa 1 3D: Datos Planos del Supermercado -->
+          <div class="bg-gradient-to-b from-slate-50 to-white border border-slate-200 rounded-2xl p-6 shadow-md flex flex-col justify-between pivot-3d-card relative">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-blue-100 text-blue-900 border border-blue-200">
+                  <i class="fa-solid fa-database mr-1"></i> Capa 1: Origen Plano
+                </span>
+                <span class="text-xs font-mono font-bold text-slate-500">17 Columnas</span>
+              </div>
+              <h4 class="text-base font-black text-slate-900">Dataset de Ventas Supermercado</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Datos transaccionales normalizados por Power Query: cada fila es una transacción con factura, fecha, cliente, categoría, producto, total facturado y margen.
+              </p>
+
+              <!-- Muestra visual de celdas planas en relieve -->
+              <div class="bg-white border border-slate-200 rounded-xl p-2.5 font-mono text-[11px] space-y-1 shadow-inner">
+                <div class="flex justify-between bg-emerald-50 text-emerald-950 font-bold px-2 py-1 rounded">
+                  <span>NUM_FACT</span><span>CATEGORIA</span><span>TOTAL_RD</span>
+                </div>
+                <div class="flex justify-between px-2 py-0.5 text-slate-600 border-b border-slate-100">
+                  <span>FAC-1001</span><span>Abarrotes</span><span>$4,850.00</span>
+                </div>
+                <div class="flex justify-between px-2 py-0.5 text-slate-600 border-b border-slate-100">
+                  <span>FAC-1002</span><span>Carnes</span><span>$12,300.00</span>
+                </div>
+                <div class="flex justify-between px-2 py-0.5 text-slate-600">
+                  <span>FAC-1003</span><span>Lácteos</span><span>$6,450.00</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-200 text-xs font-bold text-blue-700 flex items-center justify-between">
+              <span>Alimentado por Power Query</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </div>
+          </div>
+
+          <!-- Capa 2 3D: Lista de Campos & Los 4 Cuadrantes Mágicos -->
+          <div class="bg-gradient-to-b from-emerald-50/40 to-white border border-emerald-300 rounded-2xl p-6 shadow-md flex flex-col justify-between pivot-3d-card relative">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between border-b border-emerald-200 pb-3">
+                <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                  <i class="fa-solid fa-sliders mr-1"></i> Capa 2: Panel de Campos
+                </span>
+                <span class="text-xs font-mono font-bold text-emerald-800">4 Cuadrantes</span>
+              </div>
+              <h4 class="text-base font-black text-slate-900">La Anatomía de Arrastre de Excel</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                El corazón de la tabla dinámica. Distribuyes los campos del supermercado en los 4 cuadrantes espaciales:
+              </p>
+
+              <!-- Representación 3D de los 4 Cuadrantes -->
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                <!-- Filtros -->
+                <div class="quadrant-3d bg-slate-50 border border-slate-300 rounded-xl p-2.5 shadow-xs">
+                  <div class="text-[10px] font-black uppercase text-slate-500 mb-1 flex items-center gap-1">
+                    <i class="fa-solid fa-filter text-slate-600"></i> Filtros
+                  </div>
+                  <div class="bg-white border rounded px-1.5 py-0.5 text-[11px] font-bold text-slate-800 truncate">
+                    REGION
+                  </div>
+                </div>
+
+                <!-- Columnas -->
+                <div class="quadrant-3d bg-teal-50 border border-teal-300 rounded-xl p-2.5 shadow-xs">
+                  <div class="text-[10px] font-black uppercase text-teal-700 mb-1 flex items-center gap-1">
+                    <i class="fa-solid fa-table-columns text-teal-600"></i> Columnas
+                  </div>
+                  <div class="bg-white border rounded px-1.5 py-0.5 text-[11px] font-bold text-teal-900 truncate">
+                    CATEGORIA
+                  </div>
+                </div>
+
+                <!-- Filas -->
+                <div class="quadrant-3d bg-blue-50 border border-blue-300 rounded-xl p-2.5 shadow-xs">
+                  <div class="text-[10px] font-black uppercase text-blue-700 mb-1 flex items-center gap-1">
+                    <i class="fa-solid fa-bars text-blue-600"></i> Filas
+                  </div>
+                  <div class="bg-white border rounded px-1.5 py-0.5 text-[11px] font-bold text-blue-900 truncate">
+                    VENDEDOR
+                  </div>
+                </div>
+
+                <!-- Valores -->
+                <div class="quadrant-3d bg-emerald-50 border border-emerald-300 rounded-xl p-2.5 shadow-xs">
+                  <div class="text-[10px] font-black uppercase text-emerald-800 mb-1 flex items-center gap-1">
+                    <i class="fa-solid fa-sigma text-emerald-700"></i> Valores
+                  </div>
+                  <div class="bg-white border rounded px-1.5 py-0.5 text-[11px] font-black text-emerald-950 truncate">
+                    &Sigma; TOTAL_RD
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-emerald-200 text-xs font-bold text-emerald-800 flex items-center justify-between">
+              <span>Procesamiento en Memoria</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </div>
+          </div>
+
+          <!-- Capa 3 3D: Tabla Dinámica Resultante Agregada -->
+          <div class="bg-gradient-to-b from-slate-50 to-white border border-slate-200 rounded-2xl p-6 shadow-md flex flex-col justify-between pivot-3d-card relative">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300">
+                  <i class="fa-solid fa-table-cells mr-1"></i> Capa 3: Reporte 3D
+                </span>
+                <span class="text-xs font-mono font-bold text-emerald-700">Rentabilidad</span>
+              </div>
+              <h4 class="text-base font-black text-slate-900">Matriz Gerencial Resultante</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                La tabla compacta multidimensional: muestra ventas y margen agrupadas por vendedor en filas y categoría en columnas con totales generales calculados.
+              </p>
+
+              <!-- Vista previa de la matriz agregada -->
+              <div class="bg-white border border-slate-200 rounded-xl p-2.5 font-mono text-[11px] space-y-1 shadow-inner">
+                <div class="flex justify-between bg-slate-100 font-bold px-2 py-1 rounded text-slate-800">
+                  <span>VENDEDOR</span><span>Abarrotes</span><span>Carnes</span><span>Total General</span>
+                </div>
+                <div class="flex justify-between px-2 py-0.5 text-slate-700 border-b border-slate-100">
+                  <span class="font-bold">Carlos Gómez</span><span>$14,200</span><span>$28,500</span><span class="font-bold text-emerald-800">$42,700</span>
+                </div>
+                <div class="flex justify-between px-2 py-0.5 text-slate-700 border-b border-slate-100">
+                  <span class="font-bold">Ana Martínez</span><span>$18,900</span><span>$31,200</span><span class="font-bold text-emerald-800">$50,100</span>
+                </div>
+                <div class="flex justify-between px-2 py-0.5 bg-emerald-50 text-emerald-950 font-black rounded">
+                  <span>Total General</span><span>$33,100</span><span>$59,700</span><span>$92,800</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-200 text-xs font-bold text-emerald-800 flex items-center justify-between">
+              <span>Listo para Gráfico Dinámico</span>
+              <i class="fa-solid fa-check text-emerald-600"></i>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ============================================================
+           GUÍA TUTORIAL PASO A PASO DEFINITIVA (MÉTODO TUTSPLUS)
+      ============================================================ -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-excel-card space-y-8">
+        
+        <div class="border-b border-slate-200 pb-4">
+          <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-700">
+            <i class="fa-solid fa-list-check text-emerald-600"></i> Metodología Práctica Paso a Paso
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">
+            Tutorial Guiado: Cómo Crear y Analizar Ventas de Supermercado con Tablas Dinámicas
+          </h3>
+          <p class="text-slate-500 text-sm mt-1">
+            Sigue estos 8 pasos fundamentales para replicar esta arquitectura analítica en cualquier versión de Microsoft Excel.
+          </p>
+        </div>
+
+        <!-- 8 PASOS DETALLADOS -->
+        <div class="space-y-6">
+          
+          <!-- Paso 1 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-5 hover:border-emerald-500 transition-all shadow-xs">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white font-black flex items-center justify-center text-xl shrink-0 shadow-md shadow-emerald-700/20">
+              1
+            </div>
+            <div class="space-y-2 flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-lg font-black text-slate-900">Paso 1: Higiene & Preparación de los Datos del Supermercado</h4>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">Regla de Oro Tuts+</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Antes de insertar la tabla dinámica, la fuente de datos debe cumplir con 4 mandamientos rigurosos:
+              </p>
+              <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium pt-1">
+                <li class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200">
+                  <i class="fa-solid fa-check text-emerald-600"></i>
+                  <span><strong>Fila de Encabezados Únicos:</strong> Sin celdas fusionadas.</span>
+                </li>
+                <li class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200">
+                  <i class="fa-solid fa-check text-emerald-600"></i>
+                  <span><strong>Sin Filas Vacías:</strong> Registros continuos de facturas.</span>
+                </li>
+                <li class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200">
+                  <i class="fa-solid fa-check text-emerald-600"></i>
+                  <span><strong>Tipado Homogéneo:</strong> Fechas como fecha, montos en moneda.</span>
+                </li>
+                <li class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200">
+                  <i class="fa-solid fa-check text-emerald-600"></i>
+                  <span><strong>Tabla Oficial (Ctrl + T):</strong> Convierte el rango en Tabla de Excel.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Paso 2 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-5 hover:border-emerald-500 transition-all shadow-xs">
+            <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-black flex items-center justify-center text-xl shrink-0 shadow-md shadow-blue-700/20">
+              2
+            </div>
+            <div class="space-y-2 flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-lg font-black text-slate-900">Paso 2: Inserción de la Tabla Dinámica desde la Cinta de Opciones</h4>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-900 border border-blue-200">Alt + N + V</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Haz clic en cualquier celda dentro de la tabla de supermercado. Ve a la pestaña <strong class="text-slate-900">Insertar &rarr; Tabla Dinámica</strong> (o utiliza el atajo de teclado en español <kbd class="px-1.5 py-0.5 bg-white border rounded font-mono text-xs">Alt + B + T</kbd> / en inglés <kbd class="px-1.5 py-0.5 bg-white border rounded font-mono text-xs">Alt + N + V</kbd>). En el cuadro de diálogo emergente, selecciona <strong class="text-emerald-800">Nueva hoja de cálculo</strong> para mantener la presentación limpia y aislada.
+              </p>
+            </div>
+          </div>
+
+          <!-- Paso 3 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-5 hover:border-emerald-500 transition-all shadow-xs">
+            <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white font-black flex items-center justify-center text-xl shrink-0 shadow-md shadow-teal-700/20">
+              3
+            </div>
+            <div class="space-y-2 flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-lg font-black text-slate-900">Paso 3: Anatomía del Panel de Campos (PivotTable Field List)</h4>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-100 text-teal-900 border border-teal-200">Panel Lateral</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Aparecerá a la derecha de Excel el panel lateral con la lista de campos de ventas del supermercado arriba y los cuatro cuadrantes estratégicos abajo:
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs pt-1">
+                <div class="bg-white p-3 rounded-xl border border-slate-200">
+                  <strong class="text-slate-900 block mb-1"><i class="fa-solid fa-filter text-slate-500 mr-1"></i> Filtros:</strong>
+                  Aisla el reporte completo por una variable global (ej. Región Norte o Canal App Móvil).
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200">
+                  <strong class="text-teal-900 block mb-1"><i class="fa-solid fa-table-columns text-teal-600 mr-1"></i> Columnas:</strong>
+                  Despliega dimensiones en horizontal para comparar categorías de productos lado a lado.
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200">
+                  <strong class="text-blue-900 block mb-1"><i class="fa-solid fa-bars text-blue-600 mr-1"></i> Filas:</strong>
+                  Lista entidades comerciales en vertical (Vendedores, Clientes o Tiendas).
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200">
+                  <strong class="text-emerald-900 block mb-1"><i class="fa-solid fa-sigma text-emerald-700 mr-1"></i> Valores:</strong>
+                  Calcula sumas, promedios y márgenes monetarios automáticamente.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 4 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-5 hover:border-emerald-500 transition-all shadow-xs">
+            <div class="w-12 h-12 rounded-2xl bg-purple-600 text-white font-black flex items-center justify-center text-xl shrink-0 shadow-md shadow-purple-700/20">
+              4
+            </div>
+            <div class="space-y-2 flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-lg font-black text-slate-900">Paso 4: Arrastrar los Campos Clave del Supermercado</h4>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-900 border border-purple-200">Drag & Drop</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Para responder la pregunta ejecutiva: <em>"¿Cuánto factura y qué margen genera cada vendedor en cada categoría de supermercado?"</em>, arrastra los siguientes campos:
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1 font-mono">
+                <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                  <span class="text-slate-600">Arrastrar <strong class="text-blue-700">[VENDEDOR]</strong></span>
+                  <span class="font-bold text-blue-900">&rarr; A Filas</span>
+                </div>
+                <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                  <span class="text-slate-600">Arrastrar <strong class="text-teal-700">[CATEGORIA]</strong></span>
+                  <span class="font-bold text-teal-900">&rarr; A Columnas</span>
+                </div>
+                <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                  <span class="text-slate-600">Arrastrar <strong class="text-emerald-700">[TOTAL_FACTURA]</strong></span>
+                  <span class="font-bold text-emerald-900">&rarr; A Valores (&Sigma;)</span>
+                </div>
+                <div class="bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                  <span class="text-slate-600">Arrastrar <strong class="text-emerald-700">[MARGEN_BRUTO]</strong></span>
+                  <span class="font-bold text-emerald-900">&rarr; A Valores (&Sigma;)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 5 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-5 hover:border-emerald-500 transition-all shadow-xs">
+            <div class="w-12 h-12 rounded-2xl bg-amber-600 text-white font-black flex items-center justify-center text-xl shrink-0 shadow-md shadow-amber-700/20">
+              5
+            </div>
+            <div class="space-y-2 flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-lg font-black text-slate-900">Paso 5: Configuración de Campo de Valor & Formato Moneda</h4>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">Value Field Settings</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Por defecto, Excel puede mostrar números sin formato (ej. <code class="font-mono">145820.3</code>). Para presentarlo con elegancia gerencial:
+              </p>
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2 text-xs text-slate-700">
+                <p><strong>1. Formato de Moneda:</strong> Haz clic derecho sobre cualquier número &rarr; <em>Formato de número...</em> &rarr; Moneda &rarr; Símbolo RD$ con separador de miles y 0 decimales.</p>
+                <p><strong>2. Mostrar Valores Como %:</strong> En otra columna de valores, haz clic derecho &rarr; <em>Mostrar valores como &rarr; % del total general</em> para ver la cuota de mercado de cada vendedor de supermercado sin escribir fórmulas.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 6 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-5 hover:border-emerald-500 transition-all shadow-xs">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-black flex items-center justify-center text-xl shrink-0 shadow-md shadow-indigo-700/20">
+              6
+            </div>
+            <div class="space-y-2 flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-lg font-black text-slate-900">Paso 6: Agrupación de Fechas de Ventas por Meses y Trimestres</h4>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900 border border-indigo-200">Time Intelligence</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Si arrastras el campo <code class="font-mono font-bold text-slate-900">[FECHA_VENTA]</code> a las columnas, Excel mostrará cientos de días individuales. Para agruparlos: haz clic derecho sobre cualquier celda de fecha en la tabla dinámica &rarr; <strong class="text-slate-900">Agrupar...</strong> &rarr; Selecciona simultáneamente <strong class="text-indigo-800">Meses y Años</strong>. Excel creará al vuelo una jerarquía de calendario sin modificar los datos de origen.
+              </p>
+            </div>
+          </div>
+
+          <!-- Paso 7 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-5 hover:border-emerald-500 transition-all shadow-xs">
+            <div class="w-12 h-12 rounded-2xl bg-rose-600 text-white font-black flex items-center justify-center text-xl shrink-0 shadow-md shadow-rose-700/20">
+              7
+            </div>
+            <div class="space-y-2 flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-lg font-black text-slate-900">Paso 7: Diseño en Formato Tabular (Estilo TutsPlus Recomendado)</h4>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-900 border border-rose-200">Diseño Tabular</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Por defecto, Excel utiliza el <em>Formato Compacto</em>. Para convertir la tabla dinámica en un informe profesional limpio para juntas directivas:
+              </p>
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-1.5 text-xs text-slate-700">
+                <p>Ve a la cinta <strong class="text-slate-900">Diseño &rarr; Diseño de informe &rarr; Mostrar en formato tabular</strong>. Esto separa cada campo en su propia columna independiente con encabezados claros y habilita la opción de <em>Repetir todas las etiquetas de elementos</em> para exportar limpiamente a Power BI o Python.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 8 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-5 hover:border-emerald-500 transition-all shadow-xs">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-700 text-white font-black flex items-center justify-center text-xl shrink-0 shadow-md shadow-emerald-800/20">
+              8
+            </div>
+            <div class="space-y-2 flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-lg font-black text-slate-900">Paso 8: Segmentadores (Slicers), Gráficos Dinámicos & Actualización</h4>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-950 border border-emerald-300">Alt + F5</span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                El toque final corporativo:
+              </p>
+              <ul class="space-y-1.5 text-xs text-slate-700">
+                <li>&bull; <strong class="text-slate-900">Insertar Segmentación de Datos (Slicers):</strong> Cinta <em>Analizar tabla dinámica &rarr; Insertar segmentación de datos &rarr; Seleccionar [CANAL_VENTA] y [CONDICION_PAGO]</em>.</li>
+                <li>&bull; <strong class="text-slate-900">Gráfico Dinámico (PivotChart):</strong> Inserta un gráfico de columnas agrupadas vinculado; cualquier filtro en la tabla actualizará el gráfico de inmediato.</li>
+                <li>&bull; <strong class="text-slate-900">Actualizar Datos (Refresh):</strong> Cuando agregues nuevas facturas de supermercado a la fuente, pulsa <kbd class="px-1.5 py-0.5 bg-white border rounded font-mono text-xs font-bold text-emerald-800">Alt + F5</kbd> o <kbd class="px-1.5 py-0.5 bg-white border rounded font-mono text-xs font-bold text-emerald-800">Ctrl + Alt + F5</kbd> para reflejar los cambios en 1 segundo.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ============================================================
+           LABORATORIO INTERACTIVO EN VIVO: SIMULADOR DE TABLA DINÁMICA
+      ============================================================ -->
       <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-6">
         
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
           <div>
-            <h2 class="text-2xl font-black text-slate-900 flex items-center gap-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-flask-vial text-emerald-600"></i> Laboratorio Práctico en Vivo
+            </div>
+            <h2 class="text-2xl font-black text-slate-900 mt-1 flex items-center gap-2">
               <i class="fa-solid fa-table-cells text-emerald-600"></i>
-              Tabla Dinámica Analítica (Pivot Table Engine)
+              Simulador Interactivo de Tabla Dinámica (Pivot Table Engine)
             </h2>
             <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Reorganiza las métricas agregadas al vuelo cambiando la dimensión de corte analítico.
+              Experimenta en tiempo real agrupando las transacciones activas de supermercado por cualquier dimensión de corte.
             </p>
           </div>
 
@@ -2201,75 +2690,6 @@
           </table>
         </div>
 
-      </div>
-
-      <!-- GUÍA TUTORIAL PASO A PASO (PARA PRESENTACIONES Y VIDEOS) -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-6">
-        <div class="border-b border-slate-200 pb-3">
-          <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-700">
-            <i class="fa-solid fa-chalkboard-user"></i> Pedagogía para Capacitaciones y Cursos
-          </div>
-          <h3 class="text-2xl font-black text-slate-900 mt-1">
-            Tutorial Paso a Paso: Cómo Construir este Proyecto en Excel desde Cero
-          </h3>
-          <p class="text-slate-500 text-sm mt-0.5">
-            Sigue este protocolo exacto en tu computadora para recrear la solución y automatizar tu empresa.
-          </p>
-        </div>
-
-        <div class="space-y-4 text-sm text-slate-700 leading-relaxed">
-          
-          <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0 mt-0.5">1</div>
-            <div>
-              <strong class="text-slate-900 text-base">Crear la Carpeta Local de Ingestión:</strong>
-              <p class="text-xs text-slate-600 mt-1">Crea la carpeta <code class="bg-white px-2 py-0.5 border rounded font-mono font-bold text-slate-800">C:\Reportes_Empresa\Lotes_Mensuales</code> en tu computadora. En ella guardarás los archivos CSV o Excel que descargues desde este laboratorio.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0 mt-0.5">2</div>
-            <div>
-              <strong class="text-slate-900 text-base">Conexión por Carpeta (Folder Connector):</strong>
-              <p class="text-xs text-slate-600 mt-1">Abre Excel 365 &rarr; Pestaña <span class="font-bold text-slate-900">Datos &rarr; Obtener datos &rarr; Desde un archivo &rarr; Desde una carpeta</span>. Apunta a la carpeta anterior. Haz clic en el botón <strong class="text-emerald-800">Transformar datos</strong> para entrar en Power Query.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0 mt-0.5">3</div>
-            <div>
-              <strong class="text-slate-900 text-base">Ejecutar la Receta ETL:</strong>
-              <p class="text-xs text-slate-600 mt-1">Aplica los 6 pasos explicados en la Pestaña 2: Recorta espacios, divide la columna Cliente para aislar su ID, separa fecha de horarios, tipa decimales con punto/coma según tu región y agrega la columna condicional <code class="font-mono text-blue-700 font-bold">[Ingreso_Real]</code>.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0 mt-0.5">4</div>
-            <div>
-              <strong class="text-slate-900 text-base">Cargar en el Modelo de Datos & Tablas Dinámicas:</strong>
-              <p class="text-xs text-slate-600 mt-1">Haz clic en <em>Cerrar y cargar en... &rarr; Crear únicamente la conexión &rarr; Agregar estos datos al Modelo de datos</em>. Luego inserta una Tabla Dinámica desde el Modelo de Datos y arrastra los campos como se ilustró en el cuadrante del Paso 7.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0 mt-0.5">5</div>
-            <div>
-              <strong class="text-slate-900 text-base">Insertar Segmentadores (Slicers) y Gráficos Oficiales:</strong>
-              <p class="text-xs text-slate-600 mt-1">Inserta los 3 Slicers (Región, Estatus, Canal). Inserta los gráficos nativos de Excel (Columna Agrupada 2D, Anillo, Líneas con Marcadores y Barra Horizontal). Conéctalos mediante clic derecho en el Slicer &rarr; <em>Conexiones de informes</em>.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-emerald-50 border border-emerald-300">
-            <div class="w-8 h-8 rounded-xl bg-emerald-700 text-white font-extrabold flex items-center justify-center text-sm shrink-0 mt-0.5">
-              <i class="fa-solid fa-magic"></i>
-            </div>
-            <div>
-              <strong class="text-emerald-950 text-base">La Prueba de Oro de la Automatización:</strong>
-              <p class="text-xs text-emerald-900 mt-1">Deposita un nuevo archivo en la carpeta (ejemplo: <code class="font-mono font-bold">Ventas_Octubre.xlsx</code>). Vuelve a Excel y pulsa <kbd class="px-2 py-0.5 bg-white border border-emerald-400 rounded font-bold font-mono">Ctrl + Alt + F5</kbd>. Todo el modelo, KPIs y gráficos se actualizarán solos sin repetir ninguna tarea tediosa.</p>
-            </div>
-          </div>
-
-        </div>
       </div>
 
     </section>
@@ -4449,7 +4869,7 @@
   <!-- ==============================================================
        MODAL LIGHTBOX AL 95% DE LA PANTALLA (INTERACTIVO CON BOTÓN X)
   ============================================================== -->
-  <div id="lightboxModal" class="fixed inset-0 z-[9999] hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 transition-all duration-300">
+  <div id="lightboxModal" class="fixed inset-0 z-[9999] hidden bg-slate-700/40 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-300">
     <div class="bg-white border border-slate-200 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between w-[95vw] h-[95vh] max-w-[95vw] max-h-[95vh] relative animated-border">
       
       <!-- Header del Modal -->
