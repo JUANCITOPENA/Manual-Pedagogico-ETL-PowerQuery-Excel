@@ -2626,72 +2626,6 @@
 
       </div>
 
-      <!-- ============================================================
-           LABORATORIO INTERACTIVO EN VIVO: SIMULADOR DE TABLA DINÁMICA
-      ============================================================ -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-6">
-        
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
-          <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
-              <i class="fa-solid fa-flask-vial text-emerald-600"></i> Laboratorio Práctico en Vivo
-            </div>
-            <h2 class="text-2xl font-black text-slate-900 mt-1 flex items-center gap-2">
-              <i class="fa-solid fa-table-cells text-emerald-600"></i>
-              Simulador Interactivo de Tabla Dinámica (Pivot Table Engine)
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Experimenta en tiempo real agrupando las transacciones activas de supermercado por cualquier dimensión de corte.
-            </p>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-3">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Agrupar por:</label>
-              <select id="pivotGroupBy" onchange="renderPivotTable()" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 font-bold focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer">
-                <option value="REGION" selected>Región Geográfica</option>
-                <option value="VENDEDOR">Responsable / Agente</option>
-                <option value="CATEGORIA">Categoría / Familia</option>
-                <option value="TIPO_COMPRA">Canal / Modalidad</option>
-                <option value="CONDICION_PAGO">Términos de Pago</option>
-                <option value="ESTATUS">Estatus Transaccional</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Filtro rápido:</label>
-              <input type="text" id="pivotSearch" oninput="renderPivotTable()" placeholder="Filtrar dimensión..." class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500">
-            </div>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border-collapse">
-            <thead class="bg-slate-100 text-slate-700 font-bold uppercase text-[11px] border-b border-slate-200">
-              <tr>
-                <th id="pivotDimensionHeader" class="py-3 px-3.5">Dimensión (Región)</th>
-                <th class="py-3 px-3.5 text-right"># Transacciones</th>
-                <th class="py-3 px-3.5 text-right">Cant. Unidades</th>
-                <th class="py-3 px-3.5 text-right">Subtotal RD$</th>
-                <th class="py-3 px-3.5 text-right">ITBIS (18%) RD$</th>
-                <th class="py-3 px-3.5 text-right">Total Facturado RD$</th>
-                <th class="py-3 px-3.5 text-right">Costo Total RD$</th>
-                <th class="py-3 px-3.5 text-right">Margen Bruto RD$</th>
-                <th class="py-3 px-3.5 text-right">Margen %</th>
-                <th class="py-3 px-3.5 text-right">% Cumplimiento Meta</th>
-              </tr>
-            </thead>
-            <tbody id="pivotTableBody" class="divide-y divide-slate-100 font-mono text-slate-700">
-              <!-- Renderizado dinámicamente -->
-            </tbody>
-            <tfoot id="pivotTableFoot" class="bg-slate-100 font-bold font-mono text-slate-900 border-t-2 border-slate-300">
-              <!-- Totales generales -->
-            </tfoot>
-          </table>
-        </div>
-
-      </div>
-
     </section>
 
   </main>
@@ -4368,6 +4302,8 @@
        12. TABLA DINÁMICA ANALÍTICA
     ===================================================================== */
     function renderPivotTable() {
+      const tbody = document.getElementById('pivotTableBody');
+      if (!tbody) return;
       const groupByField = document.getElementById('pivotGroupBy') ? document.getElementById('pivotGroupBy').value : 'REGION';
       const searchInput = document.getElementById('pivotSearch');
       const searchTerm = searchInput ? (searchInput.value || '').toLowerCase() : '';
