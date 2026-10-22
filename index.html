@@ -55,16 +55,103 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <style>
-    /* 100% Light Mode Ejecutivo de Alto Contraste */
+    /* ==============================================================
+       100% LIGHT MODE EJECUTIVO - CERO MODO DARK / FONDOS NEGROS
+       TIPOGRAFÍA AUMENTADA +5% & BORDES ANIMADOS EN CARDS Y SECCIONES
+    ============================================================== */
     html {
       scroll-behavior: smooth;
+      font-size: 105% !important; /* Aumenta exactamente un 5% todo el escalado rem global */
     }
     body {
       font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
       background-color: #f8fafc;
       color: #0f172a;
-      font-size: 16px;
-      line-height: 1.7;
+      font-size: 1.05rem; /* +5% base sobre 16px (16.8px) */
+      line-height: 1.78;
+    }
+
+    /* Refuerzo explícito de +5% de tamaño para todos los títulos, subtítulos, párrafos, notas y resultados */
+    h1 {
+      font-size: 1.05em;
+      letter-spacing: -0.025em;
+    }
+    h2 {
+      font-size: 1.05em;
+      letter-spacing: -0.02em;
+    }
+    h3, h4, h5, h6 {
+      font-size: 1.05em;
+      letter-spacing: -0.015em;
+    }
+    p, span, li, td, th, input, select, button, .slicer-btn, label, kbd {
+      font-size: 1.05em;
+    }
+    .kpi-number, [id*="Kpi"], [id*="kpi"], .font-mono {
+      font-size: 1.05em;
+    }
+
+    /* ==============================================================
+       BORDES ANIMADOS CORPORATIVOS PARA TODAS LAS SECCIONES Y CARDS
+    ============================================================== */
+    @keyframes borderGlowLoop {
+      0% {
+        border-color: #107c41; /* Verde Excel 365 */
+        box-shadow: 0 0 0 1.5px rgba(16, 124, 65, 0.22), 0 6px 20px -2px rgba(16, 124, 65, 0.10);
+      }
+      25% {
+        border-color: #008272; /* Teal Power Query */
+        box-shadow: 0 0 0 1.5px rgba(0, 130, 114, 0.24), 0 6px 20px -2px rgba(0, 130, 114, 0.10);
+      }
+      50% {
+        border-color: #0078d4; /* Azul Microsoft Corporation */
+        box-shadow: 0 0 0 1.5px rgba(0, 120, 212, 0.24), 0 6px 20px -2px rgba(0, 120, 212, 0.10);
+      }
+      75% {
+        border-color: #33c481; /* Verde Esmeralda Vivo */
+        box-shadow: 0 0 0 1.5px rgba(51, 196, 129, 0.24), 0 6px 20px -2px rgba(51, 196, 129, 0.10);
+      }
+      100% {
+        border-color: #107c41; /* Verde Excel 365 */
+        box-shadow: 0 0 0 1.5px rgba(16, 124, 65, 0.22), 0 6px 20px -2px rgba(16, 124, 65, 0.10);
+      }
+    }
+
+    /* Aplicación de borde animado a todas las secciones y tarjetas principales */
+    section > div[class*="rounded-3xl"],
+    div.bg-white.border,
+    div.bg-slate-50.border,
+    div.rounded-3xl.border,
+    div.rounded-2xl.border,
+    .slicer-card,
+    .pivot-quadrant,
+    .animated-card-border {
+      border-width: 1.5px !important;
+      animation: borderGlowLoop 6s ease-in-out infinite;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    /* Desfase de animación armónico en tarjetas hijas para efecto fluido */
+    div.rounded-2xl.border:nth-child(2n) {
+      animation-delay: 1.5s;
+    }
+    div.rounded-2xl.border:nth-child(3n) {
+      animation-delay: 3s;
+    }
+    div.rounded-2xl.border:nth-child(4n) {
+      animation-delay: 4.5s;
+    }
+
+    .slicer-card:nth-child(1) { animation-delay: 0.8s; }
+    .slicer-card:nth-child(2) { animation-delay: 2.2s; }
+    .slicer-card:nth-child(3) { animation-delay: 3.6s; }
+
+    /* Hover interactivo con elevación suave */
+    div.bg-white.border:hover,
+    div.bg-slate-50.border:hover,
+    div.rounded-2xl.border:hover,
+    .slicer-card:hover {
+      transform: translateY(-2px);
     }
 
     /* Contenedor Maestro al 85% exacto solicitado */
@@ -260,7 +347,7 @@
 
       <!-- Acción Rápida: Descarga Directa & Repositorio GitHub -->
       <div class="flex items-center gap-2 shrink-0">
-        <a href="https://github.com/JUANCITOPENA/Manual-Pedagogico-ETL-PowerQuery-Excel" target="_blank" rel="noopener noreferrer" title="Ver Repositorio Oficial en GitHub" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-black active:scale-95 text-white text-xs font-bold shadow-sm transition-all">
+        <a href="https://github.com/JUANCITOPENA/Manual-Pedagogico-ETL-PowerQuery-Excel" target="_blank" rel="noopener noreferrer" title="Ver Repositorio Oficial en GitHub" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 border border-slate-300 text-xs font-bold shadow-sm transition-all">
           <i class="fa-brands fa-github text-sm"></i>
           <span class="hidden sm:inline">GitHub</span>
         </a>
@@ -498,60 +585,60 @@
           </div>
         </div>
 
-        <!-- EL SALTO AL 100% DE POTENCIAL: INTELIGENCIA ARTIFICIAL, MCP & AGENTES AUTÓNOMOS -->
-        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-700/80 pb-5">
+        <!-- EL SALTO AL 100% DE POTENCIAL: INTELIGENCIA ARTIFICIAL, MCP & AGENTES AUTÓNOMOS (100% LIGHT MODE) -->
+        <div class="bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/70 text-slate-900 border border-emerald-300 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-emerald-200/80 pb-5">
             <div class="space-y-1">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> El Salto Cuántico Tecnológico
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                <i class="fa-solid fa-wand-magic-sparkles text-emerald-700"></i> El Salto Cuántico Tecnológico
               </div>
-              <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                 Cómo la Inteligencia Artificial, el Protocolo MCP & los Agentes Llevan tus Habilidades al 100% de tu Potencial
               </h3>
             </div>
             <div class="flex items-center gap-2 shrink-0">
-              <span class="px-3 py-1.5 rounded-xl bg-white/10 text-emerald-300 font-mono text-xs font-black border border-white/10">
-                <i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Multiplicador x50
+              <span class="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-950 font-mono text-xs font-black border border-emerald-300 shadow-xs">
+                <i class="fa-solid fa-bolt text-amber-600 mr-1"></i> Multiplicador x50
               </span>
             </div>
           </div>
 
-          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Existe una falsa creencia de que la Inteligencia Artificial reemplazará a los analistas de Excel. La realidad corporativa es la contraria: <strong class="text-white">la IA democratiza el poder de la ingeniería de datos en manos del usuario de negocio</strong>. Al combinar Microsoft Excel con <span class="text-emerald-300 font-extrabold">Model Context Protocol (MCP)</span> y <span class="text-emerald-300 font-extrabold">Agentes y Subagentes Autónomos</span>, tus habilidades técnicas y tu capacidad de resolución analítica alcanzan el <span class="bg-emerald-500/30 text-emerald-200 px-2 py-0.5 rounded font-black">100% de su potencial máximo</span>.
+          <p class="text-slate-700 text-sm sm:text-base leading-relaxed">
+            Existe una falsa creencia de que la Inteligencia Artificial reemplazará a los analistas de Excel. La realidad corporativa es la contraria: <strong class="text-slate-950">la IA democratiza el poder de la ingeniería de datos en manos del usuario de negocio</strong>. Al combinar Microsoft Excel con <span class="bg-emerald-100 px-1.5 py-0.5 rounded font-extrabold text-emerald-950">Model Context Protocol (MCP)</span> y <span class="bg-emerald-100 px-1.5 py-0.5 rounded font-extrabold text-emerald-950">Agentes y Subagentes Autónomos</span>, tus habilidades técnicas y tu capacidad de resolución analítica alcanzan el <span class="bg-emerald-200/80 text-emerald-950 px-2 py-0.5 rounded font-black border border-emerald-300">100% de su potencial máximo</span>.
           </p>
 
           <!-- Tríada de Poder: IA + MCP + Agentes -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
             
             <!-- Componente 1: IA Generativa -->
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm hover:border-emerald-400/50 transition-all space-y-2.5">
-              <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-lg font-bold border border-purple-500/30">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:border-purple-400 transition-all space-y-2.5">
+              <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-lg font-bold border border-purple-200">
                 <i class="fa-solid fa-brain"></i>
               </div>
-              <h4 class="text-base font-bold text-white">1. Inteligencia Artificial Cognitiva</h4>
-              <p class="text-xs text-slate-300 leading-relaxed">
+              <h4 class="text-base font-bold text-slate-900">1. Inteligencia Artificial Cognitiva</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
                 Modelos avanzados que interpretan requerimientos en lenguaje natural y redactan al instante código M óptimo para Power Query, medidas analíticas DAX y fórmulas matriciales dinámicas sin errores sintácticos.
               </p>
             </div>
 
             <!-- Componente 2: MCP Protocol -->
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm hover:border-emerald-400/50 transition-all space-y-2.5">
-              <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-lg font-bold border border-emerald-500/30">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:border-emerald-500 transition-all space-y-2.5">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-lg font-bold border border-emerald-200">
                 <i class="fa-solid fa-plug-circle-bolt"></i>
               </div>
-              <h4 class="text-base font-bold text-white">2. Protocolo MCP (Model Context Protocol)</h4>
-              <p class="text-xs text-slate-300 leading-relaxed">
+              <h4 class="text-base font-bold text-slate-900">2. Protocolo MCP (Model Context Protocol)</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
                 El nuevo estándar abierto de la industria que conecta de forma atómica y bidireccional los asistentes de IA con tus libros de Excel, APIs y bases de datos. Los agentes leen esquemas de datos, validan calidad y ejecutan acciones seguras.
               </p>
             </div>
 
             <!-- Componente 3: Agentes y Subagentes -->
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm hover:border-emerald-400/50 transition-all space-y-2.5">
-              <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center text-lg font-bold border border-blue-500/30">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:border-blue-400 transition-all space-y-2.5">
+              <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-lg font-bold border border-blue-200">
                 <i class="fa-solid fa-people-group"></i>
               </div>
-              <h4 class="text-base font-bold text-white">3. Agentes & Subagentes Autónomos</h4>
-              <p class="text-xs text-slate-300 leading-relaxed">
+              <h4 class="text-base font-bold text-slate-900">3. Agentes & Subagentes Autónomos</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
                 Equipos de subagentes especializados que operan en segundo plano: un agente curador desinfecta texto (leetspeak, espacios, nulos), un agente arquitecto diseña el modelo en estrella y un agente DevOps publica en GitHub Pages.
               </p>
             </div>
@@ -559,17 +646,17 @@
           </div>
 
           <!-- Conclusión Estratégica: De Operador a Arquitecto -->
-          <div class="bg-emerald-950/60 border border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+          <div class="bg-emerald-100/70 border border-emerald-300 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+              <div class="w-8 h-8 rounded-lg bg-emerald-200 text-emerald-900 flex items-center justify-center shrink-0 border border-emerald-300">
                 <i class="fa-solid fa-user-astronaut text-base"></i>
               </div>
-              <div class="text-slate-200">
-                <strong class="text-emerald-300 font-bold uppercase tracking-wider block">Transformación del Perfil Profesional:</strong>
-                Ya no pasas horas transcribiendo celdas ni arreglando errores tipográficos; ahora actúas como un <strong class="text-white">Arquitecto y Director de Soluciones Analíticas</strong>, multiplicando tu impacto directivo por 100.
+              <div class="text-slate-800">
+                <strong class="text-emerald-950 font-black uppercase tracking-wider block">Transformación del Perfil Profesional:</strong>
+                Ya no pasas horas transcribiendo celdas ni arreglando errores tipográficos; ahora actúas como un <strong class="text-slate-950">Arquitecto y Director de Soluciones Analíticas</strong>, multiplicando tu impacto directivo por 100.
               </div>
             </div>
-            <a href="#tab-recetaEtl" onclick="switchTab('recetaEtl')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold shrink-0 transition-all shadow-md active:scale-95">
+            <a href="#tab-recetaEtl" onclick="switchTab('recetaEtl')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold shrink-0 transition-all shadow-md active:scale-95">
               <span>Explorar Manual ETL</span>
               <i class="fa-solid fa-arrow-right"></i>
             </a>
@@ -1311,7 +1398,7 @@
               <span>CSV (UTF-8 con BOM)</span>
             </button>
 
-            <button onclick="downloadJSON()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition-all active:scale-95">
+            <button onclick="downloadJSON()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-300 text-xs shadow-md transition-all active:scale-95">
               <i class="fa-solid fa-code text-sm"></i>
               <span>JSON Estructurado</span>
             </button>
