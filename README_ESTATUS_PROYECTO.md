@@ -16,6 +16,12 @@ Todas las solicitudes y requerimientos del usuario han sido implementados con é
 ---
 
 ### 1. 🏛️ PRESENTACIÓN MAGISTRAL DE MICROSOFT EXCEL, LÍNEA DE TIEMPO E IA/MCP
+- **Matriz de Seniority en Excel & Roles de Datos:** `APROBADO`. Sección de alto impacto pedagógico previa a la tabla de tiempos, con 6 niveles de seniority (Data Entry, Soporte, Curador ETL, Analista BI, Científico de Datos, y Arquitecto IA/MCP), emojis temáticos, badges y descripciones de competencias.
+- **Tabla Salarial Comparativa Global:** `APROBADO`. Comparativa de remuneraciones anuales por nivel de Excel y habilidades en IA para LATAM / República Dominicana, Estados Unidos y Europa, con cita de fuentes (Glassdoor, LinkedIn Workforce, Michael Page, CompTIA).
+- **Gráficos Analíticos de Salarios & Demanda:** `APROBADO`. 2 gráficos interactivos Chart.js con la prima salarial por skills en IA/MCP y proyección de crecimiento de contrataciones.
+- **Infografía Maestra de Seniority (`img/img1.png`):** `APROBADO`. Integrada al final de la sección con borde animado y apertura en visor a pantalla completa.
+- **Galería de Infografías ETL al 100% de Ancho (Tab 2):** `APROBADO`. Card Group al 100% de ancho con las 3 fases del pipeline (`img/img2.png`, `img/img3.png`, `img/img4.png`) y fichas técnicas.
+- **Visor Modal Lightbox al 95% de la Pantalla:** `APROBADO`. Modal flotante interactivo con botón `X` de alto contraste, navegación con flechas (Anterior/Siguiente), soporte de tecla `Escape` y descarga directa en alta resolución.
 - **Erradicación Absoluta de Modo Dark & Fondos Negros:** `APROBADO`. Cero elementos oscuros o fondos negros en todo el proyecto. El bloque de IA, MCP y Agentes, junto con botones de GitHub y JSON, han sido transformados a un 100% Light Mode luminoso con paleta esmeralda, slate claro y blanco puro.
 - **Tipografía y Legibilidad Escalada +5%:** `APROBADO`. Aumento matemático del 5% (`font-size: 105%` en `html` y `1.05rem` / `1.05em`) aplicado a todos los textos, párrafos, títulos (H1-H6), subtítulos, tablas, inputs, selectores, KPIs, resultados y observaciones para máxima legibilidad.
 - **Bordes Animados en Todas las Cards y Secciones:** `APROBADO`. Implementación de la animación corporativa `@keyframes borderGlowLoop` con ciclo cromático Office Excel (`#107c41`), Power Query (`#008272`), Microsoft Blue (`#0078d4`) y Fresh Emerald (`#33c481`), aplicada con desfases armónicos a todas las secciones y tarjetas internas.
