@@ -1593,42 +1593,82 @@
     </section>
 
     <!-- ==============================================================
-         TAB 4: DASHBOARD DINÁMICO POR INDUSTRIA CON SLICERS LATERALES
+         TAB 4: DASHBOARD DINÁMICO POR INDUSTRIA CON MAPEO EXCEL Y MANUAL PASO A PASO
     ============================================================== -->
     <section id="tab-dashboard" class="hidden space-y-8">
 
-      <!-- Barra de Encabezado del Dashboard -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-excel-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-emerald-600 inline-block animate-pulse"></span>
-            <h2 class="text-2xl font-black text-slate-900">Dashboard Ejecutivo Multidimensional</h2>
+      <!-- Barra de Encabezado del Dashboard + Selector de 5 Industrias -->
+      <div class="bg-white border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-7 shadow-excel-card space-y-5">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+          <div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-full bg-emerald-600 inline-block animate-pulse"></span>
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900">Dashboard Ejecutivo Multidimensional</h2>
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-900 border border-emerald-300">Mapeado a Excel (A1:P48)</span>
+            </div>
+            <p id="dashboardSubtitle" class="text-xs sm:text-sm text-slate-500 mt-1">
+              Métricas adaptadas en tiempo real para el sector: <strong class="text-emerald-800 text-sm font-bold" id="activeIndustryNameLabel">Supermercado & Retail</strong>.
+            </p>
           </div>
-          <p id="dashboardSubtitle" class="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Métricas adaptadas en tiempo real para el sector: <strong class="text-emerald-800 text-sm font-bold" id="activeIndustryNameLabel">Supermercado & Retail</strong>.
-          </p>
+
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button onclick="toggleDashboardManualPanel()" id="toggleDashManualBtn" class="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-black border border-emerald-300 rounded-xl text-xs shadow-xs transition-all flex items-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-book-open-reader text-emerald-700"></i>
+              <span id="toggleDashManualBtnText">Ocultar Manual Paso a Paso del Dashboard</span>
+            </button>
+            <button onclick="resetSlicers()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-300 rounded-xl text-xs shadow-xs transition-all flex items-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-filter-circle-xmark text-rose-600"></i>
+              <span>Limpiar Segmentadores</span>
+            </button>
+          </div>
         </div>
 
-        <div class="flex items-center gap-3">
-          <button onclick="resetSlicers()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-300 rounded-xl text-xs shadow-xs transition-all flex items-center gap-2">
-            <i class="fa-solid fa-filter-circle-xmark text-rose-600"></i>
-            <span>Limpiar Segmentadores</span>
+        <!-- Selector Rápido de los 5 Proyectos para cambiar el Dashboard y su Manual en vivo -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5" id="dashIndustrySubTabs">
+          <button onclick="switchHojaTrabajoSubTab('retail')" id="dashSubTab-retail" class="dash-subtab-btn flex items-center justify-between px-3.5 py-2.5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/90 text-emerald-950 font-black text-xs shadow-xs transition-all cursor-pointer">
+            <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-cart-shopping text-emerald-600"></i> 1. Supermercado & Retail</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-600 text-white font-mono">Activa</span>
+          </button>
+          <button onclick="switchHojaTrabajoSubTab('logistica')" id="dashSubTab-logistica" class="dash-subtab-btn flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer">
+            <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-truck-fast text-blue-600"></i> 2. Logística & Fletes</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-800 font-mono">Ver</span>
+          </button>
+          <button onclick="switchHojaTrabajoSubTab('finanzas')" id="dashSubTab-finanzas" class="dash-subtab-btn flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer">
+            <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-building-columns text-indigo-600"></i> 3. Finanzas & Cartera CxC</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-800 font-mono">Ver</span>
+          </button>
+          <button onclick="switchHojaTrabajoSubTab('rrhh')" id="dashSubTab-rrhh" class="dash-subtab-btn flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer">
+            <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-users-gear text-amber-600"></i> 4. Recursos Humanos</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-800 font-mono">Ver</span>
+          </button>
+          <button onclick="switchHojaTrabajoSubTab('salud')" id="dashSubTab-salud" class="dash-subtab-btn flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer">
+            <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-hospital-user text-teal-600"></i> 5. Salud & Clínicas ARS</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-800 font-mono">Ver</span>
           </button>
         </div>
       </div>
 
-      <!-- ESTRUCTURA EN 2 COLUMNAS: SIDEBAR IZQUIERDO DE SLICERS + ÁREA DERECHA DE KPIS Y GRÁFICOS -->
+      <!-- ==============================================================
+           MANUAL PASO A PASO DEL DASHBOARD EN EXCEL (DEBAJO DEL ENCABEZADO Y ANTES DEL DASHBOARD)
+      ============================================================== -->
+      <div id="dashboardStepByStepManual" class="space-y-6">
+        <!-- Inyectado dinámicamente por renderDashboardManual(industryKey) -->
+      </div>
+
+      <!-- ==============================================================
+           DASHBOARD EJECUTIVO INTERACTIVO CON MAPEO NUMERADO [1] AL [14]
+      ============================================================== -->
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-        <!-- ================= SIDEBAR LATERAL IZQUIERDO ================= -->
+        <!-- ================= SIDEBAR LATERAL IZQUIERDO (COLUMNAS EXCEL A:C) ================= -->
         <aside class="lg:col-span-1 space-y-5">
           
-          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-excel-card space-y-4">
+          <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-excel-card space-y-4">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">
-                <i class="fa-solid fa-filter text-emerald-700 mr-1"></i> Segmentadores (Slicers)
+              <span class="text-xs font-black uppercase tracking-wider text-slate-700">
+                <i class="fa-solid fa-filter text-emerald-700 mr-1"></i> Panel Slicers (Cols A:C)
               </span>
-              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">Excel 365</span>
+              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-black px-2 py-0.5 rounded border border-emerald-300">Zonas [S1-S3]</span>
             </div>
 
             <!-- Selector Rápido de Industria en Sidebar -->
@@ -1644,10 +1684,13 @@
             </div>
 
             <!-- Slicer 1: Regiones Geográficas -->
-            <div class="slicer-card">
+            <div class="slicer-card border-2 border-emerald-500/30">
               <div class="slicer-header">
-                <span id="slicer1Title">Territorio / Región</span>
-                <i class="fa-solid fa-map-location-dot text-slate-400 text-xs"></i>
+                <div class="flex items-center gap-1.5">
+                  <span class="px-1.5 py-0.5 rounded bg-emerald-700 text-white font-mono text-[10px] font-black">[S1]</span>
+                  <span id="slicer1Title">Territorio / Región</span>
+                </div>
+                <span class="text-[10px] font-mono text-slate-500 font-bold">Celda A3:C12</span>
               </div>
               <div id="slicerRegionContainer" class="p-2 space-y-1 max-h-44 overflow-y-auto">
                 <!-- Botones inyectados dinámicamente -->
@@ -1655,10 +1698,13 @@
             </div>
 
             <!-- Slicer 2: Estatus -->
-            <div class="slicer-card">
+            <div class="slicer-card border-2 border-blue-500/30">
               <div class="slicer-header">
-                <span id="slicer2Title">Estatus de Operación</span>
-                <i class="fa-solid fa-traffic-light text-slate-400 text-xs"></i>
+                <div class="flex items-center gap-1.5">
+                  <span class="px-1.5 py-0.5 rounded bg-blue-700 text-white font-mono text-[10px] font-black">[S2]</span>
+                  <span id="slicer2Title">Estatus de Operación</span>
+                </div>
+                <span class="text-[10px] font-mono text-slate-500 font-bold">Celda A14:C23</span>
               </div>
               <div id="slicerStatusContainer" class="p-2 space-y-1 max-h-44 overflow-y-auto">
                 <!-- Botones inyectados dinámicamente -->
@@ -1666,125 +1712,160 @@
             </div>
 
             <!-- Slicer 3: Canales / Medios -->
-            <div class="slicer-card">
+            <div class="slicer-card border-2 border-purple-500/30">
               <div class="slicer-header">
-                <span id="slicer3Title">Canal / Modalidad</span>
-                <i class="fa-solid fa-satellite-dish text-slate-400 text-xs"></i>
+                <div class="flex items-center gap-1.5">
+                  <span class="px-1.5 py-0.5 rounded bg-purple-700 text-white font-mono text-[10px] font-black">[S3]</span>
+                  <span id="slicer3Title">Canal / Modalidad</span>
+                </div>
+                <span class="text-[10px] font-mono text-slate-500 font-bold">Celda A25:C35</span>
               </div>
               <div id="slicerChannelContainer" class="p-2 space-y-1 max-h-44 overflow-y-auto">
                 <!-- Botones inyectados dinámicamente -->
               </div>
             </div>
 
+            <!-- Tarjeta Resumen de Respuestas Directas en el Sidebar -->
+            <div id="dashboardQuickAnswersBox" class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+              <!-- Inyectado dinámicamente con hallazgos clave para las 25 preguntas -->
+            </div>
+
           </div>
 
         </aside>
 
-        <!-- ================= ÁREA PRINCIPAL DERECHA ================= -->
+        <!-- ================= ÁREA PRINCIPAL DERECHA (COLUMNAS EXCEL E:P) ================= -->
         <div class="lg:col-span-3 space-y-6">
 
-          <!-- Fila de KPIs Adaptados a la Industria Activa -->
+          <!-- Fila de 6 KPIs Adaptados a la Industria Activa y Mapeados [K1] a [K6] -->
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5" id="dynamicKpiContainer">
             <!-- 6 Tarjetas inyectadas dinámicamente según la industria -->
           </div>
 
-          <!-- Cuadrícula de 4 Gráficos Dinámicos Homólogos de Excel -->
+          <!-- Cuadrícula de 4 Gráficos Dinámicos Homólogos de Excel Mapeados [G1] a [G4] -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <!-- Gráfico 1: Columnas Agrupadas 2D -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-excel-card space-y-3">
+            <div class="bg-white border-2 border-slate-200 hover:border-emerald-500/60 rounded-2xl p-5 shadow-excel-card space-y-3 transition-all">
               <div class="flex items-start justify-between pb-3 border-b border-slate-100 gap-2">
                 <div>
-                  <h3 class="text-sm font-bold text-slate-900" id="chart1Title">Comparativa por Región</h3>
-                  <p class="text-[11px] text-slate-400" id="chart1Subtitle">Ingresos vs Costos</p>
+                  <div class="flex items-center gap-1.5 mb-1">
+                    <span class="px-2 py-0.5 rounded bg-emerald-700 text-white font-mono text-[10px] font-black">[G1] Rango E7:J19</span>
+                    <span id="chart1QuestionTag" class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[10px] font-bold">Responde: Q7, Q8, Q24</span>
+                  </div>
+                  <h3 class="text-sm font-black text-slate-900" id="chart1Title">Comparativa por Región</h3>
+                  <p class="text-[11px] text-slate-500 font-medium" id="chart1Subtitle">Ingresos vs Costos</p>
                 </div>
-                <div class="text-right">
+                <div class="text-right shrink-0">
                   <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
                     Columna Agrupada 2D
                   </span>
-                  <div class="text-[10px] text-slate-400 mt-0.5">Insertar &rarr; Columna 2D</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5 font-mono">Origen: TD_1 (A5:C10)</div>
                 </div>
               </div>
               <div class="relative h-64 mt-2">
                 <canvas id="chartSalesByRegion"></canvas>
               </div>
+              <div id="chart1InsightBar" class="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200 text-[11px] text-emerald-950 font-medium flex flex-wrap items-center justify-between gap-2">
+                <!-- Hallazgo en vivo de G1 -->
+              </div>
             </div>
 
             <!-- Gráfico 2: Anillos (Doughnut) -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-excel-card space-y-3">
+            <div class="bg-white border-2 border-slate-200 hover:border-blue-500/60 rounded-2xl p-5 shadow-excel-card space-y-3 transition-all">
               <div class="flex items-start justify-between pb-3 border-b border-slate-100 gap-2">
                 <div>
-                  <h3 class="text-sm font-bold text-slate-900" id="chart2Title">Mix de Participación</h3>
-                  <p class="text-[11px] text-slate-400" id="chart2Subtitle">Distribución por Categoría</p>
+                  <div class="flex items-center gap-1.5 mb-1">
+                    <span class="px-2 py-0.5 rounded bg-blue-700 text-white font-mono text-[10px] font-black">[G2] Rango K7:P19</span>
+                    <span id="chart2QuestionTag" class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-mono text-[10px] font-bold">Responde: Q11, Q12, Q18</span>
+                  </div>
+                  <h3 class="text-sm font-black text-slate-900" id="chart2Title">Mix de Participación</h3>
+                  <p class="text-[11px] text-slate-500 font-medium" id="chart2Subtitle">Distribución por Categoría</p>
                 </div>
-                <div class="text-right">
+                <div class="text-right shrink-0">
                   <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200">
                     Gráfico de Anillos
                   </span>
-                  <div class="text-[10px] text-slate-400 mt-0.5">Insertar &rarr; Circular &rarr; Anillo</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5 font-mono">Origen: TD_2 (E5:F12)</div>
                 </div>
               </div>
               <div class="relative h-64 mt-2 flex items-center justify-center">
                 <canvas id="chartCategoryShare"></canvas>
               </div>
+              <div id="chart2InsightBar" class="p-2.5 rounded-xl bg-blue-50/70 border border-blue-200 text-[11px] text-blue-950 font-medium flex flex-wrap items-center justify-between gap-2">
+                <!-- Hallazgo en vivo de G2 -->
+              </div>
             </div>
 
             <!-- Gráfico 3: Líneas con Marcadores -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-excel-card space-y-3">
+            <div class="bg-white border-2 border-slate-200 hover:border-purple-500/60 rounded-2xl p-5 shadow-excel-card space-y-3 transition-all">
               <div class="flex items-start justify-between pb-3 border-b border-slate-100 gap-2">
                 <div>
-                  <h3 class="text-sm font-bold text-slate-900" id="chart3Title">Tendencia Cronológica Mensual</h3>
-                  <p class="text-[11px] text-slate-400" id="chart3Subtitle">Facturación Bruta vs Real Efectiva</p>
+                  <div class="flex items-center gap-1.5 mb-1">
+                    <span class="px-2 py-0.5 rounded bg-purple-700 text-white font-mono text-[10px] font-black">[G3] Rango E21:J33</span>
+                    <span id="chart3QuestionTag" class="px-2 py-0.5 rounded bg-purple-50 text-purple-800 border border-purple-200 font-mono text-[10px] font-bold">Responde: Q2, Q20, Q24</span>
+                  </div>
+                  <h3 class="text-sm font-black text-slate-900" id="chart3Title">Tendencia Cronológica Mensual</h3>
+                  <p class="text-[11px] text-slate-500 font-medium" id="chart3Subtitle">Facturación Bruta vs Real Efectiva</p>
                 </div>
-                <div class="text-right">
+                <div class="text-right shrink-0">
                   <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-50 text-purple-800 border border-purple-200">
                     Líneas con Marcadores
                   </span>
-                  <div class="text-[10px] text-slate-400 mt-0.5">Insertar &rarr; Línea con Marcador</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5 font-mono">Origen: TD_3 (H5:J18)</div>
                 </div>
               </div>
               <div class="relative h-64 mt-2">
                 <canvas id="chartMonthlyTrend"></canvas>
               </div>
+              <div id="chart3InsightBar" class="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200 text-[11px] text-purple-950 font-medium flex flex-wrap items-center justify-between gap-2">
+                <!-- Hallazgo en vivo de G3 -->
+              </div>
             </div>
 
             <!-- Gráfico 4: Barras Horizontales 2D -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-excel-card space-y-3">
+            <div class="bg-white border-2 border-slate-200 hover:border-amber-500/60 rounded-2xl p-5 shadow-excel-card space-y-3 transition-all">
               <div class="flex items-start justify-between pb-3 border-b border-slate-100 gap-2">
                 <div>
-                  <h3 class="text-sm font-bold text-slate-900" id="chart4Title">Ranking de Ejecución</h3>
-                  <p class="text-[11px] text-slate-400" id="chart4Subtitle">Top Responsables / Agentes</p>
+                  <div class="flex items-center gap-1.5 mb-1">
+                    <span class="px-2 py-0.5 rounded bg-amber-600 text-white font-mono text-[10px] font-black">[G4] Rango K21:P33</span>
+                    <span id="chart4QuestionTag" class="px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-mono text-[10px] font-bold">Responde: Q9, Q10, Q19</span>
+                  </div>
+                  <h3 class="text-sm font-black text-slate-900" id="chart4Title">Ranking de Ejecución</h3>
+                  <p class="text-[11px] text-slate-500 font-medium" id="chart4Subtitle">Top Responsables / Agentes</p>
                 </div>
-                <div class="text-right">
+                <div class="text-right shrink-0">
                   <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
                     Barra Horizontal 2D
                   </span>
-                  <div class="text-[10px] text-slate-400 mt-0.5">Insertar &rarr; Barra 2D</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5 font-mono">Origen: TD_4 (L5:M14)</div>
                 </div>
               </div>
               <div class="relative h-64 mt-2">
                 <canvas id="chartTopSellers"></canvas>
+              </div>
+              <div id="chart4InsightBar" class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 text-[11px] text-amber-950 font-medium flex flex-wrap items-center justify-between gap-2">
+                <!-- Hallazgo en vivo de G4 -->
               </div>
             </div>
 
           </div>
 
           <!-- ==============================================================
-               TABLA DE MUESTRA EN VIVO DIRECTA DEL DASHBOARD
-               (Sincronizada con la Empresa Activa y los Slicers)
+               [T5] TABLA DE AUDITORÍA EN VIVO DIRECTA DEL DASHBOARD (RANGO E35:P48)
           ============================================================== -->
-          <div class="bg-white border border-slate-200 rounded-2xl shadow-excel-card overflow-hidden mt-6">
+          <div class="bg-white border-2 border-slate-200 rounded-2xl shadow-excel-card overflow-hidden mt-6">
             <div class="p-4 sm:p-5 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/50">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">
-                  <i class="fa-solid fa-table-list"></i>
+                <div class="px-2.5 py-1.5 rounded-lg bg-slate-900 text-emerald-300 font-mono font-black text-xs">
+                  [T5] E35:P48
                 </div>
                 <div>
                   <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                    <span>Muestra de Datos Crudos en Vivo del Dashboard</span>
+                    <span>Matriz de Auditoría de Transacciones del Dashboard</span>
                     <span id="dashboardIndustryBadge" class="text-xs font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 border border-emerald-300">Supermercado</span>
                   </h3>
-                  <p class="text-xs text-slate-500">Filas activas respondiendo en tiempo real al caso de empresa y a los segmentadores.</p>
+                  <p class="text-xs text-slate-500">Filas activas filtradas en tiempo real por los segmentadores [S1], [S2] y [S3].</p>
                 </div>
               </div>
 
@@ -1811,7 +1892,7 @@
             </div>
 
             <div class="p-3 bg-slate-50 border-t border-slate-200 text-slate-500 text-[11px] flex items-center justify-between">
-              <span>Cualquier cambio de empresa o clic en los segmentadores laterales refresca esta tabla y los 4 gráficos al unísono.</span>
+              <span>Cada zona numerada ([S1]-[S3], [K1]-[K6], [G1]-[G4], [T5]) coincide exactamente con el Plano de Celdas de Excel del Manual Paso a Paso superior.</span>
               <span class="font-bold text-slate-700">Gobernanza de Datos Reactiva</span>
             </div>
           </div>
@@ -4245,6 +4326,20 @@
           }
         });
       }
+
+      try {
+        if (typeof updateDashboardMappedEnhancements === 'function') {
+          updateDashboardMappedEnhancements(data, {
+            grossTotal,
+            secondaryTotal,
+            marginTotal,
+            realTotal,
+            auxTotal,
+            failedCount,
+            totalCount: data.length
+          });
+        }
+      } catch(e) { console.warn('Error updating dashboard enhancements:', e); }
     }
 
     /* =====================================================================
@@ -7226,6 +7321,506 @@ in
               '<p>&bull; <strong>Cuadrante Valores:</strong> <span class="font-mono text-emerald-200">' + etl.pivotSetup.values + '</span></p>' +
             '</div>' +
           '</div>' +
+        '</div>';
+    }
+
+    /* =====================================================================
+       20. MANUAL PASO A PASO DEL DASHBOARD EN EXCEL & MAPEO DE ZONAS [1-14]
+    ===================================================================== */
+    let DASH_MANUAL_VISIBLE = true;
+
+    function toggleDashboardManualPanel() {
+      DASH_MANUAL_VISIBLE = !DASH_MANUAL_VISIBLE;
+      const panel = document.getElementById('dashboardStepByStepManual');
+      const btnText = document.getElementById('toggleDashManualBtnText');
+      if (panel) {
+        panel.classList.toggle('hidden', !DASH_MANUAL_VISIBLE);
+      }
+      if (btnText) {
+        btnText.textContent = DASH_MANUAL_VISIBLE
+          ? 'Ocultar Manual Paso a Paso del Dashboard'
+          : 'Mostrar Manual Paso a Paso del Dashboard (Excel A1:P48)';
+      }
+    }
+
+    const DASHBOARD_EXCEL_MANUAL_SPECS = {
+      retail: {
+        slicers: [
+          { code: "[S1]", cell: "A3:C12", field: "REGION", title: "Región Geográfica", qRef: "Q7, Q8, Q19" },
+          { code: "[S2]", cell: "A14:C23", field: "ESTATUS_FACTURA", title: "Estatus de Factura", qRef: "Q2, Q3, Q17" },
+          { code: "[S3]", cell: "A25:C35", field: "CANAL_VENTA", title: "Canal de Venta", qRef: "Q13, Q14" }
+        ],
+        kpis: [
+          { code: "[K1]", cell: "E3:F5", label: "Ventas Brutas Totales", field: "Suma de TOTAL_FACTURA", formula: "=Aux_Tablas_Dinamicas!$B$4", qRef: "Q1, Q15", color: "blue", fmt: "currency", valFn: s => s.grossTotal, sub: s => "Costo: RD$ " + Math.round(s.secondaryTotal).toLocaleString('es-DO') },
+          { code: "[K2]", cell: "G3:H5", label: "Ingreso Real Efectivo", field: "Suma de INGRESO_REAL", formula: "=Aux_Tablas_Dinamicas!$C$4", qRef: "Q2, Q17", color: "emerald", fmt: "currency", valFn: s => s.realTotal, sub: s => "Sin Cancelados (" + (s.totalCount - s.failedCount) + " fac.)" },
+          { code: "[K3]", cell: "I3:J5", label: "Margen Bruto RD$", field: "Suma de MARGEN_BRUTO", formula: "=Aux_Tablas_Dinamicas!$D$4", qRef: "Q4, Q5", color: "indigo", fmt: "currency", valFn: s => s.marginTotal, sub: s => "Subtotal - Costo Total" },
+          { code: "[K4]", cell: "K3:L5", label: "% Margen Comercial", field: "MARGEN_BRUTO / TOTAL_FACTURA", formula: "=I4/E4", qRef: "Q6, Q8, Q12", color: "teal", fmt: "percent", valFn: s => (s.marginTotal / (s.grossTotal || 1)) * 100, sub: s => "Rentabilidad s/ Venta" },
+          { code: "[K5]", cell: "M3:N5", label: "% Cumplimiento Meta", field: "INGRESO_REAL / (Bruto * 0.95)", formula: "=G4/(E4*0.95)", qRef: "Q23", color: "amber", fmt: "percent", valFn: s => (s.realTotal / ((s.grossTotal * 0.95) || 1)) * 100, sub: s => "Meta 95%: RD$ " + Math.round(s.grossTotal * 0.95).toLocaleString('es-DO') },
+          { code: "[K6]", cell: "O3:P5", label: "Tasa Cancelaciones", field: "Canceladas / Total Facturas", formula: "=Aux_Tablas_Dinamicas!$F$4", qRef: "Q3, Q10", color: "rose", fmt: "percent1", valFn: s => (s.failedCount / (s.totalCount || 1)) * 100, sub: s => s.failedCount + " facturas canceladas" }
+        ],
+        pivots: [
+          { id: "TD_KPIs", range: "Aux_Tablas_Dinamicas!A3:F5", rows: "(Ninguna)", cols: "(Ninguna)", vals: "Suma de TOTAL_FACTURA, Suma de INGRESO_REAL, Suma de COSTO_TOTAL, Suma de MARGEN_BRUTO, Cuenta de NUM_FACTURA", target: "Alimenta las 6 Tarjetas [K1] a [K6]" },
+          { id: "TD_1", range: "Aux_Tablas_Dinamicas!A8:C14", rows: "REGION", cols: "(Valores)", vals: "Suma de TOTAL_FACTURA, Suma de COSTO_TOTAL", target: "Alimenta [G1] Gráfico Columnas Agrupadas 2D (E7:J19)" },
+          { id: "TD_2", range: "Aux_Tablas_Dinamicas!E8:F14", rows: "CATEGORIA", cols: "(Ninguna)", vals: "Suma de TOTAL_FACTURA (y % del total general)", target: "Alimenta [G2] Gráfico de Anillos (K7:P19)" },
+          { id: "TD_3", range: "Aux_Tablas_Dinamicas!H8:J20", rows: "FECHA_VENTA (Agrupado por Meses)", cols: "(Valores)", vals: "Suma de TOTAL_FACTURA, Suma de INGRESO_REAL", target: "Alimenta [G3] Gráfico de Líneas Mensual (E21:J33)" },
+          { id: "TD_4", range: "Aux_Tablas_Dinamicas!L8:M17", rows: "VENDEDOR (Filtro de Valor: 10 mejores -> 8)", cols: "(Ninguna)", vals: "Suma de TOTAL_FACTURA (Ordenado de mayor a menor)", target: "Alimenta [G4] Ranking Barras Horizontales (K21:P33)" }
+        ],
+        chartQuestions: { g1: "Responde: Q7, Q8, Q24", g2: "Responde: Q11, Q12, Q18", g3: "Responde: Q2, Q20, Q24", g4: "Responde: Q9, Q10, Q19" }
+      },
+
+      logistica: {
+        slicers: [
+          { code: "[S1]", cell: "A3:C12", field: "RUTA_ORIGEN_DESTINO", title: "Ruta de Despacho", qRef: "Q7, Q8, Q19" },
+          { code: "[S2]", cell: "A14:C23", field: "ESTATUS_DESPACHO", title: "Estatus de Despacho", qRef: "Q2, Q3, Q17" },
+          { code: "[S3]", cell: "A25:C35", field: "TIPO_CARGA", title: "Tipo de Carga", qRef: "Q11, Q13, Q18" }
+        ],
+        kpis: [
+          { code: "[K1]", cell: "E3:F5", label: "Fletes Brutos Totales", field: "Suma de TOTAL_FLETE_RD", formula: "=Aux_Tablas_Dinamicas!$B$4", qRef: "Q1, Q15", color: "blue", fmt: "currency", valFn: s => s.grossTotal, sub: s => "Costo Op: RD$ " + Math.round(s.secondaryTotal).toLocaleString('es-DO') },
+          { code: "[K2]", cell: "G3:H5", label: "Flete Efectivo Cobrado", field: "Suma de FLETE_EFECTIVO_REAL", formula: "=Aux_Tablas_Dinamicas!$C$4", qRef: "Q2, Q23", color: "emerald", fmt: "currency", valFn: s => s.realTotal, sub: s => "Viajes activos (" + (s.totalCount - s.failedCount) + " guías)" },
+          { code: "[K3]", cell: "I3:J5", label: "Margen Operativo RD$", field: "Suma de MARGEN_FLETE", formula: "=Aux_Tablas_Dinamicas!$D$4", qRef: "Q4, Q5", color: "indigo", fmt: "currency", valFn: s => s.marginTotal, sub: s => "Flete Total - Costo Op." },
+          { code: "[K4]", cell: "K3:L5", label: "% Rentabilidad Flota", field: "MARGEN_FLETE / TOTAL_FLETE_RD", formula: "=I4/E4", qRef: "Q6, Q8, Q12", color: "teal", fmt: "percent", valFn: s => (s.marginTotal / (s.grossTotal || 1)) * 100, sub: s => "Retorno Neto s/ Flete" },
+          { code: "[K5]", cell: "M3:N5", label: "Toneladas Transportadas", field: "Suma de TONELADAS_CARGA", formula: "=Aux_Tablas_Dinamicas!$E$4", qRef: "Q11, Q16", color: "amber", fmt: "tons", valFn: s => Math.round(s.auxTotal || (s.totalCount * 14.5)), sub: s => "Prom: " + ((s.auxTotal || 15000) / (s.totalCount || 1)).toFixed(1) + " Ton/viaje" },
+          { code: "[K6]", cell: "O3:P5", label: "Tasa Viajes Anulados", field: "Anulados / Total Manifiestos", formula: "=Aux_Tablas_Dinamicas!$F$4", qRef: "Q3, Q10", color: "rose", fmt: "percent1", valFn: s => (s.failedCount / (s.totalCount || 1)) * 100, sub: s => s.failedCount + " manifiestos anulados" }
+        ],
+        pivots: [
+          { id: "TD_KPIs", range: "Aux_Tablas_Dinamicas!A3:F5", rows: "(Ninguna)", cols: "(Ninguna)", vals: "Suma de TOTAL_FLETE_RD, Suma de FLETE_EFECTIVO_REAL, Suma de COSTO_OPERATIVO, Suma de MARGEN_FLETE, Suma de TONELADAS_CARGA", target: "Alimenta las 6 Tarjetas [K1] a [K6]" },
+          { id: "TD_1", range: "Aux_Tablas_Dinamicas!A8:C14", rows: "RUTA_ORIGEN_DESTINO", cols: "(Valores)", vals: "Suma de TOTAL_FLETE_RD, Suma de COSTO_OPERATIVO", target: "Alimenta [G1] Fletes vs Costos por Ruta (E7:J19)" },
+          { id: "TD_2", range: "Aux_Tablas_Dinamicas!E8:F14", rows: "TIPO_CARGA", cols: "(Ninguna)", vals: "Suma de TOTAL_FLETE_RD (y % de participación)", target: "Alimenta [G2] Mix por Tipo de Carga (K7:P19)" },
+          { id: "TD_3", range: "Aux_Tablas_Dinamicas!H8:J20", rows: "FECHA_DESPACHO (Agrupado por Meses)", cols: "(Valores)", vals: "Suma de TOTAL_FLETE_RD, Suma de FLETE_EFECTIVO_REAL", target: "Alimenta [G3] Evolución Mensual de Fletes (E21:J33)" },
+          { id: "TD_4", range: "Aux_Tablas_Dinamicas!L8:M17", rows: "CHOFER_FLOTA (Filtro de Valor: Top 8)", cols: "(Ninguna)", vals: "Suma de TOTAL_FLETE_RD (Ordenado descendente)", target: "Alimenta [G4] Top 8 Choferes de Flota (K21:P33)" }
+        ],
+        chartQuestions: { g1: "Responde: Q7, Q8, Q24", g2: "Responde: Q11, Q12, Q18", g3: "Responde: Q2, Q20, Q24", g4: "Responde: Q9, Q10, Q19" }
+      },
+
+      finanzas: {
+        slicers: [
+          { code: "[S1]", cell: "A3:C12", field: "SUCURSAL_CARTERA", title: "Sucursal Cartera", qRef: "Q7, Q8, Q19" },
+          { code: "[S2]", cell: "A14:C23", field: "TRAMO_MORA", title: "Tramo de Mora (Aging)", qRef: "Q3, Q14, Q17" },
+          { code: "[S3]", cell: "A25:C35", field: "CANAL_PAGO", title: "Canal de Recaudo", qRef: "Q13, Q18" }
+        ],
+        kpis: [
+          { code: "[K1]", cell: "E3:F5", label: "Cartera Total Exigible", field: "Suma de SALDO_TOTAL_EXIGIBLE", formula: "=Aux_Tablas_Dinamicas!$B$4", qRef: "Q1, Q4", color: "blue", fmt: "currency", valFn: s => s.grossTotal, sub: s => "Capital + Interés Mora" },
+          { code: "[K2]", cell: "G3:H5", label: "Abonos Recuperados", field: "Suma de ABONO_RECUPERADO", formula: "=Aux_Tablas_Dinamicas!$C$4", qRef: "Q2, Q23", color: "emerald", fmt: "currency", valFn: s => s.realTotal, sub: s => "Recaudo efectivo en caja" },
+          { code: "[K3]", cell: "I3:J5", label: "Saldo Pendiente CxC", field: "Suma de SALDO_PENDIENTE", formula: "=Aux_Tablas_Dinamicas!$D$4", qRef: "Q5, Q16", color: "rose", fmt: "currency", valFn: s => s.marginTotal, sub: s => "Exposición insoluta calle" },
+          { code: "[K4]", cell: "K3:L5", label: "Tasa de Recuperación", field: "ABONO_RECUPERADO / EXIGIBLE", formula: "=G4/E4", qRef: "Q6, Q8", color: "teal", fmt: "percent", valFn: s => (s.realTotal / (s.grossTotal || 1)) * 100, sub: s => "Efectividad de cobranza" },
+          { code: "[K5]", cell: "M3:N5", label: "Días Mora Promedio", field: "Promedio de DIAS_MORA", formula: "=Aux_Tablas_Dinamicas!$E$4", qRef: "Q14, Q15", color: "amber", fmt: "days", valFn: s => Math.round(s.auxTotal / (s.totalCount || 1) || 38), sub: s => "Antigüedad media cartera" },
+          { code: "[K6]", cell: "O3:P5", label: "Tasa Incobrables (+90d)", field: "Castigados / Total Pagarés", formula: "=Aux_Tablas_Dinamicas!$F$4", qRef: "Q3, Q10, Q17", color: "rose", fmt: "percent1", valFn: s => (s.failedCount / (s.totalCount || 1)) * 100, sub: s => s.failedCount + " pagarés en mora crítica" }
+        ],
+        pivots: [
+          { id: "TD_KPIs", range: "Aux_Tablas_Dinamicas!A3:F5", rows: "(Ninguna)", cols: "(Ninguna)", vals: "Suma de SALDO_TOTAL_EXIGIBLE, Suma de ABONO_RECUPERADO, Suma de SALDO_PENDIENTE, Promedio de DIAS_MORA", target: "Alimenta las 6 Tarjetas [K1] a [K6]" },
+          { id: "TD_1", range: "Aux_Tablas_Dinamicas!A8:C14", rows: "SUCURSAL_CARTERA", cols: "(Valores)", vals: "Suma de SALDO_TOTAL_EXIGIBLE, Suma de ABONO_RECUPERADO", target: "Alimenta [G1] Exigible vs Abonos por Sucursal (E7:J19)" },
+          { id: "TD_2", range: "Aux_Tablas_Dinamicas!E8:F14", rows: "LINEA_CREDITO", cols: "(Ninguna)", vals: "Suma de SALDO_TOTAL_EXIGIBLE (y % participación)", target: "Alimenta [G2] Composición por Línea Financiera (K7:P19)" },
+          { id: "TD_3", range: "Aux_Tablas_Dinamicas!H8:J20", rows: "FECHA_EMISION (Agrupado por Meses)", cols: "(Valores)", vals: "Suma de SALDO_TOTAL_EXIGIBLE, Suma de ABONO_RECUPERADO", target: "Alimenta [G3] Evolución Mensual de Recaudo (E21:J33)" },
+          { id: "TD_4", range: "Aux_Tablas_Dinamicas!L8:M17", rows: "OFICIAL_CREDITO (Filtro de Valor: Top 8)", cols: "(Ninguna)", vals: "Suma de SALDO_TOTAL_EXIGIBLE", target: "Alimenta [G4] Top 8 Oficiales de Crédito (K21:P33)" }
+        ],
+        chartQuestions: { g1: "Responde: Q7, Q8, Q24", g2: "Responde: Q11, Q12, Q18", g3: "Responde: Q2, Q20, Q24", g4: "Responde: Q9, Q10, Q19" }
+      },
+
+      rrhh: {
+        slicers: [
+          { code: "[S1]", cell: "A3:C12", field: "SEDE_PLANTA", title: "Sede / Planta Industrial", qRef: "Q7, Q8, Q19" },
+          { code: "[S2]", cell: "A14:C23", field: "ESTATUS_LABORAL", title: "Estatus Laboral", qRef: "Q15, Q16, Q17" },
+          { code: "[S3]", cell: "A25:C35", field: "DEPARTAMENTO", title: "Departamento", qRef: "Q9, Q10, Q18" }
+        ],
+        kpis: [
+          { code: "[K1]", cell: "E3:F5", label: "Masa Salarial Bruta", field: "Suma de SUELDO_BRUTO", formula: "=Aux_Tablas_Dinamicas!$B$4", qRef: "Q1, Q6", color: "blue", fmt: "currency", valFn: s => s.grossTotal, sub: s => "Sueldo Base + Horas Extras" },
+          { code: "[K2]", cell: "G3:H5", label: "Nómina Neta Pagada", field: "Suma de SUELDO_NETO_PAGADO", formula: "=Aux_Tablas_Dinamicas!$C$4", qRef: "Q2, Q5", color: "emerald", fmt: "currency", valFn: s => s.realTotal, sub: s => "Desembolso directo ACH" },
+          { code: "[K3]", cell: "I3:J5", label: "Retenciones TSS & ISR", field: "Suma de TOTAL_DESCUENTOS", formula: "=Aux_Tablas_Dinamicas!$D$4", qRef: "Q4, Q21", color: "indigo", fmt: "currency", valFn: s => s.secondaryTotal, sub: s => "AFP 2.87% + SFS 3.04% + ISR" },
+          { code: "[K4]", cell: "K3:L5", label: "Aporte Patronal TSS", field: "Suma de APORTE_PATRONAL_TSS", formula: "=E4*0.1419", qRef: "Q5, Q23", color: "teal", fmt: "currency", valFn: s => Math.round(s.grossTotal * 0.1419), sub: s => "14.19% Carga Empleador" },
+          { code: "[K5]", cell: "M3:N5", label: "Horas Extras Pagadas", field: "Suma de HORAS_EXTRAS_VALOR", formula: "=Aux_Tablas_Dinamicas!$E$4", qRef: "Q3, Q12", color: "amber", fmt: "currency", valFn: s => Math.round(s.auxTotal || (s.grossTotal * 0.08)), sub: s => ((s.auxTotal / (s.grossTotal || 1)) * 100).toFixed(1) + "% de la masa bruta" },
+          { code: "[K6]", cell: "O3:P5", label: "Tasa Desvinculación", field: "Desvinculados / Total Empleados", formula: "=Aux_Tablas_Dinamicas!$F$4", qRef: "Q15, Q16", color: "rose", fmt: "percent1", valFn: s => (s.failedCount / (s.totalCount || 1)) * 100, sub: s => s.failedCount + " bajas registradas" }
+        ],
+        pivots: [
+          { id: "TD_KPIs", range: "Aux_Tablas_Dinamicas!A3:F5", rows: "(Ninguna)", cols: "(Ninguna)", vals: "Suma de SUELDO_BRUTO, Suma de SUELDO_NETO_PAGADO, Suma de TOTAL_DESCUENTOS, Suma de HORAS_EXTRAS_VALOR, Suma de APORTE_PATRONAL_TSS", target: "Alimenta las 6 Tarjetas [K1] a [K6]" },
+          { id: "TD_1", range: "Aux_Tablas_Dinamicas!A8:C14", rows: "SEDE_PLANTA", cols: "(Valores)", vals: "Suma de SUELDO_BRUTO, Suma de TOTAL_DESCUENTOS", target: "Alimenta [G1] Masa Salarial vs Deducciones por Planta (E7:J19)" },
+          { id: "TD_2", range: "Aux_Tablas_Dinamicas!E8:F14", rows: "DEPARTAMENTO", cols: "(Ninguna)", vals: "Suma de SUELDO_BRUTO (y % del total general)", target: "Alimenta [G2] Distribución por Departamento (K7:P19)" },
+          { id: "TD_3", range: "Aux_Tablas_Dinamicas!H8:J20", rows: "FECHA_INGRESO (Agrupado por Meses)", cols: "(Valores)", vals: "Suma de SUELDO_BRUTO, Suma de SUELDO_NETO_PAGADO", target: "Alimenta [G3] Evolución Mensual de Planilla (E21:J33)" },
+          { id: "TD_4", range: "Aux_Tablas_Dinamicas!L8:M17", rows: "SUPERVISOR_TURNO (Filtro de Valor: Top 8)", cols: "(Ninguna)", vals: "Suma de SUELDO_BRUTO", target: "Alimenta [G4] Top 8 Supervisores de Turno (K21:P33)" }
+        ],
+        chartQuestions: { g1: "Responde: Q7, Q8, Q24", g2: "Responde: Q9, Q10, Q18", g3: "Responde: Q2, Q20, Q24", g4: "Responde: Q11, Q12, Q19" }
+      },
+
+      salud: {
+        slicers: [
+          { code: "[S1]", cell: "A3:C12", field: "SEDE_CLINICA", title: "Sede Clínica", qRef: "Q7, Q8, Q19" },
+          { code: "[S2]", cell: "A14:C23", field: "ESTATUS_RECLAMACION", title: "Estatus Reclamación", qRef: "Q15, Q16, Q23" },
+          { code: "[S3]", cell: "A25:C35", field: "ASEGURADORA_ARS", title: "Aseguradora ARS", qRef: "Q13, Q14, Q17" }
+        ],
+        kpis: [
+          { code: "[K1]", cell: "E3:F5", label: "Facturación Médica Total", field: "Suma de MONTO_TOTAL_FACTURADO", formula: "=Aux_Tablas_Dinamicas!$B$4", qRef: "Q1, Q20", color: "blue", fmt: "currency", valFn: s => s.grossTotal, sub: s => s.totalCount.toLocaleString('es-DO') + " autorizaciones clínicas" },
+          { code: "[K2]", cell: "G3:H5", label: "Cobertura ARS Liquidada", field: "Suma de COBERTURA_ARS", formula: "=Aux_Tablas_Dinamicas!$C$4", qRef: "Q2, Q13", color: "emerald", fmt: "currency", valFn: s => s.secondaryTotal, sub: s => "Aprobado por Aseguradoras" },
+          { code: "[K3]", cell: "I3:J5", label: "Copagos Paciente Caja", field: "Suma de COPAGO_PACIENTE", formula: "=E4-G4", qRef: "Q3, Q17", color: "indigo", fmt: "currency", valFn: s => Math.max(0, s.realTotal - s.secondaryTotal), sub: s => "Recaudo directo recepción" },
+          { code: "[K4]", cell: "K3:L5", label: "Margen Neto Clínica", field: "Suma de MARGEN_CLINICA", formula: "=Aux_Tablas_Dinamicas!$D$4", qRef: "Q4, Q5, Q6", color: "teal", fmt: "currency", valFn: s => s.marginTotal, sub: s => "Rentabilidad: " + ((s.marginTotal / (s.grossTotal || 1)) * 100).toFixed(1) + "%" },
+          { code: "[K5]", cell: "M3:N5", label: "% Cobertura Aseguradoras", field: "COBERTURA_ARS / TOTAL_FACTURADO", formula: "=G4/E4", qRef: "Q13, Q15", color: "amber", fmt: "percent", valFn: s => (s.secondaryTotal / (s.grossTotal || 1)) * 100, sub: s => "Financiado por las ARS" },
+          { code: "[K6]", cell: "O3:P5", label: "Tasa Glosas / Rechazos", field: "Rechazadas / Total Reclamos", formula: "=Aux_Tablas_Dinamicas!$F$4", qRef: "Q12, Q14, Q16", color: "rose", fmt: "percent1", valFn: s => (s.failedCount / (s.totalCount || 1)) * 100, sub: s => s.failedCount + " expedientes glosados/rech." }
+        ],
+        pivots: [
+          { id: "TD_KPIs", range: "Aux_Tablas_Dinamicas!A3:F5", rows: "(Ninguna)", cols: "(Ninguna)", vals: "Suma de MONTO_TOTAL_FACTURADO, Suma de COBERTURA_ARS, Suma de COPAGO_PACIENTE, Suma de COSTO_INSUMOS, Suma de MARGEN_CLINICA", target: "Alimenta las 6 Tarjetas [K1] a [K6]" },
+          { id: "TD_1", range: "Aux_Tablas_Dinamicas!A8:C14", rows: "SEDE_CLINICA", cols: "(Valores)", vals: "Suma de MONTO_TOTAL_FACTURADO, Suma de COBERTURA_ARS", target: "Alimenta [G1] Facturación vs Cobertura por Clínica (E7:J19)" },
+          { id: "TD_2", range: "Aux_Tablas_Dinamicas!E8:F14", rows: "ESPECIALIDAD_MEDICA", cols: "(Ninguna)", vals: "Suma de MONTO_TOTAL_FACTURADO (y % del total)", target: "Alimenta [G2] Participación por Especialidad (K7:P19)" },
+          { id: "TD_3", range: "Aux_Tablas_Dinamicas!H8:J20", rows: "FECHA_ATENCION (Agrupado por Meses)", cols: "(Valores)", vals: "Suma de MONTO_TOTAL_FACTURADO, Suma de COBERTURA_ARS", target: "Alimenta [G3] Evolución Mensual de Reclamaciones (E21:J33)" },
+          { id: "TD_4", range: "Aux_Tablas_Dinamicas!L8:M17", rows: "MEDICO_TRATANTE (Filtro de Valor: Top 8)", cols: "(Ninguna)", vals: "Suma de MONTO_TOTAL_FACTURADO", target: "Alimenta [G4] Top 8 Médicos Tratantes (K21:P33)" }
+        ],
+        chartQuestions: { g1: "Responde: Q7, Q8, Q19", g2: "Responde: Q9, Q10, Q18", g3: "Responde: Q2, Q24", g4: "Responde: Q11, Q12" }
+      }
+    };
+
+    function updateDashboardMappedEnhancements(filteredData, sums) {
+      const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
+      const spec = DASHBOARD_EXCEL_MANUAL_SPECS[ind] || DASHBOARD_EXCEL_MANUAL_SPECS.retail;
+      const config = INDUSTRY_CONFIGS[ind] || INDUSTRY_CONFIGS.retail;
+
+      // 1. Sincronizar estado visual de los 5 sub-tabs del Dashboard
+      ['retail', 'logistica', 'finanzas', 'rrhh', 'salud'].forEach(k => {
+        const btn = document.getElementById('dashSubTab-' + k);
+        if (!btn) return;
+        const badgeSpan = btn.querySelector('span:last-child');
+        if (k === ind) {
+          btn.className = 'dash-subtab-btn flex items-center justify-between px-3.5 py-2.5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/90 text-emerald-950 font-black text-xs shadow-xs transition-all cursor-pointer';
+          if (badgeSpan) {
+            badgeSpan.className = 'px-2 py-0.5 rounded-full text-[10px] bg-emerald-600 text-white font-mono';
+            badgeSpan.textContent = 'Activa';
+          }
+        } else {
+          btn.className = 'dash-subtab-btn flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer';
+          if (badgeSpan) {
+            badgeSpan.className = 'px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-800 font-mono';
+            badgeSpan.textContent = 'Ver';
+          }
+        }
+      });
+
+      // 2. Renderizar las 6 Tarjetas KPI Mapeadas [K1] a [K6] con Rango de Celda Excel y Preguntas que Responde
+      const kpiContainer = document.getElementById('dynamicKpiContainer');
+      if (kpiContainer && spec.kpis) {
+        const colorStyles = {
+          blue:    { pill: 'bg-blue-700 text-white', val: 'text-slate-900', sub: 'text-blue-700', border: 'border-blue-200 hover:border-blue-500' },
+          emerald: { pill: 'bg-emerald-700 text-white', val: 'text-emerald-700', sub: 'text-emerald-700', border: 'border-emerald-200 hover:border-emerald-500' },
+          indigo:  { pill: 'bg-indigo-700 text-white', val: 'text-indigo-800', sub: 'text-indigo-700', border: 'border-indigo-200 hover:border-indigo-500' },
+          teal:    { pill: 'bg-teal-700 text-white', val: 'text-teal-800', sub: 'text-teal-700', border: 'border-teal-200 hover:border-teal-500' },
+          amber:   { pill: 'bg-amber-600 text-white', val: 'text-amber-700', sub: 'text-amber-700', border: 'border-amber-200 hover:border-amber-500' },
+          rose:    { pill: 'bg-rose-600 text-white', val: 'text-rose-600', sub: 'text-rose-600', border: 'border-rose-200 hover:border-rose-500' }
+        };
+
+        kpiContainer.innerHTML = spec.kpis.map(k => {
+          const st = colorStyles[k.color] || colorStyles.blue;
+          const rawVal = k.valFn(sums);
+          let formattedVal = '';
+          if (k.fmt === 'currency') formattedVal = 'RD$ ' + Math.round(rawVal).toLocaleString('es-DO');
+          else if (k.fmt === 'percent') formattedVal = Number(rawVal).toFixed(2) + '%';
+          else if (k.fmt === 'percent1') formattedVal = Number(rawVal).toFixed(1) + '%';
+          else if (k.fmt === 'tons') formattedVal = Number(rawVal).toLocaleString('es-DO') + ' Ton';
+          else if (k.fmt === 'days') formattedVal = Number(rawVal).toLocaleString('es-DO') + ' Días';
+          else formattedVal = String(rawVal);
+
+          return (
+            '<div class="bg-white rounded-2xl border-2 ' + st.border + ' p-3.5 shadow-excel-card flex flex-col justify-between transition-all">' +
+              '<div>' +
+                '<div class="flex items-center justify-between gap-1 mb-1.5">' +
+                  '<span class="px-1.5 py-0.5 rounded font-mono text-[10px] font-black ' + st.pill + '">' + k.code + ' ' + k.cell + '</span>' +
+                  '<span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[9px] font-bold border border-slate-200">' + k.qRef + '</span>' +
+                '</div>' +
+                '<div class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 leading-tight">' + k.label + '</div>' +
+                '<div class="text-base sm:text-lg font-black ' + st.val + ' mt-1 font-mono tracking-tight">' + formattedVal + '</div>' +
+              '</div>' +
+              '<div class="pt-2 mt-2 border-t border-slate-100 space-y-0.5">' +
+                '<div class="text-[10px] ' + st.sub + ' font-bold truncate">' + k.sub(sums) + '</div>' +
+                '<div class="text-[9px] font-mono text-slate-400 truncate" title="Fórmula Excel: ' + k.formula + '">Excel: ' + k.formula + '</div>' +
+              '</div>' +
+            '</div>'
+          );
+        }).join('');
+      }
+
+      // 3. Calcular hallazgos en tiempo real para las barras inferiores de los 4 gráficos y el panel lateral
+      const regMap = {};
+      const catMap = {};
+      const monthMap = {};
+      const entMap = {};
+      const chMap = {};
+
+      filteredData.forEach(r => {
+        const rk = r._cleanRegion || 'General';
+        if (!regMap[rk]) regMap[rk] = { p: 0, m: 0, c: 0 };
+        regMap[rk].p += (r._metricPrimary || 0);
+        regMap[rk].m += (r._metricMargin || 0);
+        regMap[rk].c++;
+
+        const ck = r._categoryKey || 'General';
+        catMap[ck] = (catMap[ck] || 0) + (r._metricPrimary || 0);
+
+        const mk = (r._cleanDate || '2026-01').substring(0, 7);
+        if (!monthMap[mk]) monthMap[mk] = { g: 0, r: 0 };
+        monthMap[mk].g += (r._metricPrimary || 0);
+        monthMap[mk].r += (r._metricReal || 0);
+
+        const ek = r._cleanEntity || 'Sin Asignar';
+        if (!entMap[ek]) entMap[ek] = { p: 0, c: 0 };
+        entMap[ek].p += (r._metricPrimary || 0);
+        entMap[ek].c++;
+
+        const chk = r._cleanChannel || 'General';
+        chMap[chk] = (chMap[chk] || 0) + (r._metricPrimary || 0);
+      });
+
+      const sortedRegs = Object.entries(regMap).sort((a, b) => b[1].p - a[1].p);
+      const topReg = sortedRegs[0] || ['N/A', { p: 0, m: 0, c: 0 }];
+      const lowReg = sortedRegs[sortedRegs.length - 1] || topReg;
+      const topRegShare = sums.grossTotal > 0 ? ((topReg[1].p / sums.grossTotal) * 100).toFixed(1) : '0.0';
+
+      const sortedCats = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+      const topCat = sortedCats[0] || ['N/A', 0];
+      const topCatShare = sums.grossTotal > 0 ? ((topCat[1] / sums.grossTotal) * 100).toFixed(1) : '0.0';
+
+      const sortedMonths = Object.entries(monthMap).sort((a, b) => b[1].g - a[1].g);
+      const peakMonth = sortedMonths[0] || ['2026-01', { g: 0, r: 0 }];
+
+      const sortedEnts = Object.entries(entMap).sort((a, b) => b[1].p - a[1].p);
+      const topEnt = sortedEnts[0] || ['N/A', { p: 0, c: 0 }];
+
+      const sortedChs = Object.entries(chMap).sort((a, b) => b[1] - a[1]);
+      const topCh = sortedChs[0] || ['N/A', 0];
+
+      // Actualizar etiquetas de preguntas e insights en los 4 gráficos
+      const q1El = document.getElementById('chart1QuestionTag');
+      if (q1El) q1El.textContent = spec.chartQuestions.g1;
+      const q2El = document.getElementById('chart2QuestionTag');
+      if (q2El) q2El.textContent = spec.chartQuestions.g2;
+      const q3El = document.getElementById('chart3QuestionTag');
+      if (q3El) q3El.textContent = spec.chartQuestions.g3;
+      const q4El = document.getElementById('chart4QuestionTag');
+      if (q4El) q4El.textContent = spec.chartQuestions.g4;
+
+      const b1 = document.getElementById('chart1InsightBar');
+      if (b1) {
+        b1.innerHTML =
+          '<span>🏆 <strong>Líder (Q7):</strong> ' + topReg[0] + ' (RD$ ' + Math.round(topReg[1].p).toLocaleString('es-DO') + ' &middot; ' + topRegShare + '%)</span>' +
+          '<span>📉 <strong>Menor Vol. (Q8):</strong> ' + lowReg[0] + ' (RD$ ' + Math.round(lowReg[1].p).toLocaleString('es-DO') + ')</span>';
+      }
+
+      const b2 = document.getElementById('chart2InsightBar');
+      if (b2) {
+        b2.innerHTML =
+          '<span>🥇 <strong>Top #1 Portafolio (Q11):</strong> ' + topCat[0] + ' (RD$ ' + Math.round(topCat[1]).toLocaleString('es-DO') + ')</span>' +
+          '<span>📊 <strong>Cuota Mix:</strong> ' + topCatShare + '% del total</span>';
+      }
+
+      const b3 = document.getElementById('chart3InsightBar');
+      if (b3) {
+        b3.innerHTML =
+          '<span>📅 <strong>Mes Pico (Q20):</strong> ' + peakMonth[0] + ' (RD$ ' + Math.round(peakMonth[1].g).toLocaleString('es-DO') + ')</span>' +
+          '<span>✅ <strong>Efectivo Mes Pico:</strong> RD$ ' + Math.round(peakMonth[1].r).toLocaleString('es-DO') + '</span>';
+      }
+
+      const b4 = document.getElementById('chart4InsightBar');
+      if (b4) {
+        b4.innerHTML =
+          '<span>⭐ <strong>Líder #1 (Q9):</strong> ' + topEnt[0] + ' (RD$ ' + Math.round(topEnt[1].p).toLocaleString('es-DO') + ')</span>' +
+          '<span>🧾 <strong>Operaciones:</strong> ' + topEnt[1].c + ' registros</span>';
+      }
+
+      // Actualizar caja de respuestas rápidas en el Sidebar izquierdo
+      const qaBox = document.getElementById('dashboardQuickAnswersBox');
+      if (qaBox) {
+        qaBox.innerHTML =
+          '<div class="font-black text-slate-900 flex items-center gap-1.5 border-b border-slate-200 pb-1.5">' +
+            '<i class="fa-solid fa-bolt text-amber-500"></i> Respuestas en Vivo (25 Qs)' +
+          '</div>' +
+          '<div class="space-y-1 text-[11px] text-slate-700">' +
+            '<div>&bull; <strong>Top Territorio:</strong> ' + topReg[0] + ' (' + topRegShare + '%)</div>' +
+            '<div>&bull; <strong>Top Categoría:</strong> ' + topCat[0] + ' (' + topCatShare + '%)</div>' +
+            '<div>&bull; <strong>Top Responsable:</strong> ' + topEnt[0] + '</div>' +
+            '<div>&bull; <strong>Top Canal/Medio:</strong> ' + topCh[0] + '</div>' +
+            '<div>&bull; <strong>Ticket Promedio:</strong> RD$ ' + Math.round(sums.grossTotal / (sums.totalCount || 1)).toLocaleString('es-DO') + '</div>' +
+          '</div>';
+      }
+
+      // 4. Renderizar el Manual Paso a Paso del Dashboard en Excel (debajo del título principal y antes del Dashboard)
+      renderDashboardManual(ind, spec, config);
+    }
+
+    function renderDashboardManual(ind, spec, config) {
+      const container = document.getElementById('dashboardStepByStepManual');
+      if (!container) return;
+
+      const pivotRowsHtml = spec.pivots.map(p =>
+        '<tr class="hover:bg-slate-50 border-b border-slate-200 last:border-0 text-xs">' +
+          '<td class="py-2.5 px-3 font-mono font-black text-emerald-800 whitespace-nowrap">' + p.id + '<div class="text-[10px] text-slate-400 font-normal">' + p.range + '</div></td>' +
+          '<td class="py-2.5 px-3 font-mono font-bold text-slate-800">' + p.rows + '</td>' +
+          '<td class="py-2.5 px-3 font-mono text-slate-700">' + p.vals + '</td>' +
+          '<td class="py-2.5 px-3 font-semibold text-blue-800">' + p.target + '</td>' +
+        '</tr>'
+      ).join('');
+
+      const kpiStepCards = spec.kpis.map(k =>
+        '<div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1 text-xs">' +
+          '<div class="flex items-center justify-between">' +
+            '<span class="font-mono font-black text-emerald-800">' + k.code + ' Celda ' + k.cell + '</span>' +
+            '<span class="text-[10px] font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200 font-bold text-slate-600">' + k.qRef + '</span>' +
+          '</div>' +
+          '<div class="font-black text-slate-900">' + k.label + '</div>' +
+          '<div class="text-[11px] text-slate-600">Origen: <span class="font-mono font-semibold text-slate-800">' + k.field + '</span></div>' +
+          '<div class="text-[11px] font-mono text-blue-700 bg-white px-2 py-1 rounded border border-slate-200">Fórmula: <strong>' + k.formula + '</strong></div>' +
+        '</div>'
+      ).join('');
+
+      const slicerStepCards = spec.slicers.map(s =>
+        '<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1 text-xs">' +
+          '<div class="flex items-center justify-between">' +
+            '<span class="px-2 py-0.5 rounded bg-emerald-700 text-white font-mono font-black text-[10px]">' + s.code + ' Rango ' + s.cell + '</span>' +
+            '<span class="text-[10px] font-mono font-bold text-emerald-800">Responde ' + s.qRef + '</span>' +
+          '</div>' +
+          '<div class="font-black text-slate-900 mt-1">Segmentador: ' + s.title + '</div>' +
+          '<div class="text-[11px] text-slate-600">Campo a marcar en Excel: <code class="font-mono font-bold bg-white px-1.5 py-0.5 rounded border text-emerald-900">' + s.field + '</code></div>' +
+        '</div>'
+      ).join('');
+
+      container.innerHTML =
+        '<div class="bg-white border-2 border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-6">' +
+          
+          // Encabezado del Manual del Dashboard
+          '<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 pb-4">' +
+            '<div class="space-y-1">' +
+              '<div class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-emerald-700">' +
+                '<i class="fa-solid fa-compass-drafting"></i> Manual de Construcción Paso a Paso en Microsoft Excel 365' +
+              '</div>' +
+              '<h3 class="text-xl sm:text-2xl font-black text-slate-900">' +
+                'Cómo Construir el Dashboard de <span class="text-emerald-700">' + config.name + '</span> en Excel (Mapeo Exacto [S1] a [T5])' +
+              '</h3>' +
+              '<p class="text-xs sm:text-sm text-slate-600 font-medium">' +
+                'Cada elemento del Dashboard inferior tiene un código identificador (<strong class="font-mono text-slate-900">[S1]-[S3]</strong>, <strong class="font-mono text-slate-900">[K1]-[K6]</strong>, <strong class="font-mono text-slate-900">[G1]-[G4]</strong> y <strong class="font-mono text-slate-900">[T5]</strong>) que indica en qué celdas exactas de tu hoja de Excel debes colocarlo.' +
+              '</p>' +
+            '</div>' +
+            '<div class="px-4 py-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-950 shrink-0">' +
+              '<div>📐 <strong>Lienzo Excel:</strong> Columnas <code class="font-mono">A:P</code> &middot; Filas <code class="font-mono">1:48</code></div>' +
+              '<div class="text-[11px] text-emerald-700 mt-0.5">14 Zonas Numeradas &bull; 100% Conectado por Slicers</div>' +
+            '</div>' +
+          '</div>' +
+
+          // PLANO VISUAL DE DISTRIBUCIÓN EN EXCEL (WIREFRAME MAPEADO)
+          '<div class="p-4 sm:p-5 bg-slate-900 text-white rounded-2xl space-y-3">' +
+            '<div class="flex flex-wrap items-center justify-between gap-2 text-xs border-b border-white/15 pb-2.5">' +
+              '<span class="font-black text-emerald-300 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-table-cells-large"></i> Plano Arquitectónico de Celdas en tu Hoja de Excel "Dashboard_Ejecutivo" (Rango A1:P48)</span>' +
+              '<span class="font-mono text-[11px] text-slate-300">Vista &rarr; Desmarcar "Líneas de cuadrícula"</span>' +
+            '</div>' +
+            '<div class="grid grid-cols-1 lg:grid-cols-12 gap-3 text-[11px] font-mono">' +
+              // Columna Izquierda Wireframe (Cols A:C)
+              '<div class="lg:col-span-3 bg-white/10 border border-white/20 rounded-xl p-3 space-y-2">' +
+                '<div class="text-emerald-300 font-bold text-center border-b border-white/15 pb-1">PANEL LATERAL (Cols A:C)</div>' +
+                '<div class="p-2 rounded bg-emerald-950/90 border border-emerald-500/40">[S1] A3:C12 &rarr; ' + spec.slicers[0].field + '</div>' +
+                '<div class="p-2 rounded bg-blue-950/90 border border-blue-500/40">[S2] A14:C23 &rarr; ' + spec.slicers[1].field + '</div>' +
+                '<div class="p-2 rounded bg-purple-950/90 border border-purple-500/40">[S3] A25:C35 &rarr; ' + spec.slicers[2].field + '</div>' +
+              '</div>' +
+              // Columna Derecha Wireframe (Cols E:P)
+              '<div class="lg:col-span-9 space-y-2.5">' +
+                '<div class="grid grid-cols-2 sm:grid-cols-6 gap-1.5 text-center">' +
+                  spec.kpis.map(k => '<div class="p-2 rounded bg-white/10 border border-white/20"><div class="text-emerald-300 font-bold">' + k.code + ' ' + k.cell + '</div><div class="text-[10px] text-slate-200 truncate font-sans">' + k.label + '</div></div>').join('') +
+                '</div>' +
+                '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">' +
+                  '<div class="p-2.5 rounded bg-emerald-950/70 border border-emerald-400/40"><strong class="text-emerald-300">[G1] Celda E7:J19 (Columna 2D):</strong> ' + config.chart1.title + '</div>' +
+                  '<div class="p-2.5 rounded bg-blue-950/70 border border-blue-400/40"><strong class="text-blue-300">[G2] Celda K7:P19 (Anillos):</strong> ' + config.chart2.title + '</div>' +
+                  '<div class="p-2.5 rounded bg-purple-950/70 border border-purple-400/40"><strong class="text-purple-300">[G3] Celda E21:J33 (Líneas):</strong> ' + config.chart3.title + '</div>' +
+                  '<div class="p-2.5 rounded bg-amber-950/70 border border-amber-400/40"><strong class="text-amber-300">[G4] Celda K21:P33 (Barras Top 8):</strong> ' + config.chart4.title + '</div>' +
+                '</div>' +
+                '<div class="p-2 rounded bg-white/10 border border-white/20 text-center text-slate-200">' +
+                  '<strong class="text-emerald-300">[T5] Rango E35:P48:</strong> Tabla Dinámica de Auditoría Detallada conectada a los 3 Segmentadores' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          // GUÍA EN 4 FASES DETALLADAS PASO A PASO
+          '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">' +
+            
+            // FASE 1: Las 5 Tablas Dinámicas Base
+            '<div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">' +
+              '<div class="flex items-center justify-between border-b border-slate-200 pb-2.5">' +
+                '<div class="flex items-center gap-2 font-black text-slate-900 text-sm">' +
+                  '<span class="w-6 h-6 rounded-lg bg-emerald-700 text-white flex items-center justify-center text-xs">1</span>' +
+                  '<span>Fase 1: Crear Hoja "Aux_Tablas_Dinamicas" (5 TDs)</span>' +
+                '</div>' +
+                '<span class="text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">Motor de Cálculos</span>' +
+              '</div>' +
+              '<p class="text-xs text-slate-600 leading-relaxed font-medium">' +
+                'En Excel nunca pongas las Tablas Dinámicas de soporte revueltas con los gráficos. Crea una hoja llamada <code class="font-mono font-bold bg-white px-1.5 py-0.5 border rounded">Aux_Tablas_Dinamicas</code> e inserta estas <strong>5 Tablas Dinámicas</strong> desde el Modelo de Datos (<kbd class="px-1 bg-white border rounded font-mono">Alt + N + V</kbd>):' +
+              '</p>' +
+              '<div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">' +
+                '<table class="w-full text-left border-collapse">' +
+                  '<thead class="bg-slate-100 text-[10px] font-extrabold uppercase text-slate-700 border-b border-slate-200">' +
+                    '<tr><th class="py-2 px-3">Tabla / Rango</th><th class="py-2 px-3">Cuadrante Filas</th><th class="py-2 px-3">Cuadrante Valores</th><th class="py-2 px-3">Visual que Alimenta</th></tr>' +
+                  '</thead>' +
+                  '<tbody>' + pivotRowsHtml + '</tbody>' +
+                '</table>' +
+              '</div>' +
+            '</div>' +
+
+            // FASE 2: Cómo Crear las 6 Tarjetas KPI [K1] a [K6]
+            '<div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">' +
+              '<div class="flex items-center justify-between border-b border-slate-200 pb-2.5">' +
+                '<div class="flex items-center gap-2 font-black text-slate-900 text-sm">' +
+                  '<span class="w-6 h-6 rounded-lg bg-blue-700 text-white flex items-center justify-center text-xs">2</span>' +
+                  '<span>Fase 2: Construir las 6 Tarjetas KPI [K1] a [K6] (Filas 3 a 5)</span>' +
+                '</div>' +
+                '<span class="text-[11px] font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded">Celdas E3:P5</span>' +
+              '</div>' +
+              '<p class="text-xs text-slate-600 leading-relaxed font-medium">' +
+                'En la hoja <code class="font-mono font-bold bg-white px-1.5 py-0.5 border rounded">Dashboard_Ejecutivo</code>, combina bloques de 2 columnas &times; 3 filas (o inserta Rectángulos Redondeados) en <code class="font-mono font-bold">E3:P5</code> y vincula su valor con estas fórmulas:' +
+              '</p>' +
+              '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">' + kpiStepCards + '</div>' +
+            '</div>' +
+
+          '</div>' +
+
+          // FASE 3 Y FASE 4: Slicers + Gráficos Dinámicos
+          '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">' +
+            
+            // FASE 3: Segmentadores [S1]-[S3] y Conexiones de Informes
+            '<div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">' +
+              '<div class="flex items-center justify-between border-b border-slate-200 pb-2.5">' +
+                '<div class="flex items-center gap-2 font-black text-slate-900 text-sm">' +
+                  '<span class="w-6 h-6 rounded-lg bg-purple-700 text-white flex items-center justify-center text-xs">3</span>' +
+                  '<span>Fase 3: Insertar Slicers [S1]-[S3] y Conectar Informes</span>' +
+                '</div>' +
+                '<span class="text-[11px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded">Cols A:C</span>' +
+              '</div>' +
+              '<p class="text-xs text-slate-600 leading-relaxed font-medium">' +
+                '1. Haz clic dentro de <code class="font-mono font-bold">TD_KPIs</code> &rarr; pestaña <strong>Analizar tabla dinámica &rarr; Insertar segmentación de datos</strong>.<br>' +
+                '2. Marca los 3 campos siguientes y acomódalos en las columnas <code class="font-mono font-bold">A:C</code>:<br>' +
+                '3. <strong>PASO CRÍTICO:</strong> Haz clic derecho sobre cada segmentador &rarr; <strong>Conexiones de informes (Report Connections)</strong> y marca las casillas de las <strong>5 Tablas Dinámicas</strong> (<code class="font-mono">TD_KPIs, TD_1, TD_2, TD_3, TD_4</code>).' +
+              '</p>' +
+              '<div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">' + slicerStepCards + '</div>' +
+            '</div>' +
+
+            // FASE 4: Creación y Estilizado de los 4 Gráficos Dinámicos [G1] a [G4]
+            '<div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">' +
+              '<div class="flex items-center justify-between border-b border-slate-200 pb-2.5">' +
+                '<div class="flex items-center gap-2 font-black text-slate-900 text-sm">' +
+                  '<span class="w-6 h-6 rounded-lg bg-amber-600 text-white flex items-center justify-center text-xs">4</span>' +
+                  '<span>Fase 4: Crear y Estilizar los 4 Gráficos [G1] a [G4]</span>' +
+                '</div>' +
+                '<span class="text-[11px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded">Celdas E7:P33</span>' +
+              '</div>' +
+              '<div class="space-y-2 text-xs text-slate-700 font-medium">' +
+                '<div class="p-2.5 bg-white rounded-xl border border-slate-200">' +
+                  '<strong class="text-emerald-800 font-mono">[G1] Celda E7:J19 (Columna Agrupada 2D):</strong> Clic en <code class="font-mono">TD_1</code> &rarr; <strong>Insertar &rarr; Columna en 2D &rarr; Columna agrupada</strong>. Corta (<kbd class="px-1 border rounded">Ctrl+X</kbd>) y pégalo en <code class="font-mono font-bold">E7:J19</code>. (' + spec.chartQuestions.g1 + ').' +
+                '</div>' +
+                '<div class="p-2.5 bg-white rounded-xl border border-slate-200">' +
+                  '<strong class="text-blue-800 font-mono">[G2] Celda K7:P19 (Gráfico de Anillos):</strong> Clic en <code class="font-mono">TD_2</code> &rarr; <strong>Insertar &rarr; Gráfico Circular &rarr; Anillos</strong>. Activa <em>Etiquetas de datos (%)</em> y pégalo en <code class="font-mono font-bold">K7:P19</code>. (' + spec.chartQuestions.g2 + ').' +
+                '</div>' +
+                '<div class="p-2.5 bg-white rounded-xl border border-slate-200">' +
+                  '<strong class="text-purple-800 font-mono">[G3] Celda E21:J33 (Líneas con Marcadores):</strong> Clic en <code class="font-mono">TD_3</code> &rarr; <strong>Insertar &rarr; Línea en 2D &rarr; Línea con marcadores</strong>. Pégalo en <code class="font-mono font-bold">E21:J33</code>. (' + spec.chartQuestions.g3 + ').' +
+                '</div>' +
+                '<div class="p-2.5 bg-white rounded-xl border border-slate-200">' +
+                  '<strong class="text-amber-800 font-mono">[G4] Celda K21:P33 (Barras Horizontales Top 8):</strong> Clic en <code class="font-mono">TD_4</code> &rarr; <strong>Insertar &rarr; Barra en 2D &rarr; Barra agrupada</strong>. En el eje vertical marca <em>"Categorías en orden inverso"</em> y pégalo en <code class="font-mono font-bold">K21:P33</code>. (' + spec.chartQuestions.g4 + ').' +
+                '</div>' +
+                '<div class="p-2 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-950">' +
+                  '💡 <strong>Toque Profesional Excel:</strong> En los 4 gráficos haz clic derecho sobre cualquier botón gris (<code class="font-mono">Suma de...</code>) y selecciona <strong>"Ocultar todos los botones de campos en el gráfico"</strong>.' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+
+          '</div>' +
+
         '</div>';
     }
 
