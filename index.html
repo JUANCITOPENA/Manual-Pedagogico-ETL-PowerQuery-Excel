@@ -6663,11 +6663,11 @@
         },
         fullMCode: `// =========================================================================
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 1. SUPERMERCADO & RETAIL MASIVO (POS & INVENTARIO)
-// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
-// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
+// Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
+// Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
+    // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
     PerfilesWindows = List.Select(
         {"User"} & (try
@@ -6686,18 +6686,21 @@ let
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
     })),
     EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
-        [
-            Ruta = ruta,
-            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+        let
+            archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
                 not Text.StartsWith(f[Name], "~$") and
                 not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
                 List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
-            ),
-            Cantidad = Table.RowCount(Archivos)
-        ]
+            )
+        in
+            [
+                Ruta = ruta,
+                Archivos = archivos,
+                TieneDatos = (try Table.RowCount(archivos) > 0 otherwise false),
+                Cantidad = (try Table.RowCount(archivos) otherwise 0)
+            ]
     ),
-    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
-    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    RutasConArchivos = List.Select(EvaluarRutas, each [TieneDatos] = true),
     ArchivosValidos = if List.Count(RutasConArchivos) > 0
                       then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
@@ -6880,11 +6883,11 @@ in
         },
         fullMCode: `// =========================================================================
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 2. LOGÍSTICA, TRANSPORTE & FLETES TERRESTRES
-// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
-// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
+// Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
+// Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
+    // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
     PerfilesWindows = List.Select(
         {"User"} & (try
@@ -6903,18 +6906,21 @@ let
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
     })),
     EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
-        [
-            Ruta = ruta,
-            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+        let
+            archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
                 not Text.StartsWith(f[Name], "~$") and
                 not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
                 List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
-            ),
-            Cantidad = Table.RowCount(Archivos)
-        ]
+            )
+        in
+            [
+                Ruta = ruta,
+                Archivos = archivos,
+                TieneDatos = (try Table.RowCount(archivos) > 0 otherwise false),
+                Cantidad = (try Table.RowCount(archivos) otherwise 0)
+            ]
     ),
-    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
-    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    RutasConArchivos = List.Select(EvaluarRutas, each [TieneDatos] = true),
     ArchivosValidos = if List.Count(RutasConArchivos) > 0
                       then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
@@ -7097,11 +7103,11 @@ in
         },
         fullMCode: `// =========================================================================
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 3. FINANZAS CORPORATIVAS, TESORERÍA & CARTERA CxC
-// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
-// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
+// Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
+// Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
+    // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
     PerfilesWindows = List.Select(
         {"User"} & (try
@@ -7120,18 +7126,21 @@ let
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
     })),
     EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
-        [
-            Ruta = ruta,
-            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+        let
+            archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
                 not Text.StartsWith(f[Name], "~$") and
                 not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
                 List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
-            ),
-            Cantidad = Table.RowCount(Archivos)
-        ]
+            )
+        in
+            [
+                Ruta = ruta,
+                Archivos = archivos,
+                TieneDatos = (try Table.RowCount(archivos) > 0 otherwise false),
+                Cantidad = (try Table.RowCount(archivos) otherwise 0)
+            ]
     ),
-    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
-    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    RutasConArchivos = List.Select(EvaluarRutas, each [TieneDatos] = true),
     ArchivosValidos = if List.Count(RutasConArchivos) > 0
                       then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
@@ -7316,11 +7325,11 @@ in
         },
         fullMCode: `// =========================================================================
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 4. RECURSOS HUMANOS, NÓMINA & SEGURIDAD SOCIAL (TSS)
-// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
-// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
+// Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
+// Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
+    // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
     PerfilesWindows = List.Select(
         {"User"} & (try
@@ -7339,18 +7348,21 @@ let
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
     })),
     EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
-        [
-            Ruta = ruta,
-            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+        let
+            archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
                 not Text.StartsWith(f[Name], "~$") and
                 not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
                 List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
-            ),
-            Cantidad = Table.RowCount(Archivos)
-        ]
+            )
+        in
+            [
+                Ruta = ruta,
+                Archivos = archivos,
+                TieneDatos = (try Table.RowCount(archivos) > 0 otherwise false),
+                Cantidad = (try Table.RowCount(archivos) otherwise 0)
+            ]
     ),
-    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
-    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    RutasConArchivos = List.Select(EvaluarRutas, each [TieneDatos] = true),
     ArchivosValidos = if List.Count(RutasConArchivos) > 0
                       then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
@@ -7532,11 +7544,11 @@ in
         },
         fullMCode: `// =========================================================================
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 5. SALUD, CLÍNICAS PRIVADAS & COBERTURAS ARS
-// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
-// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
+// Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
+// Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
+    // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
     PerfilesWindows = List.Select(
         {"User"} & (try
@@ -7555,18 +7567,21 @@ let
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
     })),
     EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
-        [
-            Ruta = ruta,
-            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+        let
+            archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
                 not Text.StartsWith(f[Name], "~$") and
                 not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
                 List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
-            ),
-            Cantidad = Table.RowCount(Archivos)
-        ]
+            )
+        in
+            [
+                Ruta = ruta,
+                Archivos = archivos,
+                TieneDatos = (try Table.RowCount(archivos) > 0 otherwise false),
+                Cantidad = (try Table.RowCount(archivos) otherwise 0)
+            ]
     ),
-    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
-    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    RutasConArchivos = List.Select(EvaluarRutas, each [TieneDatos] = true),
     ArchivosValidos = if List.Count(RutasConArchivos) > 0
                       then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
