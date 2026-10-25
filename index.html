@@ -7997,7 +7997,7 @@ in
             '<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1.5">' +
               '<div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre exacto en Columna Personalizada:</span> <strong class="text-blue-700 bg-white px-2 py-0.5 rounded border border-blue-200">' + calc.colName + '</strong></div>' +
               '<div class="flex flex-wrap items-center justify-between gap-2"><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula en el cuadro de Power Query:</span> <div class="flex items-center gap-2"><code class="language-powerquery bg-slate-900 text-slate-100 px-2.5 py-1 rounded-lg border border-slate-700 inline-block">' + highlightPowerQueryM(calc.pqFormula, false) + '</code><button onclick="copyCalcMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all"><i class="fa-solid fa-copy mr-1"></i>Copiar Fórmula</button></div></div>' +
-              '<div class="space-y-1"><div class="flex flex-wrap items-center justify-between gap-2"><span class="text-slate-500 font-sans text-[11px] font-bold">3. Instrucción generada en Lenguaje M:</span><button onclick="copyCalcTableAddColumnMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button></div><pre class="pq-inline-snippet language-powerquery mt-1"><code>' + highlightPowerQueryM('= ' + calc.mCode, false) + '</code></pre></div>' +
+              '<div><span class="text-slate-500 font-sans text-[11px] font-bold">3. Instrucción generada en Lenguaje M:</span> <pre class="pq-inline-snippet language-powerquery mt-1 flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= ' + calc.mCode, false) + '</code><button onclick="copyCalcTableAddColumnMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button></pre></div>' +
               '<div class="text-[11px] font-sans text-slate-500 pt-1">📌 <em>Tipo de dato obligatorio al finalizar: <strong class="text-slate-800">' + calc.dataType + '</strong>.</em></div>' +
             '</div>' +
           '</div>'
@@ -8158,12 +8158,12 @@ in
               '<p>4. Haz clic en <strong class="text-emerald-800">Formato &rarr; Poner En Mayúsculas Cada Palabra</strong>.</p>' +
             '</div>' +
             '<div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">' +
-              '<div class="font-bold text-slate-900 flex flex-wrap items-center justify-between gap-2"><span class="flex items-center gap-1.5"><i class="fa-solid fa-code text-teal-700"></i> B. Ejemplo Real Antes vs Después en ' + config.badge + ':</span><button onclick="copyStep2MCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button></div>' +
+              '<div class="font-bold text-slate-900 flex items-center gap-1.5"><i class="fa-solid fa-code text-teal-700"></i> B. Ejemplo Real Antes vs Después en ' + config.badge + ':</div>' +
               '<div class="p-2.5 bg-white rounded-lg border border-slate-200 font-mono text-[11px] space-y-1">' +
                 '<div><span class="text-rose-600 font-bold">ANTES (Crudo):</span> ' + etl.beforeAfterTrim.dirty1 + '</div>' +
                 '<div><span class="text-emerald-700 font-bold">DESPUÉS (Limpio):</span> ' + etl.beforeAfterTrim.clean1 + '</div>' +
               '</div>' +
-              '<pre class="pq-inline-snippet language-powerquery"><code>' + highlightPowerQueryM('= Table.TransformColumns(Origen, {{"' + etl.dirtyTextCols[0] + '", each Text.Proper(Text.Trim(Text.Clean(_))), type text}})', false) + '</code></pre>' +
+              '<pre class="pq-inline-snippet language-powerquery flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= Table.TransformColumns(Origen, {{"' + etl.dirtyTextCols[0] + '", each Text.Proper(Text.Trim(Text.Clean(_))), type text}})', false) + '</code><button onclick="copyStep2MCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button></pre>' +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -8181,12 +8181,9 @@ in
             '<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">Calidad de Datos</span>' +
           '</div>' +
 
-          '<div class="flex flex-wrap items-center justify-between gap-2">' +
-            '<p class="text-xs text-slate-700 leading-relaxed font-medium">' +
-              '<strong>A. Reparar textos corruptos:</strong> Selecciona con <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded font-mono font-bold">Ctrl</kbd> las columnas ' + leetColsChips + ' (donde se observa <code class="font-mono text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">' + etl.beforeAfterTrim.dirty2 + '</code>). Haz clic derecho sobre el encabezado y elige <strong>Reemplazar los valores...</strong> aplicando esta tabla:' +
-            '</p>' +
-            '<button onclick="copyStep3LeetMCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button>' +
-          '</div>' +
+          '<p class="text-xs text-slate-700 leading-relaxed font-medium">' +
+            '<strong>A. Reparar textos corruptos:</strong> Selecciona con <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded font-mono font-bold">Ctrl</kbd> las columnas ' + leetColsChips + ' (donde se observa <code class="font-mono text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">' + etl.beforeAfterTrim.dirty2 + '</code>). Haz clic derecho sobre el encabezado y elige <strong>Reemplazar los valores...</strong> aplicando esta tabla:' +
+          '</p>' +
 
           '<div class="grid grid-cols-2 sm:grid-cols-6 gap-2 font-mono text-xs">' +
             '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: @</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span></div>' +
@@ -8198,7 +8195,7 @@ in
           '</div>' +
 
           '<div class="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl space-y-2 text-xs">' +
-            '<div class="font-black text-blue-950 flex flex-wrap items-center justify-between gap-2"><span class="flex items-center gap-2"><i class="fa-solid fa-fill-drip text-blue-600"></i> B. Imputación de Valores Nulos (<code class="font-mono">null</code>) en la columna <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-300">' + etl.nullCol + '</code>:</span><button onclick="copyStep3NullMCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button></div>' +
+            '<div class="font-black text-blue-950 flex items-center gap-2"><i class="fa-solid fa-fill-drip text-blue-600"></i> B. Imputación de Valores Nulos (<code class="font-mono">null</code>) en la columna <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-300">' + etl.nullCol + '</code>:</div>' +
             '<p class="text-slate-700 font-medium">' + etl.nullReason + '</p>' +
             '<div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">' +
               '<div class="bg-white p-3 rounded-xl border border-blue-200 font-medium text-slate-700">' +
@@ -8206,7 +8203,7 @@ in
                 '2. En <em>Valor que buscar</em> escribe: <code class="font-mono font-bold text-rose-600">null</code> (y repite para vacío).<br>' +
                 '3. En <em>Reemplazar con</em> escribe: <strong class="font-mono text-emerald-700">' + etl.nullReplacement + '</strong>.' +
               '</div>' +
-              '<pre class="pq-inline-snippet language-powerquery flex items-center"><code>' + highlightPowerQueryM('= Table.ReplaceValue(PasoAnterior, null, "' + etl.nullReplacement + '", Replacer.ReplaceValue, {"' + etl.nullCol + '"})', false) + '</code></pre>' +
+              '<pre class="pq-inline-snippet language-powerquery flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= Table.ReplaceValue(PasoAnterior, null, "' + etl.nullReplacement + '", Replacer.ReplaceValue, {"' + etl.nullCol + '"})', false) + '</code><button onclick="copyStep3NullMCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button></pre>' +
             '</div>' +
           '</div>' +
         '</div>' +
