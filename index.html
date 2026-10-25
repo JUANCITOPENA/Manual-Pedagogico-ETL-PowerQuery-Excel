@@ -53,6 +53,7 @@
 
   <!-- html2pdf.js para Exportación Ejecutiva de Hoja de Trabajo en PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <!-- Font Awesome 6 Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -5773,256 +5774,435 @@
         const dataCase = HOJA_DE_TRABAJO_DATA[industryKey] || HOJA_DE_TRABAJO_DATA.retail;
         const config = INDUSTRY_CONFIGS[industryKey] || INDUSTRY_CONFIGS.retail;
 
+        if (!CURRENT_DATASET || !CURRENT_DATASET.length) {
+          CURRENT_DATASET = generateDataset();
+        }
+
         showToast('Generando Hoja de Trabajo en PDF para ' + dataCase.badge + '...', 'info');
 
-        // 1. Overlay visual de carga profesional
-        const overlay = document.createElement('div');
-        overlay.id = 'pdfCaptureOverlay';
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100vw';
-        overlay.style.height = '100vh';
-        overlay.style.backgroundColor = 'rgba(15, 23, 42, 0.75)';
-        overlay.style.backdropFilter = 'blur(4px)';
-        overlay.style.zIndex = '999999';
-        overlay.style.display = 'flex';
-        overlay.style.flexDirection = 'column';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
-        overlay.style.color = '#ffffff';
-        overlay.style.fontFamily = "'Inter', 'Segoe UI', Arial, sans-serif";
-        overlay.innerHTML = '<div style="background: #ffffff; color: #0f172a; padding: 22px 32px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; border: 2px solid #107c41; max-width: 420px;">' +
-          '<div style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid #e2e8f0; border-top-color: #107c41; animation: spin 1s linear infinite; margin: 0 auto 10px auto;"></div>' +
-          '<h3 style="font-size: 15px; font-weight: 800; margin: 0 0 4px 0; color: #0f172a;">Generando Hoja de Trabajo en PDF</h3>' +
-          '<p style="font-size: 11px; color: #475569; margin: 0;">Compilando las 25 preguntas analíticas de ' + dataCase.title + '...</p>' +
-        '</div>';
-        document.body.appendChild(overlay);
+        const JsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF ? window.jsPDF : null);
+        if (!JsPDFClass) {
+          showToast('Cargando motor PDF, intente de nuevo en un segundo...', 'error');
+          return;
+        }
 
-        // 2. Calcular Cifras de Control Reales
+        // Inicializar documento A4 Vertical en milímetros (210mm x 297mm)
+        // Márgenes laterales estrictos de 15mm a cada lado (ancho útil = 180mm, de X=15 a X=195)
+        const doc = new JsPDFClass({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+        const pageW = 210;
+        const pageH = 297;
+        const marginL = 15;
+        const marginR = 15;
+        const usableW = pageW - marginL - marginR; // 180mm exactos
+        const rightEdge = pageW - marginR; // 195mm exactos
+        let y = 14;
+
+        const cleanTxt = (str) => String(str || '')
+          .replace(/\u2192/g, '->')
+          .replace(/\u2190/g, '<-')
+          .replace(/[\u2014\u2013]/g, '-')
+          .replace(/[\u201C\u201D]/g, '"')
+          .replace(/[\u2018\u2019]/g, "'");
+
+        const drawRunningHeader = () => {
+          doc.setFillColor(240, 253, 244);
+          doc.setDrawColor(16, 124, 65);
+          doc.setLineWidth(0.35);
+          doc.roundedRect(marginL, 10, usableW, 7.5, 1.2, 1.2, 'FD');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(7.5);
+          doc.setTextColor(16, 124, 65);
+          doc.text(cleanTxt('HOJA DE TRABAJO OFICIAL · ' + dataCase.title.toUpperCase()), marginL + 3, 14.8);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(71, 85, 105);
+          doc.text('Autor: Ing. Juancito Peña Vizcaíno', rightEdge - 3, 14.8, { align: 'right' });
+          y = 21;
+        };
+
+        const checkPageBreak = (neededH) => {
+          if (y + neededH > 276) {
+            doc.addPage();
+            drawRunningHeader();
+          }
+        };
+
+        // Calcular Cifras Maestras de Control Reales del Dataset Activo
         const sums = (CURRENT_DATASET || []).reduce((acc, row) => {
           acc.gross += (row._metricPrimary || 0);
           acc.cost += (row._metricSecondary || 0);
           acc.margin += (row._metricMargin || 0);
           acc.real += (row._metricReal || 0);
-          if (row._cleanStatus === 'Cancelado' || row._cleanStatus === 'Anulado' || row._cleanStatus === 'Rechazada' || row._cleanStatus === 'Desvinculado') {
+          if (row._cleanStatus === 'Cancelado' || row._cleanStatus === 'Anulado' || row._cleanStatus === 'Rechazada' || row._cleanStatus === 'Desvinculado' || row._cleanStatus === 'Castigado / Incobrable') {
             acc.failed++;
           }
           return acc;
         }, { gross: 0, cost: 0, margin: 0, real: 0, failed: 0 });
 
-        const count = (CURRENT_DATASET && CURRENT_DATASET.length) ? CURRENT_DATASET.length : 1;
+        const count = (CURRENT_DATASET && CURRENT_DATASET.length) ? CURRENT_DATASET.length : 1500;
         const marginPct = sums.gross > 0 ? (sums.margin / sums.gross) * 100 : 0;
-        const failPct = (sums.failed / count) * 100;
+        const failPct = (sums.failed / (count || 1)) * 100;
 
-        // 3. Contenedor de exportación calibrado para A4 (640px de ancho)
-        const pdfContainer = document.createElement('div');
-        pdfContainer.id = 'pdfExportWrapper';
-        pdfContainer.style.position = 'fixed';
-        pdfContainer.style.top = '0';
-        pdfContainer.style.left = '0';
-        pdfContainer.style.width = '640px';
-        pdfContainer.style.maxWidth = '640px';
-        pdfContainer.style.boxSizing = 'border-box';
-        pdfContainer.style.padding = '8px 12px';
-        pdfContainer.style.margin = '0 auto';
-        pdfContainer.style.background = '#ffffff';
-        pdfContainer.style.color = '#0f172a';
-        pdfContainer.style.fontFamily = "'Inter', 'Segoe UI', Arial, sans-serif";
-        pdfContainer.style.fontSize = '8.5px';
-        pdfContainer.style.lineHeight = '1.35';
-        pdfContainer.style.zIndex = '999998'; // Visible en pantalla para html2canvas
+        // =========================================================================
+        // 1. ENCABEZADO OFICIAL DE LA HOJA DE TRABAJO
+        // =========================================================================
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(16, 124, 65);
+        doc.text('DOCUMENTO OFICIAL DE EVALUACIÓN & AUDITORÍA EDA', marginL, y);
 
-        // Encabezado Oficial
-        const headerHtml = 
-          '<div style="border-bottom: 2px solid #107c41; padding-bottom: 6px; margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-            '<table style="width: 100%; border-collapse: collapse; table-layout: fixed;">' +
-              '<tr>' +
-                '<td style="vertical-align: middle; width: 68%;">' +
-                  '<div style="font-size: 7.5px; font-weight: 800; color: #107c41; text-transform: uppercase; letter-spacing: 0.8px;">Documento Oficial de Evaluación & Auditoría EDA</div>' +
-                  '<div style="font-size: 14px; font-weight: 900; color: #0f172a; margin: 1px 0 2px 0; letter-spacing: -0.3px;">HOJA DE TRABAJO: MANUAL PEDAGÓGICO ETL & EXCEL 365</div>' +
-                  '<div style="font-size: 8px; color: #475569; font-weight: 600;">DataForge Suite v6.0 PRO &middot; Autor: <strong>Ing. Juancito Peña Vizcaíno</strong></div>' +
-                '</td>' +
-                '<td style="width: 32%; text-align: right; vertical-align: middle;">' +
-                  '<div style="background: #e8f5e9; border: 1px solid #a5d6a7; padding: 4px 7px; border-radius: 5px; display: inline-block; text-align: right;">' +
-                    '<div style="font-size: 7px; font-weight: 800; color: #1b5e20; text-transform: uppercase;">Proyecto / Caso de Estudio</div>' +
-                    '<div style="font-size: 10px; font-weight: 900; color: #0f172a;">' + dataCase.title + '</div>' +
-                  '</div>' +
-                '</td>' +
-              '</tr>' +
-            '</table>' +
-          '</div>';
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(15, 23, 42);
+        doc.text('HOJA DE TRABAJO: MANUAL PEDAGÓGICO ETL & EXCEL 365', marginL, y + 5.2);
 
-        // Recuadro del Evaluador
-        const studentBoxHtml = 
-          '<div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px 8px; margin-bottom: 8px; font-size: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-            '<table style="width: 100%; border-collapse: collapse; table-layout: fixed;">' +
-              '<tr>' +
-                '<td style="width: 48%; padding: 1px 0;"><strong>Analista / Evaluador:</strong> ___________________________________</td>' +
-                '<td style="width: 28%; padding: 1px 0;"><strong>Fecha:</strong> ____/____/2026</td>' +
-                '<td style="width: 24%; padding: 1px 0; text-align: right;"><strong>Calificación:</strong> _____ / 100</td>' +
-              '</tr>' +
-            '</table>' +
-          '</div>';
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(71, 85, 105);
+        doc.text('DataForge Suite v6.0 PRO · Autor: Ing. Juancito Peña Vizcaíno', marginL, y + 9.8);
 
-        // Sección 1: Ficha Técnica EDA & Cifras Maestras de Control
-        const edaSectionHtml = 
-          '<div style="margin-bottom: 8px; page-break-inside: avoid; break-inside: avoid;">' +
-            '<div style="font-size: 9.5px; font-weight: 800; color: #008272; text-transform: uppercase; margin: 0 0 3px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">' +
-              '1. Ficha Técnica, Análisis Exploratorio (EDA) & Cifras Maestras de Control' +
-            '</div>' +
-            '<p style="font-size: 8px; color: #334155; margin: 0 0 4px 0;">' + dataCase.desc + '</p>' +
-            
-            '<table style="width: 100%; font-size: 7.5px; border-collapse: collapse; margin-bottom: 5px; table-layout: fixed;">' +
-              '<tr style="background: #f1f5f9;">' +
-                '<th style="border: 1px solid #cbd5e1; padding: 2px 4px; text-align: left; width: 28%;">Dimensión / Atributo</th>' +
-                '<th style="border: 1px solid #cbd5e1; padding: 2px 4px; text-align: left; width: 72%;">Detalle de Calidad y Gobernanza</th>' +
-              '</tr>' +
-              '<tr>' +
-                '<td style="border: 1px solid #cbd5e1; padding: 2px 4px; font-weight: bold;">Llave Primaria & Registros</td>' +
-                '<td style="border: 1px solid #cbd5e1; padding: 2px 4px;">' + dataCase.eda.llavePrimaria + ' | ' + (CURRENT_DATASET ? CURRENT_DATASET.length.toLocaleString() : '1,500') + ' transacciones</td>' +
-              '</tr>' +
-              '<tr>' +
-                '<td style="border: 1px solid #cbd5e1; padding: 2px 4px; font-weight: bold;">Impurezas Detectadas</td>' +
-                '<td style="border: 1px solid #cbd5e1; padding: 2px 4px;">' + dataCase.eda.tipoProblemas + '</td>' +
-              '</tr>' +
-              '<tr>' +
-                '<td style="border: 1px solid #cbd5e1; padding: 2px 4px; font-weight: bold;">Funciones M en Power Query</td>' +
-                '<td style="border: 1px solid #cbd5e1; padding: 2px 4px; font-family: monospace; color: #008272;">' + dataCase.eda.limpiezaM + '</td>' +
-              '</tr>' +
-              '<tr>' +
-                '<td style="border: 1px solid #cbd5e1; padding: 2px 4px; font-weight: bold;">Actualización Carpeta (M)</td>' +
-                '<td style="border: 1px solid #cbd5e1; padding: 2px 4px;">Folder.Files("C:\\Carpeta") &rarr; Combinar y Transformar &rarr; Cargar a Modelo VertiPaq (Ctrl+Alt+F5).</td>' +
-              '</tr>' +
-            '</table>' +
+        // Insignia derecha del Proyecto / Industria (X=137 a X=195, ancho 58mm)
+        const badgeW = 58;
+        const badgeX = rightEdge - badgeW;
+        doc.setFillColor(232, 245, 233);
+        doc.setDrawColor(165, 214, 167);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(badgeX, y - 3.2, badgeW, 14, 1.8, 1.8, 'FD');
 
-            '<div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 5px; padding: 3px 6px; margin-bottom: 5px;">' +
-              '<div style="font-size: 7.5px; font-weight: 800; color: #166534; text-transform: uppercase; margin-bottom: 2px;">' +
-                'Cifras Maestras de Control Oficial (Para Validación de Respuestas del Estudiante)' +
-              '</div>' +
-              '<table style="width: 100%; font-size: 7.5px; border-collapse: collapse; text-align: center; table-layout: fixed;">' +
-                '<tr>' +
-                  '<td style="padding: 1px 2px; border-right: 1px solid #bbf7d0; width: 25%;">' +
-                    '<div style="color: #64748b; font-size: 6.5px;">Total Facturado Bruto</div>' +
-                    '<div style="font-weight: 900; color: #0f172a; font-family: monospace;">RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + '</div>' +
-                  '</td>' +
-                  '<td style="padding: 1px 2px; border-right: 1px solid #bbf7d0; width: 25%;">' +
-                    '<div style="color: #64748b; font-size: 6.5px;">Ingreso Real Efectivo</div>' +
-                    '<div style="font-weight: 900; color: #15803d; font-family: monospace;">RD$ ' + Math.round(sums.real).toLocaleString('es-DO') + '</div>' +
-                  '</td>' +
-                  '<td style="padding: 1px 2px; border-right: 1px solid #bbf7d0; width: 25%;">' +
-                    '<div style="color: #64748b; font-size: 6.5px;">Margen RD$ (% Margen)</div>' +
-                    '<div style="font-weight: 900; color: #0f766e; font-family: monospace;">RD$ ' + Math.round(sums.margin).toLocaleString('es-DO') + ' (' + marginPct.toFixed(1) + '%)</div>' +
-                  '</td>' +
-                  '<td style="padding: 1px 2px; width: 25%;">' +
-                    '<div style="color: #64748b; font-size: 6.5px;">Tasa Bajas / Incidencias</div>' +
-                    '<div style="font-weight: 900; color: #b91c1c; font-family: monospace;">' + failPct.toFixed(1) + '% (' + sums.failed + ' reg.)</div>' +
-                  '</td>' +
-                '</tr>' +
-              '</table>' +
-            '</div>' +
-          '</div>';
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.5);
+        doc.setTextColor(27, 94, 32);
+        doc.text('PROYECTO / CASO DE ESTUDIO', rightEdge - 2.5, y + 0.8, { align: 'right' });
 
-        // Sección 2: Las 25 Preguntas Analíticas de Negocio
-        let questionsHtml = 
-          '<div>' +
-            '<div style="font-size: 9.5px; font-weight: 800; color: #107c41; text-transform: uppercase; margin: 0 0 3px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 2px; page-break-inside: avoid; break-inside: avoid;">' +
-              '2. Cuestionario de 25 Preguntas Analíticas de Negocio (Tablas Dinámicas, Dashboards & ETL)' +
-            '</div>' +
-            '<div style="font-size: 7.5px; color: #64748b; margin-bottom: 5px; font-style: italic; page-break-inside: avoid; break-inside: avoid;">' +
-              '* Resuelve cada interrogante configurando los cuadrantes de Tablas Dinámicas o el Dashboard interactivo. Anota el valor numérico obtenido y valida tu respuesta.' +
-            '</div>';
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.2);
+        doc.setTextColor(15, 23, 42);
+        const caseTitleLines = doc.splitTextToSize(cleanTxt(dataCase.title), badgeW - 4);
+        doc.text(caseTitleLines, rightEdge - 2.5, y + 5.2, { align: 'right' });
 
-        dataCase.preguntas.forEach((q) => {
-          questionsHtml += 
-            '<div style="margin-bottom: 4px; padding: 4px 6px; background: #fafafa; border: 1px solid #cbd5e1; border-radius: 4px; page-break-inside: avoid !important; break-inside: avoid !important; box-sizing: border-box; width: 100%;">' +
-              '<table style="width: 100%; border-collapse: collapse; margin-bottom: 1px; table-layout: fixed;">' +
-                '<tr>' +
-                  '<td style="font-weight: 800; font-size: 8px; color: #0f172a; text-align: left; vertical-align: top; width: 78%; word-wrap: break-word;">' +
-                    '[' + q.id + '] Pregunta ' + q.num + ': ' + q.pregunta +
-                  '</td>' +
-                  '<td style="width: 22%; text-align: right; vertical-align: top; white-space: nowrap;">' +
-                    '<span style="font-size: 7px; font-weight: bold; color: #107c41; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 1px 4px; border-radius: 3px;">' +
-                      q.badge +
-                    '</span>' +
-                  '</td>' +
-                '</tr>' +
-              '</table>' +
-              '<div style="font-size: 7px; color: #475569; margin-bottom: 2px; line-height: 1.25; word-wrap: break-word;">' +
-                '<strong style="color: #334155;">Guía de Respuesta:</strong> ' + q.guia +
-              '</div>' +
-              '<table style="width: 100%; border-collapse: collapse; border-top: 1px dashed #cbd5e1; padding-top: 2px; font-size: 7px; table-layout: fixed;">' +
-                '<tr>' +
-                  '<td style="color: #0f172a; padding-top: 1px; width: 78%;">' +
-                    '<strong>Resultado RD$ / % / Conclusión:</strong> ____________________________________________________' +
-                  '</td>' +
-                  '<td style="width: 22%; text-align: right; color: #64748b; font-size: 6.5px; padding-top: 1px;">' +
-                    '[  ] Validado en Modelo' +
-                  '</td>' +
-                '</tr>' +
-              '</table>' +
-            '</div>';
+        y += 13;
+        doc.setDrawColor(16, 124, 65);
+        doc.setLineWidth(0.6);
+        doc.line(marginL, y, rightEdge, y);
+        y += 3.5;
+
+        // =========================================================================
+        // 2. RECUADRO DEL ANALISTA / EVALUADOR
+        // =========================================================================
+        doc.setFillColor(248, 250, 252);
+        doc.setDrawColor(203, 213, 225);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(marginL, y, usableW, 8, 1.5, 1.5, 'FD');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.8);
+        doc.setTextColor(15, 23, 42);
+        doc.text('Analista / Evaluador: ____________________________________', marginL + 3, y + 5.2);
+        doc.text('Fecha: ____/____/2026', marginL + 102, y + 5.2);
+        doc.text('Calificación: _____ / 100', rightEdge - 3, y + 5.2, { align: 'right' });
+        y += 11.5;
+
+        // =========================================================================
+        // 3. SECCIÓN 1: FICHA TÉCNICA, CAMPOS DEL DATASET, EDA & CIFRAS DE CONTROL
+        // =========================================================================
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(0, 130, 114);
+        doc.text('1. FICHA TÉCNICA DEL SET DE DATOS, CAMPOS & ANÁLISIS EXPLORATORIO (EDA)', marginL, y);
+        y += 1.5;
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.3);
+        doc.line(marginL, y, rightEdge, y);
+        y += 3.8;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.8);
+        doc.setTextColor(51, 65, 85);
+        const descLines = doc.splitTextToSize(cleanTxt(dataCase.desc), usableW);
+        doc.text(descLines, marginL, y);
+        y += descLines.length * 3.6 + 1.5;
+
+        // Lista de Campos del Dataset Activo
+        const fieldsListStr = (config.rawColumns || []).map(c => c.key + ' (' + c.label + ')').join(', ');
+
+        const edaRows = [
+          { k: 'Llave Primaria & Volumen', v: cleanTxt(dataCase.eda.llavePrimaria + ' | ' + count.toLocaleString('es-DO') + ' registros activos (' + dataCase.eda.registros + ')') },
+          { k: 'Campos del Set de Datos (' + (config.rawColumns ? config.rawColumns.length : 17) + ')', v: cleanTxt(fieldsListStr) },
+          { k: 'Impurezas Detectadas (EDA)', v: cleanTxt(dataCase.eda.tipoProblemas) },
+          { k: 'Funciones M en Power Query', v: cleanTxt(dataCase.eda.limpiezaM) }
+        ];
+
+        const col1W = 46;
+        const col2W = usableW - col1W; // 134mm
+
+        // Encabezado de tabla EDA
+        doc.setFillColor(241, 245, 249);
+        doc.setDrawColor(203, 213, 225);
+        doc.setLineWidth(0.25);
+        doc.rect(marginL, y, col1W, 5.5, 'FD');
+        doc.rect(marginL + col1W, y, col2W, 5.5, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.2);
+        doc.setTextColor(15, 23, 42);
+        doc.text('Dimensión / Atributo EDA', marginL + 2, y + 3.8);
+        doc.text('Detalle Técnico de Campos, Calidad de Datos y Gobernanza', marginL + col1W + 2, y + 3.8);
+        y += 5.5;
+
+        edaRows.forEach((row) => {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.1);
+          const valLines = doc.splitTextToSize(row.v, col2W - 4);
+          const rowH = Math.max(5.2, valLines.length * 3.3 + 2);
+          checkPageBreak(rowH);
+
+          doc.setFillColor(255, 255, 255);
+          doc.setDrawColor(203, 213, 225);
+          doc.rect(marginL, y, col1W, rowH, 'FD');
+          doc.rect(marginL + col1W, y, col2W, rowH, 'FD');
+
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(30, 41, 59);
+          doc.text(row.k, marginL + 2, y + 3.6);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(51, 65, 85);
+          doc.text(valLines, marginL + col1W + 2, y + 3.6);
+          y += rowH;
         });
 
-        questionsHtml += '</div>';
+        y += 2.5;
 
-        // Pie de Página Oficial
-        const footerHtml = 
-          '<div style="margin-top: 8px; border-top: 1.5px solid #cbd5e1; padding-top: 4px; text-align: center; font-size: 6.5px; color: #64748b; page-break-inside: avoid; break-inside: avoid;">' +
-            '&copy; 2026 DataForge Enterprise &middot; Manual Pedagógico ETL, Power Query & Microsoft Excel &middot; Autor: <strong>Ing. Juancito Peña Vizcaíno</strong> &middot; Documento Oficial de Evaluación' +
-          '</div>';
+        // Cifras Maestras de Control Oficial
+        checkPageBreak(15);
+        doc.setFillColor(240, 253, 244);
+        doc.setDrawColor(187, 247, 208);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(marginL, y, usableW, 13.5, 1.5, 1.5, 'FD');
 
-        pdfContainer.innerHTML = headerHtml + studentBoxHtml + edaSectionHtml + questionsHtml + footerHtml;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(22, 101, 52);
+        doc.text('CIFRAS MAESTRAS DE CONTROL OFICIAL (REFERENCIA DE AUDITORÍA DEL DATASET ACTIVO)', marginL + 3, y + 3.8);
 
-        // INSERTAR AL DOM ANTES DE ENVIAR A HTML2PDF (VITAL)
-        document.body.appendChild(pdfContainer);
+        const kpiW = usableW / 4; // 45mm cada KPI
+        const kpis = [
+          { label: 'Total Facturado Bruto', val: 'RD$ ' + Math.round(sums.gross).toLocaleString('es-DO'), color: [15, 23, 42] },
+          { label: 'Ingreso Real Efectivo', val: 'RD$ ' + Math.round(sums.real).toLocaleString('es-DO'), color: [21, 128, 61] },
+          { label: 'Margen RD$ (% Margen)', val: 'RD$ ' + Math.round(sums.margin).toLocaleString('es-DO') + ' (' + marginPct.toFixed(1) + '%)', color: [15, 118, 110] },
+          { label: 'Tasa Bajas / Incidencias', val: failPct.toFixed(1) + '% (' + sums.failed + ' reg.)', color: [185, 28, 28] }
+        ];
 
-        // Opciones calibradas de html2pdf: 15mm de margen lateral para que nada se corte
-        const opt = {
-          margin: [12, 15, 12, 15],
-          filename: 'HOJA_DE_TRABAJO_' + (dataCase.badge || industryKey).toUpperCase().replace(/\s+/g, '_') + '_JUANCITO_PENA.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            width: 640,
-            windowWidth: 640
-          },
-          jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
-          },
-          pagebreak: {
-            mode: ['avoid-all', 'css', 'legacy']
+        kpis.forEach((k, idx) => {
+          const kx = marginL + idx * kpiW;
+          if (idx > 0) {
+            doc.setDrawColor(187, 247, 208);
+            doc.setLineWidth(0.25);
+            doc.line(kx, y + 5, kx, y + 12.2);
           }
-        };
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.5);
+          doc.setTextColor(100, 116, 139);
+          doc.text(k.label, kx + kpiW / 2, y + 7.6, { align: 'center' });
 
-        const cleanup = () => {
-          if (document.body.contains(overlay)) document.body.removeChild(overlay);
-          if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
-        };
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(7.6);
+          doc.setTextColor(k.color[0], k.color[1], k.color[2]);
+          doc.text(k.val, kx + kpiW / 2, y + 11.4, { align: 'center' });
+        });
 
-        if (typeof html2pdf !== 'undefined') {
-          html2pdf().set(opt).from(pdfContainer).save().then(() => {
-            cleanup();
-            showToast('Documento PDF generado y descargado exitosamente.', 'success');
-          }).catch(err => {
-            console.error('Error al generar PDF con html2pdf:', err);
-            cleanup();
-            showToast('Abriendo diálogo de impresión nativo como alternativa...', 'info');
-            window.print();
-          });
-        } else {
-          cleanup();
-          showToast('Abriendo diálogo de impresión...', 'info');
-          window.print();
+        y += 16.5;
+
+        // =========================================================================
+        // 4. SECCIÓN 2: PROTOCOLO PASO A PASO (CARPETA, POWER QUERY, PIVOT & DASHBOARD)
+        // =========================================================================
+        checkPageBreak(36);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(0, 120, 212);
+        doc.text('2. GUÍA PASO A PASO: CONEXIÓN A CARPETA, POWER QUERY (M), TABLAS DINÁMICAS & DASHBOARD', marginL, y);
+        y += 1.5;
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.3);
+        doc.line(marginL, y, rightEdge, y);
+        y += 2.5;
+
+        const workflowSteps = [
+          {
+            step: 'Paso 1 · Conexión a Carpeta & Combinar',
+            detail: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta. Seleccionar la carpeta local y pulsar "Combinar y Transformar datos" para que al añadir nuevos meses se consoliden con Clic Derecho -> Actualizar.'
+          },
+          {
+            step: 'Paso 2 · Limpieza ETL en Power Query',
+            detail: 'Aplicar Text.Trim y Text.Clean en textos; reemplazar caracteres corruptos (@->a, 4->a, 3->e, 0->o, 1->i); dividir columna Fecha por delimitador espacio; crear columnas calculadas: SUBTOTAL, COSTOS, MARGEN, % MARGEN e INGRESO_REAL.'
+          },
+          {
+            step: 'Paso 3 · Carga al Modelo de Datos',
+            detail: 'En Power Query: Inicio -> Cerrar y cargar en... -> Seleccionar "Crear únicamente conexión" y marcar "Agregar estos datos al Modelo de datos" (motor columnar Power Pivot / VertiPaq sin saturar hojas).'
+          },
+          {
+            step: 'Paso 4 · Tablas Dinámicas, KPIs y Dashboard',
+            detail: 'Insertar Tablas Dinámicas desde el Modelo de Datos. Calcular Ingresos Totales, Costos, Margen RD$, % Margen, Metas, % Cumplimiento Meta y Estatus. Conectar Segmentadores (Slicers) y 4 Gráficos Dinámicos para el Dashboard.'
+          }
+        ];
+
+        workflowSteps.forEach((ws) => {
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(6.8);
+          const leftLines = doc.splitTextToSize(cleanTxt(ws.step), col1W - 4);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.9);
+          const stepLines = doc.splitTextToSize(cleanTxt(ws.detail), col2W - 4);
+          const maxLines = Math.max(leftLines.length, stepLines.length);
+          const sh = Math.max(5.5, maxLines * 3.1 + 2);
+          checkPageBreak(sh);
+
+          doc.setFillColor(248, 250, 252);
+          doc.setDrawColor(203, 213, 225);
+          doc.setLineWidth(0.25);
+          doc.rect(marginL, y, col1W, sh, 'FD');
+          doc.setFillColor(255, 255, 255);
+          doc.rect(marginL + col1W, y, col2W, sh, 'FD');
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(6.8);
+          doc.setTextColor(0, 120, 212);
+          doc.text(leftLines, marginL + 2, y + 3.5);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.9);
+          doc.setTextColor(51, 65, 85);
+          doc.text(stepLines, marginL + col1W + 2, y + 3.5);
+          y += sh;
+        });
+
+        y += 4;
+
+        // =========================================================================
+        // 5. SECCIÓN 3: LAS 25 PREGUNTAS ANALÍTICAS DE AUDITORÍA DEL PROYECTO ACTIVO
+        // =========================================================================
+        checkPageBreak(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(16, 124, 65);
+        doc.text(cleanTxt('3. CUESTIONARIO DE 25 PREGUNTAS ANALÍTICAS (' + dataCase.title.toUpperCase() + ')'), marginL, y);
+        y += 1.5;
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.3);
+        doc.line(marginL, y, rightEdge, y);
+        y += 3.2;
+
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(7.1);
+        doc.setTextColor(100, 116, 139);
+        doc.text('* Responde cada pregunta utilizando Tablas Dinámicas, Power Query o el Dashboard Ejecutivo y anota el valor exacto obtenido.', marginL, y);
+        y += 3.2;
+
+        (dataCase.preguntas || []).forEach((q) => {
+          const qHeaderStr = cleanTxt('[' + q.id + '] Pregunta ' + q.num + ': ' + q.pregunta);
+          const qGuideStr = cleanTxt('Guía de Respuesta: ' + q.guia + ' (KPI Clave: ' + q.kpi + ')');
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(7.7);
+          // Dejamos 38mm libres a la derecha para la insignia de herramienta (180 - 42 = 138mm de texto)
+          const qTitleLines = doc.splitTextToSize(qHeaderStr, usableW - 42);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.9);
+          const qGuideLines = doc.splitTextToSize(qGuideStr, usableW - 6);
+
+          const titleBlockH = qTitleLines.length * 3.4;
+          const guideBlockH = qGuideLines.length * 3.1;
+          const cardH = 3.2 + titleBlockH + 1.2 + guideBlockH + 5.8;
+
+          checkPageBreak(cardH + 2);
+
+          // Fondo de la tarjeta de pregunta (X=15mm a X=195mm, ancho exacto 180mm)
+          doc.setFillColor(250, 250, 250);
+          doc.setDrawColor(203, 213, 225);
+          doc.setLineWidth(0.28);
+          doc.roundedRect(marginL, y, usableW, cardH, 1.3, 1.3, 'FD');
+
+          // Insignia de herramienta arriba a la derecha (X=157 a X=192, dentro del borde de 195mm)
+          const pillW = 34;
+          const pillX = rightEdge - pillW - 2.5;
+          if (q.herramienta === 'dashboard') {
+            doc.setFillColor(239, 246, 252);
+            doc.setDrawColor(147, 197, 253);
+            doc.setTextColor(0, 120, 212);
+          } else if (q.herramienta === 'pq') {
+            doc.setFillColor(224, 242, 241);
+            doc.setDrawColor(153, 246, 228);
+            doc.setTextColor(0, 130, 114);
+          } else {
+            doc.setFillColor(232, 245, 233);
+            doc.setDrawColor(165, 214, 167);
+            doc.setTextColor(16, 124, 65);
+          }
+          doc.setLineWidth(0.22);
+          doc.roundedRect(pillX, y + 1.8, pillW, 4.2, 1, 1, 'FD');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(6.4);
+          doc.text(cleanTxt(q.badge), pillX + pillW / 2, y + 4.7, { align: 'center' });
+
+          // Título de la pregunta
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(7.7);
+          doc.setTextColor(15, 23, 42);
+          doc.text(qTitleLines, marginL + 2.8, y + 4.3);
+
+          // Guía de respuesta
+          const guideY = y + 4.3 + titleBlockH + 0.6;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.9);
+          doc.setTextColor(71, 85, 105);
+          doc.text(qGuideLines, marginL + 2.8, guideY);
+
+          // Línea divisoria interna y espacio para respuesta
+          const sepY = guideY + guideBlockH - 0.5;
+          doc.setDrawColor(203, 213, 225);
+          doc.setLineWidth(0.2);
+          doc.line(marginL + 2.8, sepY, rightEdge - 2.8, sepY);
+
+          const ansY = sepY + 3.4;
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(6.9);
+          doc.setTextColor(15, 23, 42);
+          doc.text('Resultado RD$ / % / Conclusión: ______________________________________________________', marginL + 2.8, ansY);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.5);
+          doc.setTextColor(100, 116, 139);
+          doc.text('[   ] Validado en Modelo', rightEdge - 2.8, ansY, { align: 'right' });
+
+          y += cardH + 2.1;
+        });
+
+        // =========================================================================
+        // 6. PIE DE PÁGINA OFICIAL EN TODAS LAS PÁGINAS CON NUMERACIÓN
+        // =========================================================================
+        const totalPages = doc.getNumberOfPages();
+        for (let p = 1; p <= totalPages; p++) {
+          doc.setPage(p);
+          doc.setDrawColor(203, 213, 225);
+          doc.setLineWidth(0.3);
+          doc.line(marginL, 285, rightEdge, 285);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.8);
+          doc.setTextColor(100, 116, 139);
+          doc.text('© 2026 DataForge Enterprise · Manual Pedagógico ETL, Power Query & Microsoft Excel · Ing. Juancito Peña Vizcaíno', marginL, 289.2);
+
+          doc.setFont('helvetica', 'bold');
+          doc.text(cleanTxt('Caso: ' + dataCase.badge + ' · Página ' + p + ' de ' + totalPages), rightEdge, 289.2, { align: 'right' });
         }
 
+        const safeName = 'HOJA_DE_TRABAJO_' + (dataCase.badge || industryKey).toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Z0-9]+/g, '_') + '_JUANCITO_PENA.pdf';
+        doc.save(safeName);
+        showToast('PDF descargado correctamente: ' + safeName, 'success');
+
       } catch (err) {
-        console.error('Error general en downloadHojaTrabajoPDF:', err);
-        showToast('Error al generar la Hoja de Trabajo en PDF.', 'error');
+        console.error('Error en downloadHojaTrabajoPDF:', err);
+        showToast('Error al generar el PDF: ' + err.message, 'error');
       }
     }
 
