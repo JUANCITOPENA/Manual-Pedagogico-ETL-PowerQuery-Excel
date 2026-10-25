@@ -7881,6 +7881,15 @@ in
       }
     }
 
+    function copyCalcTableAddColumnMCode(calcIndex, btnEl) {
+      const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
+      const data = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
+      const calc = data && data.calculations ? data.calculations[calcIndex] : null;
+      if (calc && calc.mCode) {
+        copyTextToClipboardWithFeedback('= ' + calc.mCode.replace(/^=\s*/, ''), btnEl, 'Instrucción = Table.AddColumn de ' + calc.colName + ' copiada.');
+      }
+    }
+
     function renderManualEtl(industryKey) {
       const ind = (industryKey && MANUAL_ETL_DATA[industryKey]) ? industryKey : (ACTIVE_INDUSTRY || 'retail');
       const etl = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
@@ -7960,7 +7969,7 @@ in
             '<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1.5">' +
               '<div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre exacto en Columna Personalizada:</span> <strong class="text-blue-700 bg-white px-2 py-0.5 rounded border border-blue-200">' + calc.colName + '</strong></div>' +
               '<div class="flex flex-wrap items-center justify-between gap-2"><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula en el cuadro de Power Query:</span> <div class="flex items-center gap-2"><code class="language-powerquery bg-slate-900 text-slate-100 px-2.5 py-1 rounded-lg border border-slate-700 inline-block">' + highlightPowerQueryM(calc.pqFormula, false) + '</code><button onclick="copyCalcMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all"><i class="fa-solid fa-copy mr-1"></i>Copiar Fórmula</button></div></div>' +
-              '<div><span class="text-slate-500 font-sans text-[11px] font-bold">3. Instrucción generada en Lenguaje M:</span> <pre class="pq-inline-snippet language-powerquery mt-1"><code>' + highlightPowerQueryM('= ' + calc.mCode, false) + '</code></pre></div>' +
+              '<div class="space-y-1"><div class="flex flex-wrap items-center justify-between gap-2"><span class="text-slate-500 font-sans text-[11px] font-bold">3. Instrucción generada en Lenguaje M:</span><button onclick="copyCalcTableAddColumnMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button></div><pre class="pq-inline-snippet language-powerquery mt-1"><code>' + highlightPowerQueryM('= ' + calc.mCode, false) + '</code></pre></div>' +
               '<div class="text-[11px] font-sans text-slate-500 pt-1">📌 <em>Tipo de dato obligatorio al finalizar: <strong class="text-slate-800">' + calc.dataType + '</strong>.</em></div>' +
             '</div>' +
           '</div>'
