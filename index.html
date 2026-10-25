@@ -1287,22 +1287,69 @@
     </section>
 
     <!-- ==============================================================
-         TAB 2: MASTER ETL: CONEXIÓN, LIMPIEZA & COLUMNAS PERSONALIZADAS
+         TAB 2: MASTER ETL: CONEXIÓN, LIMPIEZA & COLUMNAS PERSONALIZADAS (DINÁMICO X 5 INDUSTRIAS)
     ============================================================== -->
-    <section id="tab-recetaEtl" class="hidden space-y-10">
+    <section id="tab-recetaEtl" class="hidden space-y-8">
 
-      <!-- Header Principal -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-3">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
-          <i class="fa-solid fa-bolt text-emerald-600"></i> Flujo Maestro de Datos en Power Query
+      <!-- Header Principal + Selector Interactivo de los 5 Proyectos -->
+      <div class="bg-white border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+          <div class="space-y-2">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+              <i class="fa-solid fa-wand-magic-sparkles text-emerald-600"></i> Manual ETL Dinámico Adaptado por Industria
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              Guía Maestra Paso a Paso en Power Query: <span id="etlActiveIndustryTitle" class="text-emerald-700">Supermercado & Retail Masivo</span>
+            </h2>
+            <p id="etlActiveIndustrySubtitle" class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-4xl font-medium">
+              Selecciona cualquiera de los 5 sets de datos. Toda la guía paso a paso, nombres de columnas, limpieza de impurezas, fórmulas M, columnas personalizadas y cifras de control cambiarán automáticamente para que llegues al resultado exacto sin perderte.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button onclick="downloadExcel()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs shadow-md transition-all cursor-pointer">
+              <i class="fa-solid fa-file-excel text-sm"></i>
+              <span>Descargar Excel + Receta (.xlsx)</span>
+            </button>
+            <button onclick="downloadHojaTrabajoPDF()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#008272] hover:bg-[#00695c] active:scale-95 text-white font-black text-xs shadow-md transition-all cursor-pointer">
+              <i class="fa-solid fa-file-pdf text-sm"></i>
+              <span>Descargar Hoja de Trabajo (PDF)</span>
+            </button>
+          </div>
         </div>
-        <h2 class="text-3xl font-black text-slate-900 tracking-tight">
-          Master ETL: Conexión, Limpieza & Cálculos con Columnas Personalizadas
-        </h2>
-        <p class="text-slate-600 text-base leading-relaxed max-w-4xl font-medium">
-          Paso a paso definitivo para conectarte a diferentes fuentes, purificar datos basura <span class="text-base">🗑️</span> y construir tus métricas financieras directamente en Power Query con columnas calculadas listas para Tablas Dinámicas y KPIs.
-        </p>
+
+        <!-- Barra de 5 Sub-Tabs para cambiar el Manual ETL en vivo -->
+        <div>
+          <div class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2.5 flex items-center gap-2">
+            <i class="fa-solid fa-layer-group text-emerald-600"></i> Selecciona el Set de Datos para cargar su Manual ETL Paso a Paso:
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5" id="etlIndustrySubTabs">
+            <button onclick="switchHojaTrabajoSubTab('retail')" id="etlSubTab-retail" class="etl-subtab-btn flex items-center justify-between px-4 py-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50/90 text-emerald-950 font-black text-xs shadow-sm transition-all cursor-pointer">
+              <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-cart-shopping text-emerald-600"></i> 1. Supermercado & Retail</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-600 text-white font-mono">17 Cols</span>
+            </button>
+            <button onclick="switchHojaTrabajoSubTab('logistica')" id="etlSubTab-logistica" class="etl-subtab-btn flex items-center justify-between px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer">
+              <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-truck-fast text-blue-600"></i> 2. Logística & Fletes</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-800 font-mono">17 Cols</span>
+            </button>
+            <button onclick="switchHojaTrabajoSubTab('finanzas')" id="etlSubTab-finanzas" class="etl-subtab-btn flex items-center justify-between px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer">
+              <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-building-columns text-indigo-600"></i> 3. Finanzas & Cartera CxC</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-800 font-mono">18 Cols</span>
+            </button>
+            <button onclick="switchHojaTrabajoSubTab('rrhh')" id="etlSubTab-rrhh" class="etl-subtab-btn flex items-center justify-between px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer">
+              <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-users-gear text-amber-600"></i> 4. Recursos Humanos</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-800 font-mono">18 Cols</span>
+            </button>
+            <button onclick="switchHojaTrabajoSubTab('salud')" id="etlSubTab-salud" class="etl-subtab-btn flex items-center justify-between px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer">
+              <span class="flex items-center gap-2 truncate"><i class="fa-solid fa-hospital-user text-teal-600"></i> 5. Salud & Clínicas ARS</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-800 font-mono">15 Cols</span>
+            </button>
+          </div>
+        </div>
       </div>
+
+      <!-- CONTENEDOR DINÁMICO DE TODA LA RECETA PASO A PASO POR INDUSTRIA -->
+      <div id="manualEtlDynamicContent" class="space-y-8"></div>
 
       <!-- CARD GROUP 100% DE ANCHO: GALERÍA DE INFOGRAFÍAS MAESTRAS ETL -->
       <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-6">
@@ -1312,10 +1359,10 @@
               <i class="fa-solid fa-images"></i> Galería Maestra de Arquitectura ETL
             </div>
             <h3 class="text-2xl font-black text-slate-900 mt-1">
-              Flujo Maestro de Datos en Power Query: Conexión, Limpieza & Modelado
+              Infografías Visuales del Flujo en Power Query: Conexión, Limpieza & Modelado
             </h3>
             <p class="text-slate-500 text-sm mt-1">
-              Visualiza las infografías de alta resolución del flujo completo. Haz clic sobre cualquier tarjeta para abrirla al <strong>95% de la pantalla</strong>.
+              Haz clic sobre cualquier tarjeta para abrirla en alta definición al <strong>95% de la pantalla</strong>.
             </p>
           </div>
           <span class="px-3.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300 self-start sm:self-auto">
@@ -1323,9 +1370,7 @@
           </span>
         </div>
 
-        <!-- Grid de 3 Cards al 100% de ancho -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
           <!-- Card 1: img2.png -->
           <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:border-emerald-500 transition-all shadow-xs group cursor-pointer" onclick="openLightboxModal('img/img2.png', 'Flujo Maestro ETL - Fase 1: Conexión y Purificación de Datos')">
             <div class="space-y-3">
@@ -1395,7 +1440,7 @@
               </div>
               <h4 class="text-base font-black text-slate-900">Columnas Calculadas & Modelo</h4>
               <p class="text-xs text-slate-600 leading-relaxed">
-                Construcción de métricas financieras (Margen, Subtotales, ITBIS) y carga en memoria VertiPaq para alimentar Tablas Dinámicas y KPIs.
+                Construcción de métricas financieras y carga en memoria VertiPaq para alimentar Tablas Dinámicas y KPIs.
               </p>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 font-semibold">
@@ -1403,390 +1448,10 @@
               <span class="text-blue-700 font-bold group-hover:underline">Ver al 95% &rarr;</span>
             </div>
           </div>
-
-        </div>
-      </div>
-
-      <!-- SECCIÓN 1: CONEXIÓN A FUENTES DE DATOS -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-6">
-        <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-sm shadow-xs">1</span>
-            <div>
-              <h3 class="text-xl font-bold text-slate-900">Conexión a Fuentes de Datos 🌐</h3>
-              <p class="text-xs text-slate-500 font-semibold">Abre Excel o Power BI &rarr; Pestaña Datos (u Obtener Datos)</p>
-            </div>
-          </div>
-          <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
-            Fase de Ingesta
-          </span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <!-- A. Por Carpeta -->
-          <div class="p-5 rounded-2xl bg-slate-50 border-2 border-emerald-300 space-y-3 shadow-xs">
-            <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
-              <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs">A</span>
-              <span>Por Carpeta (La Mejor Práctica 🏆)</span>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              Crea una carpeta en tu equipo (ej. <code class="font-mono bg-white px-1 border rounded text-emerald-800 font-bold">Datos_Empresa</code>) y guarda tus archivos ahí.
-            </p>
-            <div class="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-200 font-medium">
-              <p>1. Ve a <strong>Obtener Datos &rarr; Desde una carpeta</strong>.</p>
-              <p>2. Selecciona la carpeta y presiona <strong>Abrir</strong>.</p>
-              <p>3. Clic en el botón desplegable: <span class="font-bold text-emerald-700">"Combinar y Transformar Datos"</span>.</p>
-            </div>
-            <div class="text-[11px] text-emerald-800 bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 font-semibold">
-              💡 <strong>Regla de Oro:</strong> Si agregas más archivos mañana, Power Query los unirá automáticamente al pulsar <strong>Actualizar Todo</strong>.
-            </div>
-          </div>
-
-          <!-- B. Por CSV o TXT directo -->
-          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 shadow-xs">
-            <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
-              <span class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs">B</span>
-              <span>Por CSV o TXT directo 📄</span>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              Para extraer un reporte plano individual exportado desde tu sistema o base de datos.
-            </p>
-            <div class="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-200 font-medium">
-              <p>1. Ve a <strong>Obtener Datos &rarr; Texto/CSV</strong>.</p>
-              <p>2. Busca tu archivo en el disco.</p>
-              <p>3. El sistema detectará el delimitador (Coma para CSV, Tabulador para TXT).</p>
-              <p>4. Haz clic directo en <strong class="text-blue-700">"Transformar Datos"</strong>.</p>
-            </div>
-          </div>
-
-          <!-- C. Por JSON -->
-          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 shadow-xs">
-            <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
-              <span class="w-6 h-6 rounded-lg bg-amber-600 text-white flex items-center justify-center text-xs">C</span>
-              <span>Por JSON o Web API 🗂️</span>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed">
-              Para archivos anidados o respuestas de servicios web en la nube.
-            </p>
-            <div class="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-200 font-medium">
-              <p>1. Ve a <strong>Obtener Datos &rarr; JSON</strong>.</p>
-              <p>2. Power Query lo cargará como un registro o lista.</p>
-              <p>3. Haz clic en el botón <strong class="text-amber-800">"A la tabla"</strong> en la cinta.</p>
-              <p>4. Usa el icono de las dos flechas <strong class="text-amber-800">(Expandir)</strong> en la cabecera para revelar todos los campos.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECCIÓN 2: LIMPIAR ESPACIOS FANTASMAS -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-5">
-        <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center text-sm shadow-xs">2</span>
-            <div>
-              <h3 class="text-xl font-bold text-slate-900">Limpiar Espacios Fantasmas 👻 (Recortar y Limpiar)</h3>
-              <p class="text-xs text-slate-500 font-semibold">Transformar &rarr; Formato &rarr; Recortar / Limpiar</p>
-            </div>
-          </div>
-          <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-            Higiene de Texto
-          </span>
-        </div>
-
-        <div class="bg-emerald-50/70 border-l-4 border-emerald-600 p-4 rounded-r-xl text-xs text-emerald-950 font-medium leading-relaxed">
-          <strong>Paso a paso:</strong> Mantén presionada la tecla <kbd class="px-1.5 py-0.5 bg-white border rounded font-mono font-bold">Ctrl</kbd> y haz clic izquierdo para seleccionar tus columnas de texto: <span class="font-bold">REGION</span>, <span class="font-bold">CLIENTE</span>, <span class="font-bold">VENDEDOR</span>, <span class="font-bold">PRODUCTO</span>.<br>
-          <span class="text-slate-600">¿Por qué se hace?: Los espacios en blanco arruinan los filtros y tablas dinámicas. Un filtro verá <code class="bg-white px-1 rounded text-rose-600">"Nacional"</code> y <code class="bg-white px-1 rounded text-rose-600">" Nacional "</code> como dos clientes totalmente distintos.</span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium text-slate-700">
-          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-            <div class="font-bold text-slate-900 flex items-center gap-1.5">
-              <i class="fa-solid fa-scissors text-emerald-600"></i> A. Recortar y Limpiar Básicos:
-            </div>
-            <p>1. Ve a la pestaña superior <strong class="text-slate-900">Transformar</strong>.</p>
-            <p>2. Clic en el botón <strong class="text-emerald-800">Formato &rarr; Recortar</strong> (Elimina espacios accidentales al inicio y final de la palabra).</p>
-            <p>3. Clic nuevamente en <strong class="text-emerald-800">Formato &rarr; Limpiar</strong> (Elimina saltos de línea ocultos y caracteres de control invisibles).</p>
-          </div>
-
-          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-            <div class="font-bold text-slate-900 flex items-center gap-1.5">
-              <i class="fa-solid fa-arrows-left-right text-blue-600"></i> B. Doble Espacio en los Nombres:
-            </div>
-            <p>1. Haz clic derecho sobre el encabezado de la columna y elige <strong class="text-slate-900">Reemplazar los valores...</strong></p>
-            <p>2. En <strong>"Valor que buscar"</strong> pulsa dos veces la barra espaciadora (<code class="bg-white border px-1">"  "</code>).</p>
-            <p>3. En <strong>"Reemplazar con"</strong> pulsa un solo espacio (<code class="bg-white border px-1">" "</code>) y presiona <strong>Aceptar</strong>.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECCIÓN 3: REPARAR CARACTERES CORRUPTOS -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-5">
-        <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="w-9 h-9 rounded-xl bg-amber-600 text-white font-black flex items-center justify-center text-sm shadow-xs">3</span>
-            <div>
-              <h3 class="text-xl font-bold text-slate-900">Reparar Caracteres Corruptos 🛠️ (Reemplazar)</h3>
-              <p class="text-xs text-slate-500 font-semibold">Clic Derecho en la Cabecera &rarr; Reemplazar los Valores</p>
-            </div>
-          </div>
-          <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-            Corrección Leetspeak
-          </span>
-        </div>
-
-        <p class="text-xs text-slate-700 leading-relaxed font-medium">
-          <strong>Paso a paso:</strong> Selecciona la columna de texto sucia (ej: <span class="font-bold">CLIENTE</span> o <span class="font-bold">PRODUCTO</span>), haz clic derecho sobre su título y elige <strong>Reemplazar los valores...</strong> Ejecuta la siguiente secuencia de sanación:
-        </p>
-
-        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 font-mono text-xs">
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span class="text-rose-600 font-bold">Buscar: @</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span>
-          </div>
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span class="text-rose-600 font-bold">Buscar: 4</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span>
-          </div>
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span class="text-rose-600 font-bold">Buscar: 3</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: e</span>
-          </div>
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span class="text-rose-600 font-bold">Buscar: 0</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: o</span>
-          </div>
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span class="text-rose-600 font-bold">Buscar: #</span><br>&darr;<br><span class="text-slate-400 font-bold">Reemplazar: (vacío)</span>
-          </div>
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span class="text-rose-600 font-bold">Buscar: $$</span><br>&darr;<br><span class="text-slate-400 font-bold">Reemplazar: (vacío)</span>
-          </div>
-        </div>
-
-        <div class="p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-950 font-medium">
-          ⚠️ <strong>Advertencia Crítica:</strong> Aplica el reemplazo de ceros por "o" <strong>SOLO a columnas de texto</strong> (Cliente, Producto, Región), ¡nunca a columnas de números (Precios, Cantidades) porque corromperías los importes financieros!
-        </div>
-      </div>
-
-      <!-- SECCIÓN 4: NORMALIZACIÓN Y TIPOS DE DATOS -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-excel-card space-y-5">
-        <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="w-9 h-9 rounded-xl bg-purple-600 text-white font-black flex items-center justify-center text-sm shadow-xs">4</span>
-            <div>
-              <h3 class="text-xl font-bold text-slate-900">Normalización y Tipos de Datos 🎯 (El Toque Final)</h3>
-              <p class="text-xs text-slate-500 font-semibold">Transformar &rarr; Poner En Mayúsculas Cada Palabra &rarr; Tipado Estricto</p>
-            </div>
-          </div>
-          <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">
-            Estandarización
-          </span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <!-- 1. Mayúsculas Correctas -->
-          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-            <div class="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
-              <i class="fa-solid fa-font text-purple-600"></i> 1. Mayúsculas Correctas (Formato Propio)
-            </div>
-            <p class="text-slate-600 leading-relaxed font-medium">
-              Selecciona tus columnas de texto (<span class="font-bold">CLIENTE</span>, <span class="font-bold">VENDEDOR</span>, <span class="font-bold">PRODUCTO</span>). Ve a:
-            </p>
-            <div class="p-2 bg-white border rounded font-mono font-bold text-purple-900">
-              Transformar &rarr; Formato &rarr; Poner En Mayúsculas Cada Palabra
-            </div>
-            <p class="text-slate-500 text-[11px]">
-              Esto unifica "juan perez" y "JUAN PEREZ" a <strong class="text-slate-800">"Juan Perez"</strong> automáticamente.
-            </p>
-          </div>
-
-          <!-- 2. Tipos de Datos Críticos -->
-          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-            <div class="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
-              <i class="fa-solid fa-hashtag text-emerald-600"></i> 2. Tipos de Datos Críticos 🔢
-            </div>
-            <p class="text-slate-600 leading-relaxed font-medium">
-              Haz clic en el pequeño icono <code class="font-mono bg-white px-1 border rounded">ABC/123</code> al lado del nombre de cada cabecera:
-            </p>
-            <div class="space-y-1 font-mono text-[11px]">
-              <div>📅 <span class="text-slate-700">FECHA_VENTA</span> &rarr; <strong class="text-emerald-700">Fecha (type date)</strong></div>
-              <div>📦 <span class="text-slate-700">CANTIDAD</span> &rarr; <strong class="text-blue-700">Número Entero (Int64.Type)</strong></div>
-              <div>🏷️ <span class="text-slate-700">CLIENTE, PRODUCTO</span> &rarr; <strong class="text-slate-700">Texto (type text)</strong></div>
-              <div>💰 <span class="text-slate-700">PRECIO, SUBTOTAL, TOTAL</span> &rarr; <strong class="text-emerald-800 font-bold">Número Decimal Fijo (Moneda)</strong></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECCIÓN 5: HOJA DE RUTA CON NUESTROS DATOS REALES (COLUMNAS PERSONALIZADAS) -->
-      <div class="bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/60 border-2 border-emerald-500/40 rounded-3xl p-8 shadow-excel-card space-y-6">
-        <div class="border-b border-emerald-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <span class="w-10 h-10 rounded-xl bg-emerald-700 text-white font-black flex items-center justify-center text-base shadow-sm">5</span>
-            <div>
-              <h3 class="text-2xl font-black text-slate-900 tracking-tight">
-                Hoja de Ruta en Power Query: Cálculos con Columnas Personalizadas 💡
-              </h3>
-              <p class="text-xs text-emerald-900 font-extrabold uppercase tracking-wider">
-                Cálculos directos sobre nuestros datos reales &bull; Cero Fórmulas DAX &bull; Listos para Tablas Dinámicas y Cards
-              </p>
-            </div>
-          </div>
-          <span class="px-3.5 py-1.5 rounded-full text-xs font-black bg-emerald-600 text-white shadow-xs self-start sm:self-auto">
-            Datos Reales del Proyecto
-          </span>
-        </div>
-
-        <p class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
-          Sigue estos pasos para crear las columnas calculadas que alimentarán tus tarjetas de KPI y el área de <em>Valores</em> de la Tabla Dinámica. En Power Query, ve a la pestaña:  
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-lg font-bold text-xs ml-1">
-            <i class="fa-solid fa-plus text-emerald-700"></i> Agregar columna &rarr; Columna personalizada
-          </span>
-        </p>
-
-        <!-- TARJETAS DE LOS CÁLCULOS REALES -->
-        <div class="space-y-4">
-          
-          <!-- Cálculo 1: Subtotal Calculado -->
-          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
-            <div class="flex items-center justify-between border-b pb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-800 font-black flex items-center justify-center text-xs">1</span>
-                <h4 class="text-sm font-black text-slate-900">Columna: Subtotal Calculado ($)</h4>
-              </div>
-              <span class="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Multiplicación Básica</span>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed font-medium">
-              <strong>Paso a paso:</strong> Multiplicaremos la cantidad de unidades vendidas por el precio unitario del producto para asegurar el subtotal antes de impuestos.
-            </p>
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">SUBTOTAL_CALCULADO</strong></div>
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula:</span> <strong class="text-emerald-700">=[CANTIDAD] * [PRECIO_VENTA]</strong></div>
-              <div class="text-[11px] font-sans text-slate-500 pt-1">
-                📌 <em>No olvides cambiar el icono de tipo de dato a: <strong>Número Decimal Fijo (Moneda $)</strong>.</em>
-              </div>
-            </div>
-          </div>
-
-          <!-- Cálculo 2: Margen Bruto -->
-          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
-            <div class="flex items-center justify-between border-b pb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-md bg-blue-100 text-blue-800 font-black flex items-center justify-center text-xs">2</span>
-                <h4 class="text-sm font-black text-slate-900">Columna: Margen Bruto de Ganancia ($)</h4>
-              </div>
-              <span class="text-[10px] font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">Rentabilidad Líquida</span>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed font-medium">
-              <strong>Paso a paso:</strong> Restamos el costo total al subtotal de la venta para conocer la ganancia monetaria neta de cada transacción.
-            </p>
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">MARGEN_BRUTO</strong></div>
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula:</span> <strong class="text-emerald-700">=[SUBTOTAL] - [COSTO_TOTAL]</strong></div>
-              <div class="text-[11px] font-sans text-slate-500 pt-1">
-                📌 <em>Formato: <strong>Número Decimal Fijo (Moneda $)</strong>. Listo para arrastrar a Valores de la Tabla Dinámica.</em>
-              </div>
-            </div>
-          </div>
-
-          <!-- Cálculo 3: Total con ITBIS 18% -->
-          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
-            <div class="flex items-center justify-between border-b pb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-md bg-amber-100 text-amber-800 font-black flex items-center justify-center text-xs">3</span>
-                <h4 class="text-sm font-black text-slate-900">Columna: Total Factura con Impuestos (ITBIS 18%)</h4>
-              </div>
-              <span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Facturación Final</span>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed font-medium">
-              <strong>Paso a paso:</strong> Sumamos el impuesto de ley del 18% al subtotal de la factura para conocer el monto exigible al cliente.
-            </p>
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">TOTAL_CON_ITBIS</strong></div>
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula:</span> <strong class="text-emerald-700">=[SUBTOTAL] + [ITBIS_18]</strong> &nbsp;<span class="text-slate-400 font-sans text-[11px]">(o también: =[SUBTOTAL] * 1.18)</span></div>
-              <div class="text-[11px] font-sans text-slate-500 pt-1">
-                📌 <em>Formato: <strong>Número Decimal Fijo (Moneda $)</strong>.</em>
-              </div>
-            </div>
-          </div>
-
-          <!-- Cálculo 4: Ingreso Real Efectivo -->
-          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
-            <div class="flex items-center justify-between border-b pb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-md bg-rose-100 text-rose-800 font-black flex items-center justify-center text-xs">4</span>
-                <h4 class="text-sm font-black text-slate-900">Columna: Ingreso Real Efectivo (Excluyendo Cancelaciones)</h4>
-              </div>
-              <span class="text-[10px] font-bold text-rose-800 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Control de Caja</span>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed font-medium">
-              <strong>Paso a paso:</strong> Si la factura tiene estatus "Cancelado", no ingresó dinero a la empresa; su aporte real debe ser 0.
-            </p>
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">INGRESO_REAL</strong></div>
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula M:</span> <strong class="text-emerald-700">if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA]</strong></div>
-              <div class="text-[11px] font-sans text-slate-500 pt-1">
-                📌 <em>Formato: <strong>Número Decimal Fijo (Moneda $)</strong>. Alimenta tu tarjeta de KPI principal.</em>
-              </div>
-            </div>
-          </div>
-
-          <!-- Cálculo 5: % de Margen -->
-          <div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2 hover:border-emerald-500 transition-all">
-            <div class="flex items-center justify-between border-b pb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-6 h-6 rounded-md bg-purple-100 text-purple-800 font-black flex items-center justify-center text-xs">5</span>
-                <h4 class="text-sm font-black text-slate-900">Columna: % de Margen sobre Venta</h4>
-              </div>
-              <span class="text-[10px] font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">Rentabilidad Porcentual</span>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed font-medium">
-              <strong>Paso a paso:</strong> Calcularemos el porcentaje de rendimiento protegiendo la operación contra división por cero si una venta es 0.
-            </p>
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1">
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre de columna:</span> <strong class="text-blue-700">PORC_MARGEN</strong></div>
-              <div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula M:</span> <strong class="text-emerald-700">if [SUBTOTAL] <> 0 and [SUBTOTAL] <> null then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0</strong></div>
-              <div class="text-[11px] font-sans text-slate-500 pt-1">
-                📌 <em>No olvides cambiar el tipo de dato a: <strong>Porcentaje (%)</strong>.</em>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- SECCIÓN 6: CIERRE Y CARGA ÓPTIMA -->
-      <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-3xl p-8 shadow-excel-card space-y-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl font-bold">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-          </div>
-          <div>
-            <h3 class="text-xl font-black text-white">6. Cerrar y Cargar: La Mejor Opción de Rendimiento 🚀</h3>
-            <span class="text-xs text-emerald-100 font-semibold uppercase tracking-wider">Tu trabajo queda guardado e inmune a errores manuales</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium text-emerald-50 leading-relaxed pt-1">
-          <div class="p-4 bg-white/10 rounded-xl border border-white/20 space-y-2">
-            <strong class="text-white font-bold flex items-center gap-1.5 text-sm">
-              <i class="fa-solid fa-check-circle text-emerald-300"></i> En Excel:
-            </strong>
-            <p>1. Ve a la pestaña <strong>Inicio &rarr; Cerrar y Cargar en...</strong></p>
-            <p>2. Selecciona <strong class="text-white">Crear únicamente la conexión</strong> y marca <strong class="text-white">Agregar al Modelo de Datos</strong>.</p>
-            <p>3. ¡Cero hojas congeladas! Tu libro pesará megabytes mínimos y podrás armar Tablas Dinámicas al instante.</p>
-          </div>
-
-          <div class="p-4 bg-white/10 rounded-xl border border-white/20 space-y-2">
-            <strong class="text-white font-bold flex items-center gap-1.5 text-sm">
-              <i class="fa-solid fa-arrows-rotate text-emerald-300"></i> Automatización Total Mensual:
-            </strong>
-            <p>Cuando llegue el archivo del próximo mes o semana, <strong>¡no repitas nada!</strong></p>
-            <p>1. Cópialo dentro de la carpeta que configuraste en el Paso 1.</p>
-            <p>2. Abre tu Excel y pulsa <kbd class="px-2 py-0.5 bg-white/20 rounded font-mono font-bold text-white">Ctrl + Alt + F5</kbd> (Actualizar Todo).</p>
-            <p>3. Todo se recalcula automáticamente en 2 segundos.</p>
-          </div>
         </div>
       </div>
 
     </section>
-
 
     <!-- ==============================================================
          TAB 3: GENERADOR & SIMULADOR DE LOS 5 DATASETS EMPRESARIALES
@@ -4046,6 +3711,9 @@
         if (typeof renderHojaTrabajo === 'function') {
           renderHojaTrabajo(industryKey);
         }
+        if (typeof renderManualEtl === 'function') {
+          renderManualEtl(industryKey);
+        }
       } catch(e) {}
 
       showToast(`Industria Activa: ${config.name}`, 'success');
@@ -4077,6 +3745,8 @@
           requestAnimationFrame(() => {
             try { renderDashboard(); renderDashboardTable(); } catch(e) { console.warn(e); }
           });
+        } else if (tabId === 'recetaEtl') {
+          try { renderManualEtl(ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail'); } catch(e) { console.warn(e); }
         } else if (tabId === 'generador') {
           try { renderRawTable(); } catch(e) { console.warn(e); }
         } else if (tabId === 'pivot') {
@@ -6632,6 +6302,931 @@
         console.error('Error en downloadHojaTrabajoPDF:', err);
         showToast('Error al generar el PDF: ' + err.message, 'error');
       }
+    }
+
+    /* =====================================================================
+       19. MOTOR DINÁMICO DEL MANUAL ETL PASO A PASO (5 INDUSTRIAS)
+    ===================================================================== */
+    const MANUAL_ETL_DATA = {
+      retail: {
+        title: "1. Supermercado & Retail Masivo",
+        folderPath: "C:\\Datos_Supermercado_Retail",
+        filePattern: "Ventas_POS_2026_01.xlsx ... Ventas_POS_2026_12.xlsx",
+        primaryKey: "NUM_FACTURA (FAC-RET-XXXXX)",
+        dirtyTextCols: ["REGION", "CLIENTE", "VENDEDOR", "CATEGORIA", "PRODUCTO"],
+        leetspeakCols: ["CLIENTE", "VENDEDOR"],
+        beforeAfterTrim: {
+          dirty1: '"  Norte (Puerto Plata)  "',
+          clean1: '"Norte (Puerto Plata)"',
+          dirty2: '"Su9erm3rc@d0  N@ci0n@l-RET-101"',
+          clean2: '"Supermercado Nacional" | ID: "RET-101"'
+        },
+        dateCol: "FECHA_VENTA",
+        dateRawExample: "2026-03-15 (08:00-12:00)",
+        dateCleanExample: "2026-03-15 (type date) | Ventana: 08:00-12:00",
+        nullCol: "CANAL_VENTA",
+        nullReplacement: "Sucursal Física",
+        nullReason: "El 12% de los tickets de caja rápida omiten el canal de venta; por regla de negocio corresponden a compras presenciales en Sucursal Física.",
+        typeMapping: [
+          { col: "NUM_FACTURA", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria única del ticket POS" },
+          { col: "FECHA_VENTA", type: "Fecha (type date)", icon: "📅", role: "Fecha contable tras separar el turno horario" },
+          { col: "REGION, CLIENTE, VENDEDOR, CATEGORIA, PRODUCTO", type: "Texto (type text)", icon: "🏷️", role: "Dimensiones maestras de análisis comercial" },
+          { col: "CANAL_VENTA, CONDICION_PAGO, ESTATUS_FACTURA", type: "Texto (type text)", icon: "🛒", role: "Segmentadores (Slicers) y control de cancelaciones" },
+          { col: "CANTIDAD", type: "Número Entero (Int64.Type)", icon: "📦", role: "Unidades físicas despachadas por línea" },
+          { col: "PRECIO_VENTA, SUBTOTAL, ITBIS_18, TOTAL_FACTURA, COSTO_TOTAL, MARGEN_BRUTO", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💰", role: "Importes financieros en RD$ para sumatorias" }
+        ],
+        calculations: [
+          {
+            num: 1,
+            badge: "Auditoría de Venta Bruta",
+            color: "emerald",
+            colName: "SUBTOTAL_VALIDADO",
+            title: "Columna 1: Subtotal Comercial Antes de Impuestos (RD$)",
+            explanation: "Multiplicamos las unidades vendidas por el precio unitario de lista para verificar que el subtotal antes del ITBIS (18%) no tenga alteraciones de caja.",
+            pqFormula: "=[CANTIDAD] * [PRECIO_VENTA]",
+            mCode: 'Table.AddColumn(PasoAnterior, "SUBTOTAL_VALIDADO", each [CANTIDAD] * [PRECIO_VENTA], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 2,
+            badge: "Cumplimiento Fiscal DGII",
+            color: "amber",
+            colName: "TOTAL_CON_ITBIS",
+            title: "Columna 2: Total Factura con ITBIS (18%) Liquidado",
+            explanation: "Sumamos el impuesto al valor agregado (ITBIS_18 = 18% del SUBTOTAL) al subtotal comercial para obtener el monto total facturado al cliente.",
+            pqFormula: "=[SUBTOTAL] + [ITBIS_18]",
+            mCode: 'Table.AddColumn(PasoAnterior, "TOTAL_CON_ITBIS", each [SUBTOTAL] + [ITBIS_18], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 3,
+            badge: "Rentabilidad Comercial",
+            color: "blue",
+            colName: "MARGEN_BRUTO_CALC",
+            title: "Columna 3: Margen Bruto de Contribución en RD$",
+            explanation: "Restamos el costo total de reposición de mercancía (COSTO_TOTAL) al subtotal de venta sin impuestos para medir la utilidad bruta real.",
+            pqFormula: "=[SUBTOTAL] - [COSTO_TOTAL]",
+            mCode: 'Table.AddColumn(PasoAnterior, "MARGEN_BRUTO_CALC", each [SUBTOTAL] - [COSTO_TOTAL], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 4,
+            badge: "Control de Quiebres de Stock",
+            color: "rose",
+            colName: "INGRESO_REAL",
+            title: "Columna 4: Ingreso Real Efectivo (Excluyendo Canceladas)",
+            explanation: "Si el campo ESTATUS_FACTURA es 'Cancelado' por quiebre de inventario o devolución, el ingreso efectivo en caja es 0; en caso contrario toma TOTAL_FACTURA.",
+            pqFormula: 'if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA]',
+            mCode: 'Table.AddColumn(PasoAnterior, "INGRESO_REAL", each if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 5,
+            badge: "KPI Porcentual",
+            color: "purple",
+            colName: "PORC_MARGEN",
+            title: "Columna 5: Porcentaje de Margen Bruto sobre Venta (%)",
+            explanation: "Dividimos el margen bruto entre el subtotal de venta protegiendo contra división por cero para identificar qué productos o regiones rinden menos del 15%.",
+            pqFormula: "if [SUBTOTAL] <> 0 and [SUBTOTAL] <> null then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0",
+            mCode: 'Table.AddColumn(PasoAnterior, "PORC_MARGEN", each if [SUBTOTAL] <> 0 and [SUBTOTAL] <> null then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0, Percentage.Type)',
+            dataType: "Porcentaje (%)"
+          }
+        ],
+        pivotSetup: {
+          slicers: "REGION, ESTATUS_FACTURA, CANAL_VENTA",
+          rows: "REGION o VENDEDOR o CATEGORIA",
+          values: "Suma de TOTAL_FACTURA, Suma de INGRESO_REAL, Suma de COSTO_TOTAL, Suma de MARGEN_BRUTO, Promedio de PORC_MARGEN"
+        },
+        fullMCode: `let
+    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    LimpiarTexto = Table.TransformColumns(Origen, {
+        {"REGION", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"VENDEDOR", each Text.Trim(Text.Clean(Text.From(_))), type text}
+    }),
+    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    SanarTres = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    SanarCero = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    SanarUno = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    RellenarCanal = Table.ReplaceValue(SanarUno, null, "Sucursal Física", Replacer.ReplaceValue, {"CANAL_VENTA"}),
+    ExtraerFecha = Table.TransformColumns(RellenarCanal, {{"FECHA_VENTA", each Date.FromText(Text.BeforeDelimiter(Text.From(_), " ")), type date}}),
+    ColIngresoReal = Table.AddColumn(ExtraerFecha, "INGRESO_REAL", each if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA], Currency.Type),
+    ColPorcMargen = Table.AddColumn(ColIngresoReal, "PORC_MARGEN", each if [SUBTOTAL] <> 0 then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0, Percentage.Type)
+in
+    ColPorcMargen`
+      },
+
+      logistica: {
+        title: "2. Logística, Transporte & Fletes",
+        folderPath: "C:\\Datos_Logistica_Fletes",
+        filePattern: "Manifiestos_Ruta_2026_01.xlsx ... Manifiestos_Ruta_2026_12.xlsx",
+        primaryKey: "NUM_MANIFIESTO (MAN-LOG-XXXXX)",
+        dirtyTextCols: ["RUTA_ORIGEN_DESTINO", "EMPRESA_CLIENTE", "CHOFER_FLOTA", "VEHICULO_PLACA", "TIPO_CARGA"],
+        leetspeakCols: ["EMPRESA_CLIENTE", "CHOFER_FLOTA"],
+        beforeAfterTrim: {
+          dirty1: '"  ruta cibao (sdq - santiago)  "',
+          clean1: '"Ruta Cibao (Sdq - Santiago)"',
+          dirty2: '"C3rv3c3r1@ N@ci0n@l-LOG-501"',
+          clean2: '"Cervecería Nacional" | ID: "LOG-501"'
+        },
+        dateCol: "FECHA_DESPACHO",
+        dateRawExample: "2026-04-10 (14:00-18:00)",
+        dateCleanExample: "2026-04-10 (type date) | Turno Salida: 14:00-18:00",
+        nullCol: "TIPO_CARGA",
+        nullReplacement: "Carga Estándar",
+        nullReason: "En báscula de camiones, cuando no se marca contenedor refrigerado ni materiales peligrosos, el campo TIPO_CARGA queda nulo y corresponde a 'Carga Estándar'.",
+        typeMapping: [
+          { col: "NUM_MANIFIESTO", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria única del manifiesto de despacho" },
+          { col: "FECHA_DESPACHO", type: "Fecha (type date)", icon: "📅", role: "Fecha de salida del camión tras separar ventana horaria" },
+          { col: "RUTA_ORIGEN_DESTINO, EMPRESA_CLIENTE, CHOFER_FLOTA, VEHICULO_PLACA", type: "Texto (type text)", icon: "🚚", role: "Dimensiones de ruta geográfica, cliente y unidad de flota" },
+          { col: "TIPO_CARGA, MODALIDAD_FLETE, CONDICION_FLETE, ESTATUS_DESPACHO", type: "Texto (type text)", icon: "📦", role: "Segmentadores operativos y control de viajes anulados" },
+          { col: "TONELADAS_CARGA", type: "Número Decimal / Entero (Number.Type)", icon: "⚖️", role: "Peso métrico transportado en toneladas" },
+          { col: "TARIFA_POR_TON, SUBTOTAL_FLETE, PEAJES_COMBUSTIBLE, TOTAL_FLETE_RD, COSTO_OPERATIVO, MARGEN_FLETE", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💰", role: "Tarifas, fletes, costos de ruta y margen neto en RD$" }
+        ],
+        calculations: [
+          {
+            num: 1,
+            badge: "Facturación por Peso",
+            color: "emerald",
+            colName: "SUBTOTAL_FLETE_CALC",
+            title: "Columna 1: Subtotal de Flete Base por Tonelada (RD$)",
+            explanation: "Multiplicamos las toneladas métricas pesadas en báscula (TONELADAS_CARGA) por la tarifa pactada por tonelada (TARIFA_POR_TON).",
+            pqFormula: "=[TONELADAS_CARGA] * [TARIFA_POR_TON]",
+            mCode: 'Table.AddColumn(PasoAnterior, "SUBTOTAL_FLETE_CALC", each [TONELADAS_CARGA] * [TARIFA_POR_TON], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 2,
+            badge: "Recargos de Ruta",
+            color: "amber",
+            colName: "TOTAL_FLETE_CALC",
+            title: "Columna 2: Total Flete Facturado con Peajes y Combustible (RD$)",
+            explanation: "Sumamos al subtotal del flete el recargo directo de peajes y combustible (PEAJES_COMBUSTIBLE) para auditar el TOTAL_FLETE_RD.",
+            pqFormula: "=[SUBTOTAL_FLETE] + [PEAJES_COMBUSTIBLE]",
+            mCode: 'Table.AddColumn(PasoAnterior, "TOTAL_FLETE_CALC", each [SUBTOTAL_FLETE] + [PEAJES_COMBUSTIBLE], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 3,
+            badge: "Utilidad Operativa",
+            color: "blue",
+            colName: "MARGEN_FLETE_CALC",
+            title: "Columna 3: Margen Operativo Neto del Viaje (RD$)",
+            explanation: "Restamos el costo operativo total del camión (COSTO_OPERATIVO: diésel, viáticos, desgaste y peajes) al TOTAL_FLETE_RD.",
+            pqFormula: "=[TOTAL_FLETE_RD] - [COSTO_OPERATIVO]",
+            mCode: 'Table.AddColumn(PasoAnterior, "MARGEN_FLETE_CALC", each [TOTAL_FLETE_RD] - [COSTO_OPERATIVO], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 4,
+            badge: "Viajes Efectivos",
+            color: "rose",
+            colName: "FLETE_EFECTIVO_REAL",
+            title: "Columna 4: Flete Efectivo Real (Descontando Despachos Anulados)",
+            explanation: "Si el viaje tiene ESTATUS_DESPACHO = 'Anulado' por avería mecánica o rechazo en puerto, el ingreso real es 0; de lo contrario conserva TOTAL_FLETE_RD.",
+            pqFormula: 'if [ESTATUS_DESPACHO] = "Anulado" then 0 else [TOTAL_FLETE_RD]',
+            mCode: 'Table.AddColumn(PasoAnterior, "FLETE_EFECTIVO_REAL", each if [ESTATUS_DESPACHO] = "Anulado" then 0 else [TOTAL_FLETE_RD], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 5,
+            badge: "Eficiencia de Flota",
+            color: "purple",
+            colName: "PORC_RENTABILIDAD_RUTA",
+            title: "Columna 5: Porcentaje de Rentabilidad Operativa por Viaje (%)",
+            explanation: "Dividimos el margen del flete entre el total facturado del viaje para detectar qué rutas o choferes operan con rentabilidad crítica.",
+            pqFormula: "if [TOTAL_FLETE_RD] <> 0 and [TOTAL_FLETE_RD] <> null then ([TOTAL_FLETE_RD] - [COSTO_OPERATIVO]) / [TOTAL_FLETE_RD] else 0",
+            mCode: 'Table.AddColumn(PasoAnterior, "PORC_RENTABILIDAD_RUTA", each if [TOTAL_FLETE_RD] <> 0 and [TOTAL_FLETE_RD] <> null then ([TOTAL_FLETE_RD] - [COSTO_OPERATIVO]) / [TOTAL_FLETE_RD] else 0, Percentage.Type)',
+            dataType: "Porcentaje (%)"
+          }
+        ],
+        pivotSetup: {
+          slicers: "RUTA_ORIGEN_DESTINO, ESTATUS_DESPACHO, TIPO_CARGA",
+          rows: "RUTA_ORIGEN_DESTINO o CHOFER_FLOTA o TIPO_CARGA",
+          values: "Suma de TOTAL_FLETE_RD, Suma de FLETE_EFECTIVO_REAL, Suma de COSTO_OPERATIVO, Suma de MARGEN_FLETE, Suma de TONELADAS_CARGA"
+        },
+        fullMCode: `let
+    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    LimpiarTexto = Table.TransformColumns(Origen, {
+        {"RUTA_ORIGEN_DESTINO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"EMPRESA_CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"CHOFER_FLOTA", each Text.Trim(Text.Clean(Text.From(_))), type text}
+    }),
+    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    SanarTres = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    SanarCero = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    SanarUno = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    RellenarCarga = Table.ReplaceValue(SanarUno, null, "Carga Estándar", Replacer.ReplaceValue, {"TIPO_CARGA"}),
+    ExtraerFecha = Table.TransformColumns(RellenarCarga, {{"FECHA_DESPACHO", each Date.FromText(Text.BeforeDelimiter(Text.From(_), " ")), type date}}),
+    ColFleteReal = Table.AddColumn(ExtraerFecha, "FLETE_EFECTIVO_REAL", each if [ESTATUS_DESPACHO] = "Anulado" then 0 else [TOTAL_FLETE_RD], Currency.Type),
+    ColRentabilidad = Table.AddColumn(ColFleteReal, "PORC_RENTABILIDAD_RUTA", each if [TOTAL_FLETE_RD] <> 0 then ([TOTAL_FLETE_RD] - [COSTO_OPERATIVO]) / [TOTAL_FLETE_RD] else 0, Percentage.Type)
+in
+    ColRentabilidad`
+      },
+
+      finanzas: {
+        title: "3. Finanzas Corporativas & Cartera CxC",
+        folderPath: "C:\\Datos_Finanzas_CarteraCxC",
+        filePattern: "Cartera_Pagares_2026_01.xlsx ... Cartera_Pagares_2026_12.xlsx",
+        primaryKey: "NUM_PAGARE (PAG-FIN-XXXXX)",
+        dirtyTextCols: ["SUCURSAL_CARTERA", "RNC_DEUDOR", "NOMBRE_DEUDOR", "OFICIAL_CREDITO", "LINEA_CREDITO"],
+        leetspeakCols: ["NOMBRE_DEUDOR", "OFICIAL_CREDITO"],
+        beforeAfterTrim: {
+          dirty1: '"  cibao (santiago real)  "',
+          clean1: '"Cibao (Santiago Real)"',
+          dirty2: '"C0m3rci@l d3l V@ll3-FIN-801"',
+          clean2: '"Comercial del Valle" | Código: "FIN-801"'
+        },
+        dateCol: "FECHA_EMISION / FECHA_VENCIMIENTO",
+        dateRawExample: "2026-02-14 -> Vencimiento: 2026-02-28",
+        dateCleanExample: "Ambas columnas tipadas como Fecha (type date) para cálculo de mora",
+        nullCol: "CANAL_PAGO",
+        nullReplacement: "Banca en Línea",
+        nullReason: "Las transferencias interbancarias automáticas sin código de ventanilla llegan con CANAL_PAGO vacío; corresponden a 'Banca en Línea'.",
+        typeMapping: [
+          { col: "NUM_PAGARE, RNC_DEUDOR", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria del pagaré e identificación tributaria RNC" },
+          { col: "FECHA_EMISION, FECHA_VENCIMIENTO", type: "Fecha (type date)", icon: "📅", role: "Fechas contractuales de desembolso y vencimiento" },
+          { col: "SUCURSAL_CARTERA, NOMBRE_DEUDOR, OFICIAL_CREDITO, LINEA_CREDITO", type: "Texto (type text)", icon: "🏦", role: "Dimensiones de banca corporativa y oficial de cuentas" },
+          { col: "CANAL_PAGO, TRAMO_MORA, ESTATUS_CARTERA", type: "Texto (type text)", icon: "📊", role: "Clasificación de riesgo crediticio (Aging 0-30, 31-60, 61-90, +90d)" },
+          { col: "DIAS_MORA", type: "Número Entero (Int64.Type)", icon: "⏱️", role: "Días de atraso transcurridos tras el vencimiento" },
+          { col: "TASA_INTERES_ANUAL", type: "Número Decimal / Porcentaje", icon: "📈", role: "Tasa activa anualizada pactada en el pagaré" },
+          { col: "MONTO_PRINCIPAL, INTERES_MORA, SALDO_TOTAL_EXIGIBLE, ABONO_RECUPERADO, SALDO_PENDIENTE", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💰", role: "Capital, intereses moratorios, cobros y saldo insoluto en RD$" }
+        ],
+        calculations: [
+          {
+            num: 1,
+            badge: "Cálculo Financiero",
+            color: "amber",
+            colName: "INTERES_MORA_CALC",
+            title: "Columna 1: Interés Moratorio Devengado (Base 365 Días)",
+            explanation: "Calculamos el interés moratorio exacto multiplicando el capital (MONTO_PRINCIPAL) por la tasa anual entre 100 y por la fracción de días en mora (DIAS_MORA / 365).",
+            pqFormula: "=Number.Round([MONTO_PRINCIPAL] * ([TASA_INTERES_ANUAL] / 100) * ([DIAS_MORA] / 365), 2)",
+            mCode: 'Table.AddColumn(PasoAnterior, "INTERES_MORA_CALC", each Number.Round([MONTO_PRINCIPAL] * ([TASA_INTERES_ANUAL] / 100) * ([DIAS_MORA] / 365), 2), Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 2,
+            badge: "Deuda Total",
+            color: "blue",
+            colName: "SALDO_EXIGIBLE_CALC",
+            title: "Columna 2: Saldo Total Exigible al Deudor (Capital + Mora)",
+            explanation: "Sumamos el capital prestado (MONTO_PRINCIPAL) más los intereses moratorios devengados (INTERES_MORA) para determinar la deuda total exigible.",
+            pqFormula: "=[MONTO_PRINCIPAL] + [INTERES_MORA]",
+            mCode: 'Table.AddColumn(PasoAnterior, "SALDO_EXIGIBLE_CALC", each [MONTO_PRINCIPAL] + [INTERES_MORA], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 3,
+            badge: "Cuentas por Cobrar",
+            color: "rose",
+            colName: "SALDO_PENDIENTE_CALC",
+            title: "Columna 3: Saldo Insoluto Pendiente por Cobrar (RD$)",
+            explanation: "Restamos los pagos y abonos recibidos (ABONO_RECUPERADO) al saldo total exigible para obtener la exposición neta pendiente en la calle.",
+            pqFormula: "=[SALDO_TOTAL_EXIGIBLE] - [ABONO_RECUPERADO]",
+            mCode: 'Table.AddColumn(PasoAnterior, "SALDO_PENDIENTE_CALC", each [SALDO_TOTAL_EXIGIBLE] - [ABONO_RECUPERADO], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 4,
+            badge: "Efectividad de Cobro",
+            color: "emerald",
+            colName: "PORC_RECUPERACION",
+            title: "Columna 4: Tasa de Recuperación Efectiva de Cartera (%)",
+            explanation: "Dividimos el abono recuperado entre el saldo total exigible para medir el porcentaje de efectividad de cobro por oficial y sucursal.",
+            pqFormula: "if [SALDO_TOTAL_EXIGIBLE] <> 0 then [ABONO_RECUPERADO] / [SALDO_TOTAL_EXIGIBLE] else 0",
+            mCode: 'Table.AddColumn(PasoAnterior, "PORC_RECUPERACION", each if [SALDO_TOTAL_EXIGIBLE] <> 0 then [ABONO_RECUPERADO] / [SALDO_TOTAL_EXIGIBLE] else 0, Percentage.Type)',
+            dataType: "Porcentaje (%)"
+          },
+          {
+            num: 5,
+            badge: "Riesgo Bancario (Aging)",
+            color: "purple",
+            colName: "PROVISION_INCOBRABLE",
+            title: "Columna 5: Provisión de Cartera Crítica (> 90 Días de Mora)",
+            explanation: "Si el pagaré supera los 90 días de mora (Incobrable / Cobro Judicial), se provisiona el 100% de su SALDO_PENDIENTE como riesgo crítico.",
+            pqFormula: "if [DIAS_MORA] > 90 then [SALDO_PENDIENTE] else 0",
+            mCode: 'Table.AddColumn(PasoAnterior, "PROVISION_INCOBRABLE", each if [DIAS_MORA] > 90 then [SALDO_PENDIENTE] else 0, Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          }
+        ],
+        pivotSetup: {
+          slicers: "SUCURSAL_CARTERA, TRAMO_MORA, CANAL_PAGO",
+          rows: "SUCURSAL_CARTERA u OFICIAL_CREDITO o LINEA_CREDITO",
+          values: "Suma de SALDO_TOTAL_EXIGIBLE, Suma de ABONO_RECUPERADO, Suma de SALDO_PENDIENTE, Promedio de DIAS_MORA"
+        },
+        fullMCode: `let
+    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    LimpiarTexto = Table.TransformColumns(Origen, {
+        {"SUCURSAL_CARTERA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"NOMBRE_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"OFICIAL_CREDITO", each Text.Trim(Text.Clean(Text.From(_))), type text}
+    }),
+    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    SanarTres = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    SanarCero = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    SanarUno = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    RellenarCanal = Table.ReplaceValue(SanarUno, null, "Banca en Línea", Replacer.ReplaceValue, {"CANAL_PAGO"}),
+    ColSaldoPendiente = Table.AddColumn(RellenarCanal, "SALDO_PENDIENTE_CALC", each [SALDO_TOTAL_EXIGIBLE] - [ABONO_RECUPERADO], Currency.Type),
+    ColPorcRecuperacion = Table.AddColumn(ColSaldoPendiente, "PORC_RECUPERACION", each if [SALDO_TOTAL_EXIGIBLE] <> 0 then [ABONO_RECUPERADO] / [SALDO_TOTAL_EXIGIBLE] else 0, Percentage.Type)
+in
+    ColPorcRecuperacion`
+      },
+
+      rrhh: {
+        title: "4. Recursos Humanos, Nómina & TSS",
+        folderPath: "C:\\Datos_RRHH_Nomina_TSS",
+        filePattern: "Nomina_General_2026_01.xlsx ... Nomina_General_2026_12.xlsx",
+        primaryKey: "COD_EMPLEADO (EMP-RH-XXXXX)",
+        dirtyTextCols: ["SEDE_PLANTA", "NOMBRE_COLABORADOR", "SUPERVISOR_TURNO", "DEPARTAMENTO", "CARGO_PUESTO"],
+        leetspeakCols: ["NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"],
+        beforeAfterTrim: {
+          dirty1: '"  planta central santo domingo  "',
+          clean1: '"Planta Central Santo Domingo"',
+          dirty2: '"Y0m@1r@ G0m3z-RH-302"',
+          clean2: '"Yomaira Gómez" | Legajo: "RH-302"'
+        },
+        dateCol: "FECHA_INGRESO",
+        dateRawExample: "2026-01-18",
+        dateCleanExample: "2026-01-18 (type date) para antigüedad y altas del período",
+        nullCol: "DEPARTAMENTO",
+        nullReplacement: "Operaciones Planta",
+        nullReason: "Los operarios contratados en turnos rotativos sin centro de costo asignado traen DEPARTAMENTO vacío; se imputan a 'Operaciones Planta'.",
+        typeMapping: [
+          { col: "COD_EMPLEADO", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria única del legajo del colaborador" },
+          { col: "FECHA_INGRESO", type: "Fecha (type date)", icon: "📅", role: "Fecha de alta laboral en la empresa" },
+          { col: "SEDE_PLANTA, NOMBRE_COLABORADOR, SUPERVISOR_TURNO, DEPARTAMENTO, CARGO_PUESTO", type: "Texto (type text)", icon: "👥", role: "Estructura organizacional, localidad y puesto" },
+          { col: "TIPO_CONTRATO, MODALIDAD_PAGO, ESTATUS_LABORAL", type: "Texto (type text)", icon: "📋", role: "Segmentadores de estatus (Activo, Vacaciones, Licencia, Desvinculado)" },
+          { col: "SUELDO_BRUTO, HORAS_EXTRAS_VALOR", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💵", role: "Remuneración bruta mensual y recargos por horas extras" },
+          { col: "RETENCION_AFP_287, RETENCION_SFS_304, RETENCION_ISR, TOTAL_DESCUENTOS", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "🏛️", role: "Retenciones laborales de ley TSS (AFP 2.87%, SFS 3.04%) y DGII (ISR)" },
+          { col: "SUELDO_NETO_PAGADO, APORTE_PATRONAL_TSS", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💰", role: "Sueldo líquido depositado y carga patronal TSS (14.19%)" }
+        ],
+        calculations: [
+          {
+            num: 1,
+            badge: "Seguridad Social TSS",
+            color: "emerald",
+            colName: "AFP_LEGAL_287",
+            title: "Columna 1: Auditoría de Retención AFP Empleado (2.87%)",
+            explanation: "Multiplicamos el SUELDO_BRUTO por 2.87% (0.0287) según la Ley 87-01 de Seguridad Social para validar el descuento de fondo de pensiones.",
+            pqFormula: "=Number.Round([SUELDO_BRUTO] * 0.0287, 2)",
+            mCode: 'Table.AddColumn(PasoAnterior, "AFP_LEGAL_287", each Number.Round([SUELDO_BRUTO] * 0.0287, 2), Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 2,
+            badge: "Seguro Familiar Salud",
+            color: "blue",
+            colName: "SFS_LEGAL_304",
+            title: "Columna 2: Auditoría de Retención SFS Empleado (3.04%)",
+            explanation: "Multiplicamos el SUELDO_BRUTO por 3.04% (0.0304) para verificar el aporte del trabajador al Seguro Familiar de Salud.",
+            pqFormula: "=Number.Round([SUELDO_BRUTO] * 0.0304, 2)",
+            mCode: 'Table.AddColumn(PasoAnterior, "SFS_LEGAL_304", each Number.Round([SUELDO_BRUTO] * 0.0304, 2), Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 3,
+            badge: "Deducciones Totales",
+            color: "amber",
+            colName: "TOTAL_DESCUENTOS_CALC",
+            title: "Columna 3: Total Descuentos de Nómina (AFP + SFS + ISR)",
+            explanation: "Sumamos las tres retenciones legales aplicadas al trabajador (RETENCION_AFP_287 + RETENCION_SFS_304 + RETENCION_ISR).",
+            pqFormula: "=[RETENCION_AFP_287] + [RETENCION_SFS_304] + [RETENCION_ISR]",
+            mCode: 'Table.AddColumn(PasoAnterior, "TOTAL_DESCUENTOS_CALC", each [RETENCION_AFP_287] + [RETENCION_SFS_304] + [RETENCION_ISR], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 4,
+            badge: "Pago en Cuenta ACH",
+            color: "rose",
+            colName: "SUELDO_NETO_CALC",
+            title: "Columna 4: Sueldo Neto Pagado al Colaborador (RD$)",
+            explanation: "Restamos el total de descuentos legales al sueldo bruto devengado para determinar el monto líquido transferido al banco.",
+            pqFormula: "=[SUELDO_BRUTO] - [TOTAL_DESCUENTOS]",
+            mCode: 'Table.AddColumn(PasoAnterior, "SUELDO_NETO_CALC", each [SUELDO_BRUTO] - [TOTAL_DESCUENTOS], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 5,
+            badge: "Presupuesto Corporativo",
+            color: "purple",
+            colName: "COSTO_TOTAL_EMPLEADOR",
+            title: "Columna 5: Costo Laboral Total para la Empresa (Bruto + 14.19% TSS)",
+            explanation: "Sumamos al SUELDO_BRUTO el aporte patronal de ley (APORTE_PATRONAL_TSS = 14.19%: AFP Patronal, SFS Patronal, SRL e INFOTEP).",
+            pqFormula: "=[SUELDO_BRUTO] + [APORTE_PATRONAL_TSS]",
+            mCode: 'Table.AddColumn(PasoAnterior, "COSTO_TOTAL_EMPLEADOR", each [SUELDO_BRUTO] + [APORTE_PATRONAL_TSS], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          }
+        ],
+        pivotSetup: {
+          slicers: "SEDE_PLANTA, ESTATUS_LABORAL, DEPARTAMENTO",
+          rows: "SEDE_PLANTA o DEPARTAMENTO o CARGO_PUESTO",
+          values: "Suma de SUELDO_BRUTO, Suma de TOTAL_DESCUENTOS, Suma de SUELDO_NETO_PAGADO, Suma de APORTE_PATRONAL_TSS, Cuenta de COD_EMPLEADO"
+        },
+        fullMCode: `let
+    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    LimpiarTexto = Table.TransformColumns(Origen, {
+        {"SEDE_PLANTA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"NOMBRE_COLABORADOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"SUPERVISOR_TURNO", each Text.Trim(Text.Clean(Text.From(_))), type text}
+    }),
+    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    SanarTres = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    SanarCero = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    SanarUno = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    RellenarDepto = Table.ReplaceValue(SanarUno, null, "Operaciones Planta", Replacer.ReplaceValue, {"DEPARTAMENTO"}),
+    ColCostoEmpresa = Table.AddColumn(RellenarDepto, "COSTO_TOTAL_EMPLEADOR", each [SUELDO_BRUTO] + [APORTE_PATRONAL_TSS], Currency.Type),
+    ColPorcNeto = Table.AddColumn(ColCostoEmpresa, "PORC_NETO_PERCIBIDO", each if [SUELDO_BRUTO] <> 0 then [SUELDO_NETO_PAGADO] / [SUELDO_BRUTO] else 0, Percentage.Type)
+in
+    ColPorcNeto`
+      },
+
+      salud: {
+        title: "5. Salud, Clínicas & Coberturas ARS",
+        folderPath: "C:\\Datos_Salud_Clinicas_ARS",
+        filePattern: "Reclamaciones_ARS_2026_01.xlsx ... Reclamaciones_ARS_2026_12.xlsx",
+        primaryKey: "NUM_AUTORIZACION (AUT-SAL-XXXXX)",
+        dirtyTextCols: ["SEDE_CLINICA", "EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE", "ESPECIALIDAD_MEDICA", "SERVICIO_PROCEDIMIENTO"],
+        leetspeakCols: ["EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"],
+        beforeAfterTrim: {
+          dirty1: '"  unión médica santiago (cibao)  "',
+          clean1: '"Unión Médica Santiago (Cibao)"',
+          dirty2: '"Dr. F3rn@nd0 R0j@s-SAL-401"',
+          clean2: '"Dr. Fernando Rojas" | Código: "SAL-401"'
+        },
+        dateCol: "FECHA_ATENCION",
+        dateRawExample: "2026-05-20 (18:00-23:00)",
+        dateCleanExample: "2026-05-20 (type date) | Guardia Médica: 18:00-23:00",
+        nullCol: "ASEGURADORA_ARS",
+        nullReplacement: "Particular Privado",
+        nullReason: "Los pacientes atendidos por emergencia sin póliza de seguro médico registran ASEGURADORA_ARS nulo; deben clasificarse como 'Particular Privado'.",
+        typeMapping: [
+          { col: "NUM_AUTORIZACION", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria única de la autorización médica" },
+          { col: "FECHA_ATENCION", type: "Fecha (type date)", icon: "📅", role: "Fecha de atención clínica tras separar el turno de guardia" },
+          { col: "SEDE_CLINICA, EXPEDIENTE_PACIENTE, MEDICO_TRATANTE", type: "Texto (type text)", icon: "🏥", role: "Centro hospitalario, paciente y especialista tratante" },
+          { col: "ESPECIALIDAD_MEDICA, SERVICIO_PROCEDIMIENTO, ASEGURADORA_ARS, PLAN_SEGURO, ESTATUS_RECLAMACION", type: "Texto (type text)", icon: "🩺", role: "Catálogo médico, aseguradora ARS y estatus de glosa" },
+          { col: "MONTO_TOTAL_FACTURADO, COBERTURA_ARS, COPAGO_PACIENTE, COSTO_INSUMOS, MARGEN_CLINICA", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💰", role: "Facturación clínica, cobertura ARS, copago, insumos y margen en RD$" }
+        ],
+        calculations: [
+          {
+            num: 1,
+            badge: "Recaudo en Caja",
+            color: "emerald",
+            colName: "COPAGO_VALIDADO",
+            title: "Columna 1: Copago Directo a Cargo del Paciente (RD$)",
+            explanation: "Restamos el monto cubierto por la aseguradora (COBERTURA_ARS) al total facturado del procedimiento (MONTO_TOTAL_FACTURADO) para validar la diferencia pagada por el paciente.",
+            pqFormula: "=[MONTO_TOTAL_FACTURADO] - [COBERTURA_ARS]",
+            mCode: 'Table.AddColumn(PasoAnterior, "COPAGO_VALIDADO", each [MONTO_TOTAL_FACTURADO] - [COBERTURA_ARS], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 2,
+            badge: "Rentabilidad Hospitalaria",
+            color: "blue",
+            colName: "MARGEN_CLINICA_CALC",
+            title: "Columna 2: Margen Operativo Neto de la Clínica (RD$)",
+            explanation: "Restamos el costo de material gastable, fármacos y quirófano (COSTO_INSUMOS) al MONTO_TOTAL_FACTURADO.",
+            pqFormula: "=[MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS]",
+            mCode: 'Table.AddColumn(PasoAnterior, "MARGEN_CLINICA_CALC", each [MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 3,
+            badge: "Participación ARS",
+            color: "amber",
+            colName: "PORC_COBERTURA_ARS",
+            title: "Columna 3: Porcentaje de Cobertura Financiado por la ARS (%)",
+            explanation: "Dividimos la COBERTURA_ARS entre el MONTO_TOTAL_FACTURADO para conocer qué proporción del servicio asume el seguro médico.",
+            pqFormula: "if [MONTO_TOTAL_FACTURADO] <> 0 then [COBERTURA_ARS] / [MONTO_TOTAL_FACTURADO] else 0",
+            mCode: 'Table.AddColumn(PasoAnterior, "PORC_COBERTURA_ARS", each if [MONTO_TOTAL_FACTURADO] <> 0 then [COBERTURA_ARS] / [MONTO_TOTAL_FACTURADO] else 0, Percentage.Type)',
+            dataType: "Porcentaje (%)"
+          },
+          {
+            num: 4,
+            badge: "Auditoría de Glosas",
+            color: "rose",
+            colName: "INGRESO_EFECTIVO_CLINICA",
+            title: "Columna 4: Ingreso Clínico Efectivo (Sin Reclamaciones Rechazadas)",
+            explanation: "Si ESTATUS_RECLAMACION es 'Rechazada' por auditoría médica de la ARS, el ingreso efectivo es 0; en caso contrario toma MONTO_TOTAL_FACTURADO.",
+            pqFormula: 'if [ESTATUS_RECLAMACION] = "Rechazada" then 0 else [MONTO_TOTAL_FACTURADO]',
+            mCode: 'Table.AddColumn(PasoAnterior, "INGRESO_EFECTIVO_CLINICA", each if [ESTATUS_RECLAMACION] = "Rechazada" then 0 else [MONTO_TOTAL_FACTURADO], Currency.Type)',
+            dataType: "Número Decimal Fijo (Moneda RD$)"
+          },
+          {
+            num: 5,
+            badge: "Rendimiento por Especialidad",
+            color: "purple",
+            colName: "PORC_MARGEN_CLINICO",
+            title: "Columna 5: Porcentaje de Margen Operativo Clínico (%)",
+            explanation: "Dividimos el margen de la clínica entre el monto total facturado para comparar la rentabilidad entre Cirugía, UCI, Imágenes y Laboratorio.",
+            pqFormula: "if [MONTO_TOTAL_FACTURADO] <> 0 then ([MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS]) / [MONTO_TOTAL_FACTURADO] else 0",
+            mCode: 'Table.AddColumn(PasoAnterior, "PORC_MARGEN_CLINICO", each if [MONTO_TOTAL_FACTURADO] <> 0 then ([MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS]) / [MONTO_TOTAL_FACTURADO] else 0, Percentage.Type)',
+            dataType: "Porcentaje (%)"
+          }
+        ],
+        pivotSetup: {
+          slicers: "SEDE_CLINICA, ESTATUS_RECLAMACION, ASEGURADORA_ARS",
+          rows: "SEDE_CLINICA o ESPECIALIDAD_MEDICA o MEDICO_TRATANTE o ASEGURADORA_ARS",
+          values: "Suma de MONTO_TOTAL_FACTURADO, Suma de COBERTURA_ARS, Suma de COPAGO_PACIENTE, Suma de COSTO_INSUMOS, Suma de MARGEN_CLINICA"
+        },
+        fullMCode: `let
+    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    LimpiarTexto = Table.TransformColumns(Origen, {
+        {"SEDE_CLINICA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"EXPEDIENTE_PACIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"MEDICO_TRATANTE", each Text.Trim(Text.Clean(Text.From(_))), type text}
+    }),
+    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    SanarTres = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    SanarCero = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    SanarUno = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    RellenarArs = Table.ReplaceValue(SanarUno, null, "Particular Privado", Replacer.ReplaceValue, {"ASEGURADORA_ARS"}),
+    ExtraerFecha = Table.TransformColumns(RellenarArs, {{"FECHA_ATENCION", each Date.FromText(Text.BeforeDelimiter(Text.From(_), " ")), type date}}),
+    ColIngresoClinica = Table.AddColumn(ExtraerFecha, "INGRESO_EFECTIVO_CLINICA", each if [ESTATUS_RECLAMACION] = "Rechazada" then 0 else [MONTO_TOTAL_FACTURADO], Currency.Type),
+    ColPorcMargen = Table.AddColumn(ColIngresoClinica, "PORC_MARGEN_CLINICO", each if [MONTO_TOTAL_FACTURADO] <> 0 then ([MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS]) / [MONTO_TOTAL_FACTURADO] else 0, Percentage.Type)
+in
+    ColPorcMargen`
+      }
+    };
+
+    function copyActiveEtlMCode() {
+      const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
+      const data = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
+      if (navigator.clipboard && data.fullMCode) {
+        navigator.clipboard.writeText(data.fullMCode).then(() => {
+          showToast('Código M de ' + data.title + ' copiado al portapapeles.', 'success');
+        }).catch(() => {
+          showToast('Selecciona el bloque de código M para copiarlo.', 'info');
+        });
+      }
+    }
+
+    function renderManualEtl(industryKey) {
+      const ind = (industryKey && MANUAL_ETL_DATA[industryKey]) ? industryKey : (ACTIVE_INDUSTRY || 'retail');
+      const etl = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
+      const config = INDUSTRY_CONFIGS[ind] || INDUSTRY_CONFIGS.retail;
+      const hoja = (typeof HOJA_DE_TRABAJO_DATA !== 'undefined' && HOJA_DE_TRABAJO_DATA[ind]) ? HOJA_DE_TRABAJO_DATA[ind] : null;
+
+      // 1. Actualizar título superior y estado visual de los 5 sub-tabs en Manual ETL
+      const titleEl = document.getElementById('etlActiveIndustryTitle');
+      if (titleEl) titleEl.textContent = config.name;
+
+      ['retail', 'logistica', 'finanzas', 'rrhh', 'salud'].forEach(k => {
+        const btn = document.getElementById('etlSubTab-' + k);
+        if (!btn) return;
+        if (k === ind) {
+          btn.className = 'etl-subtab-btn flex items-center justify-between px-4 py-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50/90 text-emerald-950 font-black text-xs shadow-sm transition-all cursor-pointer';
+        } else {
+          btn.className = 'etl-subtab-btn flex items-center justify-between px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer';
+        }
+      });
+
+      const container = document.getElementById('manualEtlDynamicContent');
+      if (!container) return;
+
+      // 2. Calcular cifras de control reales del dataset activo para mostrarlas en la guía
+      const sums = (CURRENT_DATASET || []).reduce((acc, row) => {
+        acc.gross += (row._metricPrimary || 0);
+        acc.cost += (row._metricSecondary || 0);
+        acc.margin += (row._metricMargin || 0);
+        acc.real += (row._metricReal || 0);
+        if (row._cleanStatus === 'Cancelado' || row._cleanStatus === 'Anulado' || row._cleanStatus === 'Rechazada' || row._cleanStatus === 'Desvinculado' || row._cleanStatus === 'Castigado / Incobrable') {
+          acc.failed++;
+        }
+        return acc;
+      }, { gross: 0, cost: 0, margin: 0, real: 0, failed: 0 });
+      const recCount = (CURRENT_DATASET && CURRENT_DATASET.length) ? CURRENT_DATASET.length : 1500;
+      const marginPct = sums.gross > 0 ? ((sums.margin / sums.gross) * 100).toFixed(1) : '0.0';
+      const failPct = ((sums.failed / (recCount || 1)) * 100).toFixed(1);
+
+      // Chips de todas las columnas reales del dataset
+      const rawColsHtml = (config.rawColumns || []).map(c =>
+        '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold ' +
+        (c.isMainId ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : (c.isHighlight ? 'bg-blue-50 text-blue-900 border border-blue-200' : 'bg-slate-100 text-slate-800 border border-slate-200')) +
+        '">' + (c.isMainId ? '🔑 ' : '') + c.key + ' <span class="font-sans font-normal text-slate-500">(' + c.label + ')</span></span>'
+      ).join(' ');
+
+      const dirtyColsChips = etl.dirtyTextCols.map(c => '<span class="px-2 py-0.5 bg-white border border-emerald-300 rounded font-mono font-bold text-emerald-900">' + c + '</span>').join(' ');
+      const leetColsChips = etl.leetspeakCols.map(c => '<span class="px-2 py-0.5 bg-amber-100 border border-amber-300 rounded font-mono font-bold text-amber-950">' + c + '</span>').join(' y ');
+
+      const typeRowsHtml = etl.typeMapping.map(tm =>
+        '<tr class="hover:bg-slate-50/80 border-b border-slate-200 last:border-0">' +
+          '<td class="py-2.5 px-3 font-mono font-bold text-slate-900 text-xs">' + tm.icon + ' ' + tm.col + '</td>' +
+          '<td class="py-2.5 px-3 font-mono font-bold text-emerald-800 text-xs whitespace-nowrap">' + tm.type + '</td>' +
+          '<td class="py-2.5 px-3 text-slate-600 text-xs font-medium">' + tm.role + '</td>' +
+        '</tr>'
+      ).join('');
+
+      const colorMap = {
+        emerald: { bg: 'bg-emerald-100', text: 'text-emerald-800', badgeBg: 'bg-emerald-50', border: 'border-emerald-200' },
+        amber:   { bg: 'bg-amber-100',   text: 'text-amber-800',   badgeBg: 'bg-amber-50',   border: 'border-amber-200' },
+        blue:    { bg: 'bg-blue-100',    text: 'text-blue-800',    badgeBg: 'bg-blue-50',    border: 'border-blue-200' },
+        rose:    { bg: 'bg-rose-100',    text: 'text-rose-800',    badgeBg: 'bg-rose-50',    border: 'border-rose-200' },
+        purple:  { bg: 'bg-purple-100',  text: 'text-purple-800',  badgeBg: 'bg-purple-50',  border: 'border-purple-200' }
+      };
+
+      const calcCardsHtml = etl.calculations.map(calc => {
+        const cm = colorMap[calc.color] || colorMap.emerald;
+        return (
+          '<div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2.5 hover:border-emerald-500 transition-all">' +
+            '<div class="flex flex-wrap items-center justify-between border-b border-slate-100 pb-2.5 gap-2">' +
+              '<div class="flex items-center gap-2.5">' +
+                '<span class="w-7 h-7 rounded-lg ' + cm.bg + ' ' + cm.text + ' font-black flex items-center justify-center text-xs">' + calc.num + '</span>' +
+                '<h4 class="text-sm sm:text-base font-black text-slate-900">' + calc.title + '</h4>' +
+              '</div>' +
+              '<span class="text-[11px] font-bold ' + cm.text + ' ' + cm.badgeBg + ' px-2.5 py-0.5 rounded-full border ' + cm.border + '">' + calc.badge + '</span>' +
+            '</div>' +
+            '<p class="text-xs text-slate-600 leading-relaxed font-medium"><strong>Qué hace este cálculo:</strong> ' + calc.explanation + '</p>' +
+            '<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1.5">' +
+              '<div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre exacto en Columna Personalizada:</span> <strong class="text-blue-700 bg-white px-2 py-0.5 rounded border border-blue-200">' + calc.colName + '</strong></div>' +
+              '<div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula en el cuadro de Power Query:</span> <strong class="text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-200">' + calc.pqFormula + '</strong></div>' +
+              '<div><span class="text-slate-500 font-sans text-[11px] font-bold">3. Instrucción generada en Lenguaje M:</span> <code class="text-teal-800 text-[11px] block mt-0.5 bg-white p-2 rounded border border-slate-200 overflow-x-auto">= ' + calc.mCode + '</code></div>' +
+              '<div class="text-[11px] font-sans text-slate-500 pt-1">📌 <em>Tipo de dato obligatorio al finalizar: <strong class="text-slate-800">' + calc.dataType + '</strong>.</em></div>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+
+      container.innerHTML =
+        // BANNER DE FICHA TÉCNICA Y CIFRAS DE CONTROL A LAS QUE DEBE LLEGAR EL ESTUDIANTE
+        '<div class="bg-gradient-to-r from-slate-900 via-emerald-950 to-teal-950 text-white rounded-3xl p-6 sm:p-7 shadow-excel-card space-y-5">' +
+          '<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/15 pb-4">' +
+            '<div class="space-y-1">' +
+              '<div class="text-xs font-extrabold uppercase tracking-wider text-emerald-300 flex items-center gap-2">' +
+                '<i class="fa-solid fa-bullseye"></i> Ficha de Control & Meta del Laboratorio ETL' +
+              '</div>' +
+              '<h3 class="text-xl sm:text-2xl font-black text-white">' + etl.title + ' &middot; Llave Primaria: <span class="font-mono text-emerald-300">' + etl.primaryKey + '</span></h3>' +
+              '<p class="text-xs text-slate-300">' + (hoja ? hoja.desc : '') + '</p>' +
+            '</div>' +
+            '<div class="bg-white/10 border border-white/20 rounded-2xl px-4 py-2.5 text-xs font-mono shrink-0">' +
+              '<div class="text-[10px] uppercase text-emerald-300 font-sans font-bold">Carpeta Local Sugerida</div>' +
+              '<div class="text-white font-bold">' + etl.folderPath + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-center">' +
+            '<div class="bg-white/10 border border-white/15 rounded-2xl p-3">' +
+              '<div class="text-[11px] text-slate-300 font-bold uppercase">1. Total Bruto Dataset</div>' +
+              '<div class="text-base sm:text-lg font-black text-white font-mono mt-0.5">RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + '</div>' +
+              '<div class="text-[10px] text-emerald-300">' + recCount.toLocaleString('es-DO') + ' registros activos</div>' +
+            '</div>' +
+            '<div class="bg-white/10 border border-white/15 rounded-2xl p-3">' +
+              '<div class="text-[11px] text-slate-300 font-bold uppercase">2. Ingreso / Neto Real</div>' +
+              '<div class="text-base sm:text-lg font-black text-emerald-300 font-mono mt-0.5">RD$ ' + Math.round(sums.real).toLocaleString('es-DO') + '</div>' +
+              '<div class="text-[10px] text-slate-300">Descontando bajas/anulados</div>' +
+            '</div>' +
+            '<div class="bg-white/10 border border-white/15 rounded-2xl p-3">' +
+              '<div class="text-[11px] text-slate-300 font-bold uppercase">3. Margen / Saldo Control</div>' +
+              '<div class="text-base sm:text-lg font-black text-teal-300 font-mono mt-0.5">RD$ ' + Math.round(sums.margin).toLocaleString('es-DO') + ' (' + marginPct + '%)</div>' +
+              '<div class="text-[10px] text-slate-300">Rentabilidad / Saldo auditado</div>' +
+            '</div>' +
+            '<div class="bg-white/10 border border-white/15 rounded-2xl p-3">' +
+              '<div class="text-[11px] text-slate-300 font-bold uppercase">4. Tasa Bajas / Incidencias</div>' +
+              '<div class="text-base sm:text-lg font-black text-rose-300 font-mono mt-0.5">' + failPct + '% (' + sums.failed + ' filas)</div>' +
+              '<div class="text-[10px] text-slate-300">Registros en estatus crítico</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        // PASO 1: CONEXIÓN A FUENTES DE DATOS + COLUMNAS DEL SET ACTIVO
+        '<div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-6">' +
+          '<div class="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-3">' +
+            '<div class="flex items-center gap-3">' +
+              '<span class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-sm shadow-xs">1</span>' +
+              '<div>' +
+                '<h3 class="text-xl font-bold text-slate-900">Paso 1: Conexión a Fuentes de Datos & Estructura de ' + config.badge + ' 🌐</h3>' +
+                '<p class="text-xs text-slate-500 font-semibold">Abre Excel 365 &rarr; Pestaña Datos &rarr; Obtener Datos &rarr; De un archivo</p>' +
+              '</div>' +
+            '</div>' +
+            '<span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">Fase 1 &middot; Ingestión</span>' +
+          '</div>' +
+
+          '<div class="grid grid-cols-1 md:grid-cols-3 gap-5">' +
+            '<div class="p-5 rounded-2xl bg-slate-50 border-2 border-emerald-400 space-y-3 shadow-xs">' +
+              '<div class="flex items-center gap-2 font-bold text-slate-900 text-sm">' +
+                '<span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs">A</span>' +
+                '<span>Conexión a Carpeta (Recomendado 🏆)</span>' +
+              '</div>' +
+              '<p class="text-xs text-slate-600 leading-relaxed">Crea la carpeta <code class="font-mono bg-white px-1.5 py-0.5 border rounded text-emerald-800 font-bold">' + etl.folderPath + '</code> y guarda allí los reportes mensuales (<code class="font-mono text-[11px]">' + etl.filePattern + '</code>).</p>' +
+              '<div class="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-200 font-medium">' +
+                '<p>1. Ve a <strong>Datos &rarr; Obtener datos &rarr; De un archivo &rarr; De una carpeta</strong>.</p>' +
+                '<p>2. Selecciona <code class="font-mono text-emerald-800">' + etl.folderPath + '</code> y pulsa <strong>Abrir</strong>.</p>' +
+                '<p>3. Haz clic en <strong class="text-emerald-700">"Combinar y Transformar datos"</strong>.</p>' +
+              '</div>' +
+              '<div class="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl font-mono text-[11px] text-emerald-950">' +
+                '= Folder.Files("' + etl.folderPath + '")' +
+              '</div>' +
+            '</div>' +
+
+            '<div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 shadow-xs">' +
+              '<div class="flex items-center gap-2 font-bold text-slate-900 text-sm">' +
+                '<span class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs">B</span>' +
+                '<span>Desde el Libro Excel o CSV Descargado 📄</span>' +
+              '</div>' +
+              '<p class="text-xs text-slate-600 leading-relaxed">Si descargaste el archivo <strong class="text-slate-900">.xlsx</strong> o <strong class="text-slate-900">.csv</strong> de este simulador para practicar directamente:</p>' +
+              '<div class="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-200 font-medium">' +
+                '<p>1. Si estás dentro del libro descargado: selecciona cualquier celda de la hoja <strong>Datos_Crudos_ETL</strong>.</p>' +
+                '<p>2. Ve a <strong>Datos &rarr; De una tabla o rango</strong>.</p>' +
+                '<p>3. Si conectas desde otro libro: <strong>Datos &rarr; Obtener datos &rarr; Desde un libro de Excel</strong> y elige <strong>Transformar datos</strong>.</p>' +
+              '</div>' +
+            '</div>' +
+
+            '<div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 shadow-xs">' +
+              '<div class="flex items-center gap-2 font-bold text-slate-900 text-sm">' +
+                '<span class="w-6 h-6 rounded-lg bg-amber-600 text-white flex items-center justify-center text-xs">C</span>' +
+                '<span>Desde Archivo JSON Estructurado 🗂️</span>' +
+              '</div>' +
+              '<p class="text-xs text-slate-600 leading-relaxed">Si descargaste el dataset de <strong>' + config.badge + '</strong> en formato <strong>.json</strong>:</p>' +
+              '<div class="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-200 font-medium">' +
+                '<p>1. Ve a <strong>Datos &rarr; Obtener datos &rarr; De un archivo &rarr; De JSON</strong>.</p>' +
+                '<p>2. Si aparece como lista de <code class="font-mono">Record</code>, haz clic en <strong>"A la tabla"</strong> arriba a la izquierda.</p>' +
+                '<p>3. Haz clic en el botón de las dos flechas <strong>(Expandir)</strong> y desmarca <em>"Usar el nombre de columna original como prefijo"</em>.</p>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5">' +
+            '<div class="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-2">' +
+              '<i class="fa-solid fa-table-columns text-emerald-600"></i> Columnas Reales que verás al abrir Power Query en ' + config.name + ' (' + (config.rawColumns ? config.rawColumns.length : 17) + ' campos):' +
+            '</div>' +
+            '<div class="flex flex-wrap gap-1.5">' + rawColsHtml + '</div>' +
+          '</div>' +
+        '</div>' +
+
+        // PASO 2: LIMPIAR ESPACIOS FANTASMAS
+        '<div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-5">' +
+          '<div class="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-3">' +
+            '<div class="flex items-center gap-3">' +
+              '<span class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center text-sm shadow-xs">2</span>' +
+              '<div>' +
+                '<h3 class="text-xl font-bold text-slate-900">Paso 2: Limpiar Espacios Fantasmas en ' + config.badge + ' 👻 (Recortar y Limpiar)</h3>' +
+                '<p class="text-xs text-slate-500 font-semibold">Pestaña Transformar &rarr; Formato &rarr; Recortar (Text.Trim) y Limpiar (Text.Clean)</p>' +
+              '</div>' +
+            '</div>' +
+            '<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Higiene de Texto</span>' +
+          '</div>' +
+
+          '<div class="bg-emerald-50/70 border-l-4 border-emerald-600 p-4 rounded-r-xl text-xs text-emerald-950 font-medium leading-relaxed space-y-2">' +
+            '<div><strong>¿Qué columnas debes seleccionar en este set de datos?:</strong> Mantén presionada la tecla <kbd class="px-1.5 py-0.5 bg-white border rounded font-mono font-bold">Ctrl</kbd> y selecciona exactamente: ' + dirtyColsChips + '</div>' +
+            '<div class="text-slate-600"><strong>¿Por qué es obligatorio?:</strong> En este dataset el 20% de las filas traen espacios invisibles al inicio o al final (ej. <code class="bg-white px-1.5 py-0.5 rounded text-rose-600 font-mono">' + etl.beforeAfterTrim.dirty1 + '</code>). Sin <strong>Recortar</strong>, tu Tabla Dinámica duplicará las filas.</div>' +
+          '</div>' +
+
+          '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium text-slate-700">' +
+            '<div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">' +
+              '<div class="font-bold text-slate-900 flex items-center gap-1.5"><i class="fa-solid fa-scissors text-emerald-600"></i> A. Secuencia en la Interfaz de Power Query:</div>' +
+              '<p>1. Con las columnas ' + etl.dirtyTextCols.slice(0, 3).join(', ') + ' seleccionadas, ve a la pestaña <strong class="text-slate-900">Transformar</strong>.</p>' +
+              '<p>2. Haz clic en <strong class="text-emerald-800">Formato &rarr; Recortar</strong> (elimina espacios al inicio y al final).</p>' +
+              '<p>3. Haz clic en <strong class="text-emerald-800">Formato &rarr; Limpiar</strong> (elimina caracteres no imprimibles).</p>' +
+              '<p>4. Haz clic en <strong class="text-emerald-800">Formato &rarr; Poner En Mayúsculas Cada Palabra</strong>.</p>' +
+            '</div>' +
+            '<div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">' +
+              '<div class="font-bold text-slate-900 flex items-center gap-1.5"><i class="fa-solid fa-code text-teal-700"></i> B. Ejemplo Real Antes vs Después en ' + config.badge + ':</div>' +
+              '<div class="p-2.5 bg-white rounded-lg border border-slate-200 font-mono text-[11px] space-y-1">' +
+                '<div><span class="text-rose-600 font-bold">ANTES (Crudo):</span> ' + etl.beforeAfterTrim.dirty1 + '</div>' +
+                '<div><span class="text-emerald-700 font-bold">DESPUÉS (Limpio):</span> ' + etl.beforeAfterTrim.clean1 + '</div>' +
+              '</div>' +
+              '<div class="p-2.5 bg-white rounded-lg border border-slate-200 font-mono text-[11px] text-teal-900 overflow-x-auto">' +
+                '= Table.TransformColumns(Origen, {{"' + etl.dirtyTextCols[0] + '", each Text.Proper(Text.Trim(Text.Clean(_))), type text}})' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        // PASO 3: DESINFECCIÓN LEETSPEAK Y RELLENO DE NULOS
+        '<div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-5">' +
+          '<div class="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-3">' +
+            '<div class="flex items-center gap-3">' +
+              '<span class="w-9 h-9 rounded-xl bg-amber-600 text-white font-black flex items-center justify-center text-sm shadow-xs">3</span>' +
+              '<div>' +
+                '<h3 class="text-xl font-bold text-slate-900">Paso 3: Desinfección Leetspeak & Relleno de Nulos en ' + config.badge + ' 🛠️</h3>' +
+                '<p class="text-xs text-slate-500 font-semibold">Clic Derecho en Cabecera &rarr; Reemplazar los Valores (Table.ReplaceValue)</p>' +
+              '</div>' +
+            '</div>' +
+            '<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">Calidad de Datos</span>' +
+          '</div>' +
+
+          '<p class="text-xs text-slate-700 leading-relaxed font-medium">' +
+            '<strong>A. Reparar textos corruptos:</strong> Selecciona con <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded font-mono font-bold">Ctrl</kbd> las columnas ' + leetColsChips + ' (donde se observa <code class="font-mono text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">' + etl.beforeAfterTrim.dirty2 + '</code>). Haz clic derecho sobre el encabezado y elige <strong>Reemplazar los valores...</strong> aplicando esta tabla:' +
+          '</p>' +
+
+          '<div class="grid grid-cols-2 sm:grid-cols-6 gap-2 font-mono text-xs">' +
+            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: @</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span></div>' +
+            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 4</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span></div>' +
+            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 3</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: e</span></div>' +
+            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 0</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: o</span></div>' +
+            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 1</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: i</span></div>' +
+            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: # o $$</span><br>&darr;<br><span class="text-slate-500 font-bold">(Dejar vacío)</span></div>' +
+          '</div>' +
+
+          '<div class="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl space-y-2 text-xs">' +
+            '<div class="font-black text-blue-950 flex items-center gap-2"><i class="fa-solid fa-fill-drip text-blue-600"></i> B. Imputación de Valores Nulos (<code class="font-mono">null</code>) en la columna <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-300">' + etl.nullCol + '</code>:</div>' +
+            '<p class="text-slate-700 font-medium">' + etl.nullReason + '</p>' +
+            '<div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">' +
+              '<div class="bg-white p-3 rounded-xl border border-blue-200 font-medium text-slate-700">' +
+                '1. Haz clic derecho sobre la columna <strong class="font-mono text-slate-900">' + etl.nullCol + '</strong> &rarr; <strong>Reemplazar los valores...</strong><br>' +
+                '2. En <em>Valor que buscar</em> escribe: <code class="font-mono font-bold text-rose-600">null</code> (y repite para vacío).<br>' +
+                '3. En <em>Reemplazar con</em> escribe: <strong class="font-mono text-emerald-700">' + etl.nullReplacement + '</strong>.' +
+              '</div>' +
+              '<div class="bg-white p-3 rounded-xl border border-blue-200 font-mono text-[11px] text-teal-900 flex items-center overflow-x-auto">' +
+                '= Table.ReplaceValue(PasoAnterior, null, "' + etl.nullReplacement + '", Replacer.ReplaceValue, {"' + etl.nullCol + '"})' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        // PASO 4: SEPARACIÓN DE FECHAS/ID Y TABLA DE TIPOS DE DATOS EXACTOS
+        '<div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-5">' +
+          '<div class="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-3">' +
+            '<div class="flex items-center gap-3">' +
+              '<span class="w-9 h-9 rounded-xl bg-purple-600 text-white font-black flex items-center justify-center text-sm shadow-xs">4</span>' +
+              '<div>' +
+                '<h3 class="text-xl font-bold text-slate-900">Paso 4: División de Columnas & Tipado Estricto en ' + config.badge + ' 🎯</h3>' +
+                '<p class="text-xs text-slate-500 font-semibold">Dividir Columna por Delimitador &rarr; Asignación de Tipos de Datos Oficiales</p>' +
+              '</div>' +
+            '</div>' +
+            '<span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">Tipado de Modelo</span>' +
+          '</div>' +
+
+          '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">' +
+            '<div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">' +
+              '<div class="font-bold text-slate-900 flex items-center gap-1.5 text-sm"><i class="fa-solid fa-calendar-check text-purple-600"></i> 1. Aislar Fecha Contable en <code class="font-mono">' + etl.dateCol + '</code></div>' +
+              '<p class="text-slate-600 font-medium">Valor en bruto: <code class="font-mono bg-white px-1.5 py-0.5 border rounded text-rose-600">' + etl.dateRawExample + '</code></p>' +
+              '<p class="text-slate-700">Selecciona <strong class="font-mono">' + etl.dateCol + '</strong> &rarr; <strong>Transformar &rarr; Dividir columna &rarr; Por delimitador</strong> &rarr; elige <strong>Espacio</strong> (o paréntesis de apertura <code class="font-mono">"("</code>) en la primera aparición.</p>' +
+              '<p class="text-emerald-800 font-bold">Resultado limpio: ' + etl.dateCleanExample + '</p>' +
+            '</div>' +
+            '<div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">' +
+              '<div class="font-bold text-slate-900 flex items-center gap-1.5 text-sm"><i class="fa-solid fa-id-card text-blue-600"></i> 2. Separar Nombre Limpio y Código ID en <code class="font-mono">' + etl.leetspeakCols[0] + '</code></div>' +
+              '<p class="text-slate-600 font-medium">Si deseas analizar el código de cliente/entidad por separado:</p>' +
+              '<p class="text-slate-700">Selecciona <strong class="font-mono">' + etl.leetspeakCols[0] + '</strong> &rarr; <strong>Dividir columna &rarr; Por delimitador</strong> &rarr; Guion (<code class="font-mono">"-"</code>) en el delimitador situado más a la izquierda.</p>' +
+              '<p class="text-emerald-800 font-bold">Resultado: ' + etl.beforeAfterTrim.clean2 + '</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="overflow-x-auto rounded-2xl border border-slate-200">' +
+            '<table class="w-full text-left border-collapse">' +
+              '<thead class="bg-slate-100 text-slate-700 uppercase text-[11px] font-extrabold border-b border-slate-200">' +
+                '<tr>' +
+                  '<th class="py-2.5 px-3">Columna(s) del Set de Datos (' + config.badge + ')</th>' +
+                  '<th class="py-2.5 px-3">Tipo de Dato Obligatorio en Power Query</th>' +
+                  '<th class="py-2.5 px-3">Función Analítica en Tablas Dinámicas & Dashboard</th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody>' + typeRowsHtml + '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>' +
+
+        // PASO 5: LOS 5 CÁLCULOS CON COLUMNAS PERSONALIZADAS DE LA INDUSTRIA ACTIVA
+        '<div class="bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/60 border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-6">' +
+          '<div class="border-b border-emerald-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">' +
+            '<div class="flex items-center gap-3">' +
+              '<span class="w-10 h-10 rounded-xl bg-emerald-700 text-white font-black flex items-center justify-center text-base shadow-sm">5</span>' +
+              '<div>' +
+                '<h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Paso 5: Los 5 Cálculos Reales en Power Query para ' + config.name + ' 💡</h3>' +
+                '<p class="text-xs text-emerald-900 font-extrabold uppercase tracking-wider">Pestaña Agregar Columna &rarr; Columna Personalizada &bull; Fórmulas Exactas del Caso</p>' +
+              '</div>' +
+            '</div>' +
+            '<span class="px-3.5 py-1.5 rounded-full text-xs font-black bg-emerald-600 text-white shadow-xs self-start sm:self-auto">5 Columnas Calculadas M</span>' +
+          '</div>' +
+
+          '<div class="space-y-4">' + calcCardsHtml + '</div>' +
+        '</div>' +
+
+        // PASO 6: SCRIPT M COMPLETO PARA COPIAR + CARGA A MODELO Y TABLA DINÁMICA
+        '<div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-6">' +
+          '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/20 pb-4">' +
+            '<div class="flex items-center gap-3">' +
+              '<div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl font-bold">6</div>' +
+              '<div>' +
+                '<h3 class="text-xl font-black text-white">Paso 6: Script M Completo (Editor Avanzado) & Carga a Tablas Dinámicas 🚀</h3>' +
+                '<span class="text-xs text-emerald-100 font-semibold uppercase tracking-wider">Listo para pegar en Vista &rarr; Editor Avanzado o seguir paso a paso</span>' +
+              '</div>' +
+            '</div>' +
+            '<button onclick="copyActiveEtlMCode()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-emerald-900 hover:bg-emerald-50 font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer self-start sm:self-auto">' +
+              '<i class="fa-solid fa-copy"></i> Copiar Script M de ' + config.badge +
+            '</button>' +
+          '</div>' +
+
+          '<pre class="bg-slate-950/90 text-emerald-300 border border-white/15 rounded-2xl p-4 font-mono text-xs overflow-x-auto leading-relaxed">' + etl.fullMCode + '</pre>' +
+
+          '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium text-emerald-50 leading-relaxed">' +
+            '<div class="p-4 bg-white/10 rounded-2xl border border-white/20 space-y-2">' +
+              '<strong class="text-white font-black flex items-center gap-1.5 text-sm"><i class="fa-solid fa-database text-emerald-300"></i> A. Cerrar y Cargar al Modelo de Datos:</strong>' +
+              '<p>1. En Power Query ve a <strong>Inicio &rarr; Cerrar y cargar en...</strong></p>' +
+              '<p>2. Elige <strong class="text-white">Crear únicamente la conexión</strong> y activa la casilla <strong class="text-white">Agregar estos datos al Modelo de datos</strong>.</p>' +
+              '<p>3. Cuando agregues nuevos archivos a <code class="font-mono text-white">' + etl.folderPath + '</code>, solo presiona <kbd class="px-2 py-0.5 bg-white/20 rounded font-mono font-bold text-white">Ctrl + Alt + F5</kbd>.</p>' +
+            '</div>' +
+            '<div class="p-4 bg-white/10 rounded-2xl border border-white/20 space-y-2">' +
+              '<strong class="text-white font-black flex items-center gap-1.5 text-sm"><i class="fa-solid fa-table-cells text-emerald-300"></i> B. Configuración de la Tabla Dinámica (' + config.badge + '):</strong>' +
+              '<p>&bull; <strong>Segmentadores (Slicers):</strong> <span class="font-mono text-emerald-200">' + etl.pivotSetup.slicers + '</span></p>' +
+              '<p>&bull; <strong>Cuadrante Filas:</strong> <span class="font-mono text-emerald-200">' + etl.pivotSetup.rows + '</span></p>' +
+              '<p>&bull; <strong>Cuadrante Valores:</strong> <span class="font-mono text-emerald-200">' + etl.pivotSetup.values + '</span></p>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
     }
 
     window.onload = function() {
