@@ -6669,21 +6669,25 @@ let
     // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
     // Funciona automáticamente aunque Excel nombre tu tabla como "Tabla1", "Table1" o "Datos_Crudos_ETL"
     LibroActual = Excel.CurrentWorkbook(),
-    TablaDetectada = if not Table.IsEmpty(LibroActual) then
-                         (try LibroActual{[Name="Tabla1"]}[Content]
-                          otherwise try LibroActual{[Name="Table1"]}[Content]
-                          otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
-                          otherwise LibroActual{0}[Content])
-                     else
-                         let
-                             ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Supermercado_&_Retail_Masivo_ETL_1000_Filas.xlsx"), null, true)
-                                            otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Supermercado_&_Retail_Masivo_ETL_1000_Filas (1).xlsx"), null, true),
-                             HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                         in
-                             HojaDatos,
-    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
-             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
-             else TablaDetectada,
+    TablasPreparadas = Table.TransformColumns(LibroActual, {
+        {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
+    }),
+    TablasOrigenValidas = Table.SelectRows(TablasPreparadas, each
+        List.Contains(Table.ColumnNames([Content]), "CLIENTE") and
+        not List.Contains(Table.ColumnNames([Content]), "SUBTOTAL_VALIDADO")
+    ),
+    Origen = if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else
+                 let
+                     ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Supermercado_&_Retail_Masivo_ETL_1000_Filas (1).xlsx"), null, true)
+                                    otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Supermercado_&_Retail_Masivo_ETL_1000_Filas.xlsx"), null, true),
+                     HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data],
+                     PromoverEncabezados = if List.Contains(Table.ColumnNames(HojaDatos), "Column1")
+                                           then Table.PromoteHeaders(HojaDatos, [PromoteAllScalars=true])
+                                           else HojaDatos
+                 in
+                     PromoverEncabezados,
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
@@ -6823,21 +6827,25 @@ in
 let
     // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
     LibroActual = Excel.CurrentWorkbook(),
-    TablaDetectada = if not Table.IsEmpty(LibroActual) then
-                         (try LibroActual{[Name="Tabla1"]}[Content]
-                          otherwise try LibroActual{[Name="Table1"]}[Content]
-                          otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
-                          otherwise LibroActual{0}[Content])
-                     else
-                         let
-                             ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Logística,_Fletes_&_Cadena_de_Suministro_ETL_1000_Filas.xlsx"), null, true)
-                                            otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Logística,_Fletes_&_Cadena_de_Suministro_ETL_1000_Filas (1).xlsx"), null, true),
-                             HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                         in
-                             HojaDatos,
-    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
-             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
-             else TablaDetectada,
+    TablasPreparadas = Table.TransformColumns(LibroActual, {
+        {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
+    }),
+    TablasOrigenValidas = Table.SelectRows(TablasPreparadas, each
+        List.Contains(Table.ColumnNames([Content]), "EMPRESA_CLIENTE") and
+        not List.Contains(Table.ColumnNames([Content]), "SUBTOTAL_FLETE_CALC")
+    ),
+    Origen = if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else
+                 let
+                     ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Logística,_Fletes_&_Cadena_de_Suministro_ETL_1000_Filas.xlsx"), null, true)
+                                    otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Logística,_Fletes_&_Cadena_de_Suministro_ETL_1000_Filas (1).xlsx"), null, true),
+                     HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data],
+                     PromoverEncabezados = if List.Contains(Table.ColumnNames(HojaDatos), "Column1")
+                                           then Table.PromoteHeaders(HojaDatos, [PromoteAllScalars=true])
+                                           else HojaDatos
+                 in
+                     PromoverEncabezados,
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
@@ -6977,21 +6985,25 @@ in
 let
     // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
     LibroActual = Excel.CurrentWorkbook(),
-    TablaDetectada = if not Table.IsEmpty(LibroActual) then
-                         (try LibroActual{[Name="Tabla1"]}[Content]
-                          otherwise try LibroActual{[Name="Table1"]}[Content]
-                          otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
-                          otherwise LibroActual{0}[Content])
-                     else
-                         let
-                             ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Finanzas_Corporativas_&_Cuentas_por_Cobrar_(CxC)_ETL_1000_Filas.xlsx"), null, true)
-                                            otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Finanzas_Corporativas_&_Cuentas_por_Cobrar_(CxC)_ETL_1000_Filas (1).xlsx"), null, true),
-                             HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                         in
-                             HojaDatos,
-    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
-             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
-             else TablaDetectada,
+    TablasPreparadas = Table.TransformColumns(LibroActual, {
+        {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
+    }),
+    TablasOrigenValidas = Table.SelectRows(TablasPreparadas, each
+        List.Contains(Table.ColumnNames([Content]), "NOMBRE_DEUDOR") and
+        not List.Contains(Table.ColumnNames([Content]), "INTERES_MORA_CALC")
+    ),
+    Origen = if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else
+                 let
+                     ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Finanzas_Corporativas_&_Cuentas_por_Cobrar_(CxC)_ETL_1000_Filas (1).xlsx"), null, true)
+                                    otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Finanzas_Corporativas_&_Cuentas_por_Cobrar_(CxC)_ETL_1000_Filas.xlsx"), null, true),
+                     HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data],
+                     PromoverEncabezados = if List.Contains(Table.ColumnNames(HojaDatos), "Column1")
+                                           then Table.PromoteHeaders(HojaDatos, [PromoteAllScalars=true])
+                                           else HojaDatos
+                 in
+                     PromoverEncabezados,
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
@@ -7133,21 +7145,25 @@ in
 let
     // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
     LibroActual = Excel.CurrentWorkbook(),
-    TablaDetectada = if not Table.IsEmpty(LibroActual) then
-                         (try LibroActual{[Name="Tabla1"]}[Content]
-                          otherwise try LibroActual{[Name="Table1"]}[Content]
-                          otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
-                          otherwise LibroActual{0}[Content])
-                     else
-                         let
-                             ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Recursos_Humanos_&_Planilla_Multisucursal_ETL_1000_Filas.xlsx"), null, true)
-                                            otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Recursos_Humanos_&_Planilla_Multisucursal_ETL_1000_Filas (1).xlsx"), null, true),
-                             HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                         in
-                             HojaDatos,
-    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
-             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
-             else TablaDetectada,
+    TablasPreparadas = Table.TransformColumns(LibroActual, {
+        {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
+    }),
+    TablasOrigenValidas = Table.SelectRows(TablasPreparadas, each
+        List.Contains(Table.ColumnNames([Content]), "NOMBRE_COLABORADOR") and
+        not List.Contains(Table.ColumnNames([Content]), "AFP_LEGAL_287")
+    ),
+    Origen = if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else
+                 let
+                     ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Recursos_Humanos_&_Planilla_Multisucursal_ETL_1000_Filas (1).xlsx"), null, true)
+                                    otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Recursos_Humanos_&_Planilla_Multisucursal_ETL_1000_Filas.xlsx"), null, true),
+                     HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data],
+                     PromoverEncabezados = if List.Contains(Table.ColumnNames(HojaDatos), "Column1")
+                                           then Table.PromoteHeaders(HojaDatos, [PromoteAllScalars=true])
+                                           else HojaDatos
+                 in
+                     PromoverEncabezados,
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
@@ -7286,21 +7302,25 @@ in
 let
     // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
     LibroActual = Excel.CurrentWorkbook(),
-    TablaDetectada = if not Table.IsEmpty(LibroActual) then
-                         (try LibroActual{[Name="Tabla1"]}[Content]
-                          otherwise try LibroActual{[Name="Table1"]}[Content]
-                          otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
-                          otherwise LibroActual{0}[Content])
-                     else
-                         let
-                             ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Salud,_Clínicas_&_Coberturas_ARS_ETL_1000_Filas.xlsx"), null, true)
-                                            otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Salud,_Clínicas_&_Coberturas_ARS_ETL_1000_Filas (1).xlsx"), null, true),
-                             HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                         in
-                             HojaDatos,
-    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
-             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
-             else TablaDetectada,
+    TablasPreparadas = Table.TransformColumns(LibroActual, {
+        {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
+    }),
+    TablasOrigenValidas = Table.SelectRows(TablasPreparadas, each
+        List.Contains(Table.ColumnNames([Content]), "EXPEDIENTE_PACIENTE") and
+        not List.Contains(Table.ColumnNames([Content]), "COPAGO_VALIDADO")
+    ),
+    Origen = if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else
+                 let
+                     ArchivoExcel = try Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Salud,_Clínicas_&_Coberturas_ARS_ETL_1000_Filas (1).xlsx"), null, true)
+                                    otherwise Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Salud,_Clínicas_&_Coberturas_ARS_ETL_1000_Filas.xlsx"), null, true),
+                     HojaDatos = ArchivoExcel{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data],
+                     PromoverEncabezados = if List.Contains(Table.ColumnNames(HojaDatos), "Column1")
+                                           then Table.PromoteHeaders(HojaDatos, [PromoteAllScalars=true])
+                                           else HojaDatos
+                 in
+                     PromoverEncabezados,
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
@@ -7437,7 +7457,7 @@ in
               result += '<span class="token type-token">' + escapeHtml(word) + '</span>';
             } else if (functionsSet.has(word)) {
               result += '<span class="token function">' + escapeHtml(word) + '</span>';
-            } else if (/^(LibroActual|TablaDetectada|ArchivoExcel|HojaDatos|Origen|LimpiarTexto|SanarHash|SanarArroba|SanarCuatro|SanarTres|SanarCero|SanarUno|Rellenar[A-Za-z]+|ExtraerFecha|Tipar[A-Za-z]+|Col[0-9A-Za-z_]+|PasoAnterior|_)$/.test(word)) {
+            } else if (/^(LibroActual|TablasPreparadas|TablasOrigenValidas|TablaDetectada|ArchivoExcel|HojaDatos|PromoverEncabezados|Origen|LimpiarTexto|SanarHash|SanarArroba|SanarCuatro|SanarTres|SanarCero|SanarUno|Rellenar[A-Za-z]+|ExtraerFecha|Tipar[A-Za-z]+|Col[0-9A-Za-z_]+|PasoAnterior|_)$/.test(word)) {
               result += '<span class="token step-var">' + escapeHtml(word) + '</span>';
             } else {
               result += escapeHtml(word);
