@@ -55,6 +55,34 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+  <!-- Prism.js Syntax Highlighter CDN para Lenguaje M de Power Query -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script>
+    if (window.Prism) {
+      Prism.languages.powerquery = {
+        'comment': [
+          { pattern: /(^|[^\\])\/\*[\s\S]*?(?:\*\/|$)/, lookbehind: true },
+          { pattern: /(^|[^\\:])\/\/.*/, lookbehind: true }
+        ],
+        'string': {
+          pattern: /"(?:""|[^"])*"/,
+          greedy: true
+        },
+        'column-ref': {
+          pattern: /\[[^\]]+\]/,
+          greedy: true
+        },
+        'type-token': /\b(?:Currency\.Type|Percentage\.Type|Int64\.Type|Number\.Type|Date\.Type|Text\.Type|Logical\.Type|DateTime\.Type|type\s+(?:text|date|number|logical|any|table|record|list))\b/,
+        'function': /\b(?:Excel\.CurrentWorkbook|Excel\.Workbook|File\.Contents|Folder\.Files|Csv\.Document|Json\.Document|Table\.[A-Za-z0-9_]+|Text\.[A-Za-z0-9_]+|Date\.[A-Za-z0-9_]+|Number\.[A-Za-z0-9_]+|List\.[A-Za-z0-9_]+|Replacer\.[A-Za-z0-9_]+|Splitter\.[A-Za-z0-9_]+)\b/,
+        'keyword': /\b(?:let|in|each|if|then|else|and|or|not|try|otherwise|type|as|is|meta|section|shared|error|true|false|null)\b/,
+        'number': /\b\d+(?:\.\d+)?\b/,
+        'operator': /<>|<=|>=|=>|[=+\-*/><]/,
+        'punctuation': /[{}(),\[\]]/
+      };
+      Prism.languages.m = Prism.languages.powerquery;
+    }
+  </script>
+
   <!-- Font Awesome 6 Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -4606,6 +4634,10 @@
         const dataKeys = Object.keys(cleanData[0] || {});
         wsData['!cols'] = dataKeys.map(k => ({ wch: Math.max(k.length + 4, 18) }));
         XLSX.utils.book_append_sheet(wb, wsData, "Datos_Crudos_ETL");
+        if (!wb.Workbook) wb.Workbook = {};
+        if (!wb.Workbook.Names) wb.Workbook.Names = [];
+        const lastColLetter = XLSX.utils.encode_col(Math.max(0, dataKeys.length - 1));
+        wb.Workbook.Names.push({ Name: "Datos_Crudos_ETL", Ref: "Datos_Crudos_ETL!$A$1:$" + lastColLetter + "$" + (cleanData.length + 1) });
 
         // Calcular cifras de control reales del set de datos descargado
         const sums = CURRENT_DATASET.reduce((acc, row) => {
@@ -6631,38 +6663,54 @@
         },
         fullMCode: `// =========================================================================
 // SCRIPT M MAESTRO: 1. SUPERMERCADO & RETAIL MASIVO (POS & INVENTARIO)
-// Dónde pegarlo: Power Query -> Pestaña Vista -> Editor Avanzado
+// Solución Anti-Error: Detecta automáticamente "Tabla1", "Table1" o "Datos_Crudos_ETL"
 // =========================================================================
 let
-    // PASO 1: Conexión a la tabla cruda del libro Excel ("Datos_Crudos_ETL")
-    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
+    // Funciona automáticamente aunque Excel nombre tu tabla como "Tabla1", "Table1" o "Datos_Crudos_ETL"
+    LibroActual = Excel.CurrentWorkbook(),
+    TablaDetectada = try LibroActual{[Name="Tabla1"]}[Content]
+                     otherwise try LibroActual{[Name="Table1"]}[Content]
+                     otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
+                     otherwise LibroActual{0}[Content],
+    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
+             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
+             else TablaDetectada,
 
-    // PASO 2: Limpieza de espacios fantasmas (Trim), caracteres ocultos (Clean) y Nombre Propio
-    LimpiarTexto = Table.TransformColumns(Origen, {
-        {"REGION", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"VENDEDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"CATEGORIA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"PRODUCTO", each Text.Trim(Text.Clean(Text.From(_))), type text}
-    }),
-
-    // PASO 3A: Desinfección de caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
+    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
 
-    // PASO 3B: Imputación de valores nulos en CANAL_VENTA -> "Sucursal Física"
-    RellenarCanal = Table.ReplaceValue(SanarUno, null, "Sucursal Física", Replacer.ReplaceValue, {"CANAL_VENTA"}),
+    // PASO 3: Limpieza de Espacios Fantasmas (Trim), Caracteres Ocultos (Clean) y Relleno de Nulos en CANAL_VENTA
+    LimpiarTexto = Table.TransformColumns(SanarUno, {
+        {"REGION", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"VENDEDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"CATEGORIA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"PRODUCTO", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"CANAL_VENTA", each if _ = null or Text.Trim(Text.From(_)) = "" then "Sucursal Física" else Text.Trim(Text.From(_)), type text}
+    }),
 
-    // PASO 4: Aislar la fecha contable en FECHA_VENTA descartando el turno horario "(08:00-12:00)"
-    ExtraerFecha = Table.TransformColumns(RellenarCanal, {
-        {"FECHA_VENTA", each Date.FromText(Text.BeforeDelimiter(Text.From(_), " ")), type date}
+    // PASO 4: Aislar Fecha Contable en FECHA_VENTA y Tipar Columnas Numéricas Oficiales
+    ExtraerFecha = Table.TransformColumns(LimpiarTexto, {
+        {"FECHA_VENTA", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+    }),
+    TiparNumeros = Table.TransformColumnTypes(ExtraerFecha, {
+        {"CANTIDAD", Int64.Type},
+        {"PRECIO_VENTA", Currency.Type},
+        {"SUBTOTAL", Currency.Type},
+        {"ITBIS_18", Currency.Type},
+        {"TOTAL_FACTURA", Currency.Type},
+        {"COSTO_TOTAL", Currency.Type},
+        {"MARGEN_BRUTO", Currency.Type}
     }),
 
     // PASO 5: Creación de las 5 Columnas Calculadas de Auditoría Retail (Pestaña Agregar Columna)
-    Col1_Subtotal    = Table.AddColumn(ExtraerFecha, "SUBTOTAL_VALIDADO", each [CANTIDAD] * [PRECIO_VENTA], Currency.Type),
+    Col1_Subtotal    = Table.AddColumn(TiparNumeros, "SUBTOTAL_VALIDADO", each [CANTIDAD] * [PRECIO_VENTA], Currency.Type),
     Col2_TotalItbis  = Table.AddColumn(Col1_Subtotal, "TOTAL_CON_ITBIS", each [SUBTOTAL] + [ITBIS_18], Currency.Type),
     Col3_MargenCalc  = Table.AddColumn(Col2_TotalItbis, "MARGEN_BRUTO_CALC", each [SUBTOTAL] - [COSTO_TOTAL], Currency.Type),
     Col4_IngresoReal = Table.AddColumn(Col3_MargenCalc, "INGRESO_REAL", each if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA], Currency.Type),
@@ -6762,38 +6810,52 @@ in
         },
         fullMCode: `// =========================================================================
 // SCRIPT M MAESTRO: 2. LOGÍSTICA, TRANSPORTE & FLETES TERRESTRES
-// Dónde pegarlo: Power Query -> Pestaña Vista -> Editor Avanzado
+// Solución Anti-Error: Detecta automáticamente "Tabla1", "Table1" o "Datos_Crudos_ETL"
 // =========================================================================
 let
-    // PASO 1: Conexión a la tabla cruda del libro Excel ("Datos_Crudos_ETL")
-    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
+    LibroActual = Excel.CurrentWorkbook(),
+    TablaDetectada = try LibroActual{[Name="Tabla1"]}[Content]
+                     otherwise try LibroActual{[Name="Table1"]}[Content]
+                     otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
+                     otherwise LibroActual{0}[Content],
+    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
+             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
+             else TablaDetectada,
 
-    // PASO 2: Limpieza de espacios fantasmas (Trim), caracteres ocultos (Clean) y Nombre Propio
-    LimpiarTexto = Table.TransformColumns(Origen, {
-        {"RUTA_ORIGEN_DESTINO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"EMPRESA_CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"CHOFER_FLOTA", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"VEHICULO_PLACA", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"TIPO_CARGA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
-    }),
-
-    // PASO 3A: Desinfección de caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
+    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
 
-    // PASO 3B: Imputación de valores nulos en TIPO_CARGA -> "Carga Estándar"
-    RellenarCarga = Table.ReplaceValue(SanarUno, null, "Carga Estándar", Replacer.ReplaceValue, {"TIPO_CARGA"}),
+    // PASO 3: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en TIPO_CARGA -> "Carga Estándar"
+    LimpiarTexto = Table.TransformColumns(SanarUno, {
+        {"RUTA_ORIGEN_DESTINO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"EMPRESA_CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"CHOFER_FLOTA", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"VEHICULO_PLACA", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"TIPO_CARGA", each if _ = null or Text.Trim(Text.From(_)) = "" then "Carga Estándar" else Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
+    }),
 
-    // PASO 4: Aislar la fecha de salida en FECHA_DESPACHO descartando la ventana horaria
-    ExtraerFecha = Table.TransformColumns(RellenarCarga, {
-        {"FECHA_DESPACHO", each Date.FromText(Text.BeforeDelimiter(Text.From(_), " ")), type date}
+    // PASO 4: Aislar Fecha de Salida en FECHA_DESPACHO y Tipar Columnas Numéricas
+    ExtraerFecha = Table.TransformColumns(LimpiarTexto, {
+        {"FECHA_DESPACHO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+    }),
+    TiparNumeros = Table.TransformColumnTypes(ExtraerFecha, {
+        {"TONELADAS_CARGA", Number.Type},
+        {"TARIFA_POR_TON", Currency.Type},
+        {"SUBTOTAL_FLETE", Currency.Type},
+        {"PEAJES_COMBUSTIBLE", Currency.Type},
+        {"TOTAL_FLETE_RD", Currency.Type},
+        {"COSTO_OPERATIVO", Currency.Type},
+        {"MARGEN_FLETE", Currency.Type}
     }),
 
     // PASO 5: Creación de las 5 Columnas Calculadas de Auditoría de Fletes y Flota
-    Col1_SubtotalFlete = Table.AddColumn(ExtraerFecha, "SUBTOTAL_FLETE_CALC", each [TONELADAS_CARGA] * [TARIFA_POR_TON], Currency.Type),
+    Col1_SubtotalFlete = Table.AddColumn(TiparNumeros, "SUBTOTAL_FLETE_CALC", each [TONELADAS_CARGA] * [TARIFA_POR_TON], Currency.Type),
     Col2_TotalFlete    = Table.AddColumn(Col1_SubtotalFlete, "TOTAL_FLETE_CALC", each [SUBTOTAL_FLETE] + [PEAJES_COMBUSTIBLE], Currency.Type),
     Col3_MargenFlete   = Table.AddColumn(Col2_TotalFlete, "MARGEN_FLETE_CALC", each [TOTAL_FLETE_RD] - [COSTO_OPERATIVO], Currency.Type),
     Col4_FleteReal     = Table.AddColumn(Col3_MargenFlete, "FLETE_EFECTIVO_REAL", each if [ESTATUS_DESPACHO] = "Anulado" then 0 else [TOTAL_FLETE_RD], Currency.Type),
@@ -6894,39 +6956,54 @@ in
         },
         fullMCode: `// =========================================================================
 // SCRIPT M MAESTRO: 3. FINANZAS CORPORATIVAS, TESORERÍA & CARTERA CxC
-// Dónde pegarlo: Power Query -> Pestaña Vista -> Editor Avanzado
+// Solución Anti-Error: Detecta automáticamente "Tabla1", "Table1" o "Datos_Crudos_ETL"
 // =========================================================================
 let
-    // PASO 1: Conexión a la tabla cruda del libro Excel ("Datos_Crudos_ETL")
-    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
+    LibroActual = Excel.CurrentWorkbook(),
+    TablaDetectada = try LibroActual{[Name="Tabla1"]}[Content]
+                     otherwise try LibroActual{[Name="Table1"]}[Content]
+                     otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
+                     otherwise LibroActual{0}[Content],
+    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
+             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
+             else TablaDetectada,
 
-    // PASO 2: Limpieza de espacios fantasmas (Trim), caracteres ocultos (Clean) y Nombre Propio
-    LimpiarTexto = Table.TransformColumns(Origen, {
-        {"SUCURSAL_CARTERA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"RNC_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"NOMBRE_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"OFICIAL_CREDITO", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"LINEA_CREDITO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
-    }),
-
-    // PASO 3A: Desinfección de caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
+    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
 
-    // PASO 3B: Imputación de valores nulos en CANAL_PAGO -> "Banca en Línea"
-    RellenarCanal = Table.ReplaceValue(SanarUno, null, "Banca en Línea", Replacer.ReplaceValue, {"CANAL_PAGO"}),
+    // PASO 3: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en CANAL_PAGO -> "Banca en Línea"
+    LimpiarTexto = Table.TransformColumns(SanarUno, {
+        {"SUCURSAL_CARTERA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"RNC_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"NOMBRE_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"OFICIAL_CREDITO", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"LINEA_CREDITO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"CANAL_PAGO", each if _ = null or Text.Trim(Text.From(_)) = "" then "Banca en Línea" else Text.Trim(Text.From(_)), type text}
+    }),
 
-    // PASO 4: Tipado estricto de fechas contractuales (FECHA_EMISION y FECHA_VENCIMIENTO)
-    TiparFechas = Table.TransformColumns(RellenarCanal, {
-        {"FECHA_EMISION", each Date.FromText(Text.BeforeDelimiter(Text.From(_), " ")), type date},
-        {"FECHA_VENCIMIENTO", each Date.FromText(Text.BeforeDelimiter(Text.From(_), " ")), type date}
+    // PASO 4: Tipado Estricto de Fechas Contractuales y Columnas Numéricas de Cartera
+    TiparFechas = Table.TransformColumns(LimpiarTexto, {
+        {"FECHA_EMISION", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date},
+        {"FECHA_VENCIMIENTO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+    }),
+    TiparNumeros = Table.TransformColumnTypes(TiparFechas, {
+        {"MONTO_PRINCIPAL", Currency.Type},
+        {"TASA_INTERES_ANUAL", Number.Type},
+        {"INTERES_MORA", Currency.Type},
+        {"SALDO_TOTAL_EXIGIBLE", Currency.Type},
+        {"ABONO_RECUPERADO", Currency.Type},
+        {"SALDO_PENDIENTE", Currency.Type},
+        {"DIAS_MORA", Int64.Type}
     }),
 
     // PASO 5: Creación de las 5 Columnas Calculadas de Auditoría de Cartera y Riesgo (Aging)
-    Col1_InteresMora     = Table.AddColumn(TiparFechas, "INTERES_MORA_CALC", each Number.Round([MONTO_PRINCIPAL] * ([TASA_INTERES_ANUAL] / 100) * ([DIAS_MORA] / 365), 2), Currency.Type),
+    Col1_InteresMora     = Table.AddColumn(TiparNumeros, "INTERES_MORA_CALC", each Number.Round([MONTO_PRINCIPAL] * ([TASA_INTERES_ANUAL] / 100) * ([DIAS_MORA] / 365), 2), Currency.Type),
     Col2_SaldoExigible   = Table.AddColumn(Col1_InteresMora, "SALDO_EXIGIBLE_CALC", each [MONTO_PRINCIPAL] + [INTERES_MORA], Currency.Type),
     Col3_SaldoPendiente  = Table.AddColumn(Col2_SaldoExigible, "SALDO_PENDIENTE_CALC", each [SALDO_TOTAL_EXIGIBLE] - [ABONO_RECUPERADO], Currency.Type),
     Col4_PorcRecuperado  = Table.AddColumn(Col3_SaldoPendiente, "PORC_RECUPERACION", each if [SALDO_TOTAL_EXIGIBLE] <> 0 then [ABONO_RECUPERADO] / [SALDO_TOTAL_EXIGIBLE] else 0, Percentage.Type),
@@ -7027,38 +7104,53 @@ in
         },
         fullMCode: `// =========================================================================
 // SCRIPT M MAESTRO: 4. RECURSOS HUMANOS, NÓMINA & SEGURIDAD SOCIAL (TSS)
-// Dónde pegarlo: Power Query -> Pestaña Vista -> Editor Avanzado
+// Solución Anti-Error: Detecta automáticamente "Tabla1", "Table1" o "Datos_Crudos_ETL"
 // =========================================================================
 let
-    // PASO 1: Conexión a la tabla cruda del libro Excel ("Datos_Crudos_ETL")
-    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
+    LibroActual = Excel.CurrentWorkbook(),
+    TablaDetectada = try LibroActual{[Name="Tabla1"]}[Content]
+                     otherwise try LibroActual{[Name="Table1"]}[Content]
+                     otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
+                     otherwise LibroActual{0}[Content],
+    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
+             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
+             else TablaDetectada,
 
-    // PASO 2: Limpieza de espacios fantasmas (Trim), caracteres ocultos (Clean) y Nombre Propio
-    LimpiarTexto = Table.TransformColumns(Origen, {
-        {"SEDE_PLANTA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"NOMBRE_COLABORADOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"SUPERVISOR_TURNO", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"DEPARTAMENTO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"CARGO_PUESTO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
-    }),
-
-    // PASO 3A: Desinfección de caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
+    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
 
-    // PASO 3B: Imputación de valores nulos en DEPARTAMENTO -> "Operaciones Planta"
-    RellenarDepto = Table.ReplaceValue(SanarUno, null, "Operaciones Planta", Replacer.ReplaceValue, {"DEPARTAMENTO"}),
+    // PASO 3: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en DEPARTAMENTO -> "Operaciones Planta"
+    LimpiarTexto = Table.TransformColumns(SanarUno, {
+        {"SEDE_PLANTA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"NOMBRE_COLABORADOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"SUPERVISOR_TURNO", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"DEPARTAMENTO", each if _ = null or Text.Trim(Text.From(_)) = "" then "Operaciones Planta" else Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"CARGO_PUESTO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
+    }),
 
-    // PASO 4: Tipado de FECHA_INGRESO como Fecha contable (type date)
-    TiparFechaIngreso = Table.TransformColumns(RellenarDepto, {
-        {"FECHA_INGRESO", each Date.FromText(Text.BeforeDelimiter(Text.From(_), " ")), type date}
+    // PASO 4: Tipado de FECHA_INGRESO y Columnas Monetarias de Nómina y TSS
+    TiparFechaIngreso = Table.TransformColumns(LimpiarTexto, {
+        {"FECHA_INGRESO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+    }),
+    TiparNumeros = Table.TransformColumnTypes(TiparFechaIngreso, {
+        {"SUELDO_BRUTO", Currency.Type},
+        {"HORAS_EXTRAS_VALOR", Currency.Type},
+        {"RETENCION_AFP_287", Currency.Type},
+        {"RETENCION_SFS_304", Currency.Type},
+        {"RETENCION_ISR", Currency.Type},
+        {"TOTAL_DESCUENTOS", Currency.Type},
+        {"SUELDO_NETO_PAGADO", Currency.Type},
+        {"APORTE_PATRONAL_TSS", Currency.Type}
     }),
 
     // PASO 5: Creación de las 5 Columnas Calculadas de Nómina, TSS (Ley 87-01) e ISR
-    Col1_AfpLegal       = Table.AddColumn(TiparFechaIngreso, "AFP_LEGAL_287", each Number.Round([SUELDO_BRUTO] * 0.0287, 2), Currency.Type),
+    Col1_AfpLegal       = Table.AddColumn(TiparNumeros, "AFP_LEGAL_287", each Number.Round([SUELDO_BRUTO] * 0.0287, 2), Currency.Type),
     Col2_SfsLegal       = Table.AddColumn(Col1_AfpLegal, "SFS_LEGAL_304", each Number.Round([SUELDO_BRUTO] * 0.0304, 2), Currency.Type),
     Col3_TotalDesc      = Table.AddColumn(Col2_SfsLegal, "TOTAL_DESCUENTOS_CALC", each [RETENCION_AFP_287] + [RETENCION_SFS_304] + [RETENCION_ISR], Currency.Type),
     Col4_SueldoNeto     = Table.AddColumn(Col3_TotalDesc, "SUELDO_NETO_CALC", each [SUELDO_BRUTO] - [TOTAL_DESCUENTOS], Currency.Type),
@@ -7157,38 +7249,51 @@ in
         },
         fullMCode: `// =========================================================================
 // SCRIPT M MAESTRO: 5. SALUD, CLÍNICAS PRIVADAS & COBERTURAS ARS
-// Dónde pegarlo: Power Query -> Pestaña Vista -> Editor Avanzado
+// Solución Anti-Error: Detecta automáticamente "Tabla1", "Table1" o "Datos_Crudos_ETL"
 // =========================================================================
 let
-    // PASO 1: Conexión a la tabla cruda del libro Excel ("Datos_Crudos_ETL")
-    Origen = Excel.CurrentWorkbook(){[Name="Datos_Crudos_ETL"]}[Content],
+    // PASO 1: Conexión Inteligente a la Tabla del Libro Excel Actual
+    LibroActual = Excel.CurrentWorkbook(),
+    TablaDetectada = try LibroActual{[Name="Tabla1"]}[Content]
+                     otherwise try LibroActual{[Name="Table1"]}[Content]
+                     otherwise try LibroActual{[Name="Datos_Crudos_ETL"]}[Content]
+                     otherwise LibroActual{0}[Content],
+    Origen = if List.Contains(Table.ColumnNames(TablaDetectada), "Column1")
+             then Table.PromoteHeaders(TablaDetectada, [PromoteAllScalars=true])
+             else TablaDetectada,
 
-    // PASO 2: Limpieza de espacios fantasmas (Trim), caracteres ocultos (Clean) y Nombre Propio
-    LimpiarTexto = Table.TransformColumns(Origen, {
-        {"SEDE_CLINICA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"EXPEDIENTE_PACIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"MEDICO_TRATANTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"ESPECIALIDAD_MEDICA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"SERVICIO_PROCEDIMIENTO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
-    }),
-
-    // PASO 3A: Desinfección de caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarArroba = Table.ReplaceValue(LimpiarTexto, "@", "a", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
+    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
 
-    // PASO 3B: Imputación de valores nulos en ASEGURADORA_ARS -> "Particular Privado"
-    RellenarArs = Table.ReplaceValue(SanarUno, null, "Particular Privado", Replacer.ReplaceValue, {"ASEGURADORA_ARS"}),
+    // PASO 3: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en ASEGURADORA_ARS -> "Particular Privado"
+    LimpiarTexto = Table.TransformColumns(SanarUno, {
+        {"SEDE_CLINICA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"EXPEDIENTE_PACIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"MEDICO_TRATANTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"ESPECIALIDAD_MEDICA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"SERVICIO_PROCEDIMIENTO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"ASEGURADORA_ARS", each if _ = null or Text.Trim(Text.From(_)) = "" then "Particular Privado" else Text.Trim(Text.From(_)), type text}
+    }),
 
-    // PASO 4: Aislar fecha clínica en FECHA_ATENCION descartando el turno de guardia médica
-    ExtraerFecha = Table.TransformColumns(RellenarArs, {
-        {"FECHA_ATENCION", each Date.FromText(Text.BeforeDelimiter(Text.From(_), " ")), type date}
+    // PASO 4: Aislar Fecha Clínica en FECHA_ATENCION y Tipar Columnas Monetarias Hospitalarias
+    ExtraerFecha = Table.TransformColumns(LimpiarTexto, {
+        {"FECHA_ATENCION", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+    }),
+    TiparNumeros = Table.TransformColumnTypes(ExtraerFecha, {
+        {"MONTO_TOTAL_FACTURADO", Currency.Type},
+        {"COBERTURA_ARS", Currency.Type},
+        {"COPAGO_PACIENTE", Currency.Type},
+        {"COSTO_INSUMOS", Currency.Type},
+        {"MARGEN_CLINICA", Currency.Type}
     }),
 
     // PASO 5: Creación de las 5 Columnas Calculadas de Facturación ARS, Glosas y Margen Clínico
-    Col1_CopagoValidado = Table.AddColumn(ExtraerFecha, "COPAGO_VALIDADO", each [MONTO_TOTAL_FACTURADO] - [COBERTURA_ARS], Currency.Type),
+    Col1_CopagoValidado = Table.AddColumn(TiparNumeros, "COPAGO_VALIDADO", each [MONTO_TOTAL_FACTURADO] - [COBERTURA_ARS], Currency.Type),
     Col2_MargenClinica  = Table.AddColumn(Col1_CopagoValidado, "MARGEN_CLINICA_CALC", each [MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS], Currency.Type),
     Col3_PorcCobertura  = Table.AddColumn(Col2_MargenClinica, "PORC_COBERTURA_ARS", each if [MONTO_TOTAL_FACTURADO] <> 0 then [COBERTURA_ARS] / [MONTO_TOTAL_FACTURADO] else 0, Percentage.Type),
     Col4_IngresoClinico = Table.AddColumn(Col3_PorcCobertura, "INGRESO_EFECTIVO_CLINICA", each if [ESTATUS_RECLAMACION] = "Rechazada" then 0 else [MONTO_TOTAL_FACTURADO], Currency.Type),
@@ -7253,7 +7358,7 @@ in
         }
 
         // Master regex for Power Query M tokens
-        const tokenRegex = /("(?:""|[^"])*")|(\[[^\]]+\])|(\b(?:Excel\.CurrentWorkbook|Folder\.Files|Csv\.Document|Json\.Document|Table\.[A-Za-z0-9_]+|Text\.[A-Za-z0-9_]+|Date\.[A-Za-z0-9_]+|Number\.[A-Za-z0-9_]+|Replacer\.[A-Za-z0-9_]+|Splitter\.[A-Za-z0-9_]+|Currency\.Type|Percentage\.Type|Int64\.Type|Number\.Type|Date\.Type|Text\.Type)\b)|(\b\d+(?:\.\d+)?\b)|(\b[A-Za-z_][A-Za-z0-9_]*\b)|(<>|<=|>=|=>|[=+\-*/><])|([{}(),])/g;
+        const tokenRegex = /("(?:""|[^"])*")|(\[[^\]]+\])|(\b(?:Excel\.CurrentWorkbook|Excel\.Workbook|File\.Contents|Folder\.Files|Csv\.Document|Json\.Document|Table\.[A-Za-z0-9_]+|Text\.[A-Za-z0-9_]+|Date\.[A-Za-z0-9_]+|Number\.[A-Za-z0-9_]+|List\.[A-Za-z0-9_]+|Replacer\.[A-Za-z0-9_]+|Splitter\.[A-Za-z0-9_]+|Currency\.Type|Percentage\.Type|Int64\.Type|Number\.Type|Date\.Type|Text\.Type)\b)|(\b\d+(?:\.\d+)?\b)|(\b[A-Za-z_][A-Za-z0-9_]*\b)|(<>|<=|>=|=>|[=+\-*/><])|([{}(),])/g;
 
         let result = '';
         let lastIndex = 0;
@@ -7292,7 +7397,7 @@ in
               result += '<span class="token type-token">' + escapeHtml(word) + '</span>';
             } else if (functionsSet.has(word)) {
               result += '<span class="token function">' + escapeHtml(word) + '</span>';
-            } else if (/^(Origen|LimpiarTexto|SanarArroba|SanarCuatro|SanarTres|SanarCero|SanarUno|Rellenar[A-Za-z]+|ExtraerFecha|Tipar[A-Za-z]+|Col[0-9A-Za-z_]+|PasoAnterior|_)$/.test(word)) {
+            } else if (/^(LibroActual|TablaDetectada|Origen|LimpiarTexto|SanarHash|SanarArroba|SanarCuatro|SanarTres|SanarCero|SanarUno|Rellenar[A-Za-z]+|ExtraerFecha|Tipar[A-Za-z]+|Col[0-9A-Za-z_]+|PasoAnterior|_)$/.test(word)) {
               result += '<span class="token step-var">' + escapeHtml(word) + '</span>';
             } else {
               result += escapeHtml(word);
@@ -7332,15 +7437,55 @@ in
       }).join('');
     }
 
-    function copyActiveEtlMCode() {
+    function copyTextToClipboardWithFeedback(textToCopy, btnEl, successMsg) {
+      const doFeedback = () => {
+        if (btnEl) {
+          const prevHtml = btnEl.innerHTML;
+          btnEl.innerHTML = '<i class="fa-solid fa-check text-emerald-950"></i> ¡Código M Copiado!';
+          btnEl.classList.add('ring-4', 'ring-emerald-300');
+          setTimeout(() => {
+            btnEl.innerHTML = prevHtml;
+            btnEl.classList.remove('ring-4', 'ring-emerald-300');
+          }, 2200);
+        }
+        showToast(successMsg || 'Código M copiado al portapapeles.', 'success');
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(doFeedback).catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = textToCopy;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          doFeedback();
+        });
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = textToCopy;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        doFeedback();
+      }
+    }
+
+    function copyActiveEtlMCode(btnEl) {
       const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
       const data = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
-      if (navigator.clipboard && data.fullMCode) {
-        navigator.clipboard.writeText(data.fullMCode).then(() => {
-          showToast('Código M de ' + data.title + ' copiado al portapapeles.', 'success');
-        }).catch(() => {
-          showToast('Selecciona el bloque de código M para copiarlo.', 'info');
-        });
+      if (data && data.fullMCode) {
+        copyTextToClipboardWithFeedback(data.fullMCode, btnEl, 'Script M Completo de ' + data.title + ' copiado y listo para pegar en el Editor Avanzado.');
+      }
+    }
+
+    function copyCalcMCode(calcIndex, btnEl) {
+      const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
+      const data = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
+      const calc = data && data.calculations ? data.calculations[calcIndex] : null;
+      if (calc) {
+        copyTextToClipboardWithFeedback(calc.pqFormula.replace(/^=/, ''), btnEl, 'Fórmula de ' + calc.colName + ' copiada.');
       }
     }
 
@@ -7408,7 +7553,7 @@ in
         purple:  { bg: 'bg-purple-100',  text: 'text-purple-800',  badgeBg: 'bg-purple-50',  border: 'border-purple-200' }
       };
 
-      const calcCardsHtml = etl.calculations.map(calc => {
+      const calcCardsHtml = etl.calculations.map((calc, calcIdx) => {
         const cm = colorMap[calc.color] || colorMap.emerald;
         return (
           '<div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2.5 hover:border-emerald-500 transition-all">' +
@@ -7422,7 +7567,7 @@ in
             '<p class="text-xs text-slate-600 leading-relaxed font-medium"><strong>Qué hace este cálculo:</strong> ' + calc.explanation + '</p>' +
             '<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1.5">' +
               '<div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre exacto en Columna Personalizada:</span> <strong class="text-blue-700 bg-white px-2 py-0.5 rounded border border-blue-200">' + calc.colName + '</strong></div>' +
-              '<div><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula en el cuadro de Power Query:</span> <code class="language-powerquery bg-slate-900 text-slate-100 px-2.5 py-1 rounded-lg border border-slate-700 inline-block mt-0.5">' + highlightPowerQueryM(calc.pqFormula, false) + '</code></div>' +
+              '<div class="flex flex-wrap items-center justify-between gap-2"><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula en el cuadro de Power Query:</span> <div class="flex items-center gap-2"><code class="language-powerquery bg-slate-900 text-slate-100 px-2.5 py-1 rounded-lg border border-slate-700 inline-block">' + highlightPowerQueryM(calc.pqFormula, false) + '</code><button onclick="copyCalcMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all"><i class="fa-solid fa-copy mr-1"></i>Copiar Fórmula</button></div></div>' +
               '<div><span class="text-slate-500 font-sans text-[11px] font-bold">3. Instrucción generada en Lenguaje M:</span> <pre class="pq-inline-snippet language-powerquery mt-1"><code>' + highlightPowerQueryM('= ' + calc.mCode, false) + '</code></pre></div>' +
               '<div class="text-[11px] font-sans text-slate-500 pt-1">📌 <em>Tipo de dato obligatorio al finalizar: <strong class="text-slate-800">' + calc.dataType + '</strong>.</em></div>' +
             '</div>' +
@@ -7678,7 +7823,7 @@ in
                 '<span class="text-xs text-emerald-200 font-semibold uppercase tracking-wider">Listo para pegar en Vista &rarr; Editor Avanzado o seguir paso a paso &bull; Caso: ' + config.name + '</span>' +
               '</div>' +
             '</div>' +
-            '<button onclick="copyActiveEtlMCode()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-400 text-slate-950 hover:bg-emerald-300 font-black text-xs shadow-lg transition-all active:scale-95 cursor-pointer self-start sm:self-auto">' +
+            '<button onclick="copyActiveEtlMCode(this)" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-400 text-slate-950 hover:bg-emerald-300 font-black text-xs shadow-lg transition-all active:scale-95 cursor-pointer self-start sm:self-auto">' +
               '<i class="fa-solid fa-copy"></i> Copiar Script M de ' + config.badge +
             '</button>' +
           '</div>' +
@@ -7696,7 +7841,7 @@ in
             '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 text-xs leading-relaxed">' +
               '<div class="p-3.5 rounded-xl bg-slate-950/55 border border-white/15 space-y-1.5">' +
                 '<div class="font-black text-emerald-300 flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center text-[11px] font-black">1</span> 1. ¿Dónde iniciar en Excel?</div>' +
-                '<p class="text-slate-200">Abre el archivo Excel descargado de <strong>' + config.badge + '</strong>, haz clic en cualquier celda dentro de la hoja <code class="font-mono text-amber-300 font-bold">Datos_Crudos_ETL</code> y ve a la cinta superior: <strong class="text-white">Datos &rarr; De una tabla o rango</strong> (asegúrate de que la tabla se llame exactamente <code class="font-mono text-emerald-300">Datos_Crudos_ETL</code>).</p>' +
+                '<p class="text-slate-200">Abre el archivo Excel descargado de <strong>' + config.badge + '</strong>, haz clic en cualquier celda de la primera hoja (<code class="font-mono text-amber-300 font-bold">Datos_Crudos_ETL</code>) y pulsa <strong class="text-white">Datos &rarr; De una tabla o rango &rarr; Aceptar</strong>. <em>(No importa si Excel nombra tu tabla como <code class="font-mono text-emerald-300">Tabla1</code> o <code class="font-mono text-emerald-300">Table1</code>; el script la detecta automáticamente)</em>.</p>' +
               '</div>' +
 
               '<div class="p-3.5 rounded-xl bg-slate-950/55 border border-white/15 space-y-1.5">' +
@@ -7726,7 +7871,13 @@ in
             '</div>' +
           '</div>' +
 
-          // VENTANA IDE DEL EDITOR AVANZADO POWER QUERY CON SINTAXIS COLOREADA (PRISM / LENGUAJE M)
+          // NOTA DE SOLUCIÓN AL ERROR Expression.Error: We couldn't find an Excel table named 'Datos_Crudos_ETL'
+          '<div class="bg-amber-400/15 border-l-4 border-amber-400 rounded-r-2xl p-4 text-xs text-amber-100 space-y-1">' +
+            '<div class="font-black text-amber-300 flex items-center gap-2 text-sm"><i class="fa-solid fa-shield-halved"></i> Blindaje Anti-Error Activado (Solución a Expression.Error: "Datos_Crudos_ETL")</div>' +
+            '<p class="leading-relaxed">Cuando abres el archivo Excel descargado y pulsas <strong>Datos &rarr; De una tabla o rango</strong>, la pestaña se llama <code class="font-mono text-white">Datos_Crudos_ETL</code>, pero Excel bautiza automáticamente el objeto de tabla como <code class="font-mono text-emerald-300 font-bold">Tabla1</code> (o <code class="font-mono text-emerald-300 font-bold">Table1</code> en inglés). Este script incluye un bloque <code class="font-mono text-purple-300 font-bold">try ... otherwise LibroActual{0}[Content]</code> en el <strong>PASO 1</strong> que detecta automáticamente <code class="font-mono text-emerald-300">Tabla1</code>, <code class="font-mono text-emerald-300">Table1</code> o <code class="font-mono text-emerald-300">Datos_Crudos_ETL</code> sin dar error.</p>' +
+          '</div>' +
+
+          // VENTANA IDE DEL EDITOR AVANZADO POWER QUERY CON SINTAXIS COLOREADA (PRISM / LENGUAJE M) Y BOTÓN COPIAR INTEGRADO
           '<div class="pq-ide-window">' +
             '<div class="pq-ide-header">' +
               '<div class="flex items-center gap-2.5">' +
@@ -7735,13 +7886,18 @@ in
                   '<span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span>' +
                   '<span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>' +
                 '</div>' +
-                '<span class="text-xs font-mono font-bold text-slate-200 ml-2"><i class="fa-solid fa-terminal text-emerald-400 mr-1.5"></i>Editor avanzado &mdash; Consulta: <span class="text-emerald-300">Datos_Crudos_ETL (' + config.badge + ')</span></span>' +
+                '<span class="text-xs font-mono font-bold text-slate-200 ml-2"><i class="fa-solid fa-terminal text-emerald-400 mr-1.5"></i>Prism Power Query M &mdash; <span class="text-emerald-300">Editor Avanzado (' + config.badge + ')</span></span>' +
               '</div>' +
-              '<div class="flex flex-wrap items-center gap-2 text-[10px] font-mono">' +
-                '<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-400/30">let / in / each</span>' +
-                '<span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-400/30">Funciones M</span>' +
-                '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/30">[Columnas]</span>' +
-                '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">"Strings" / Tipos</span>' +
+              '<div class="flex flex-wrap items-center gap-2">' +
+                '<div class="hidden xl:flex items-center gap-1.5 text-[10px] font-mono mr-2">' +
+                  '<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-400/30">let / in / try</span>' +
+                  '<span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-400/30">Funciones M</span>' +
+                  '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/30">[Columnas]</span>' +
+                  '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">"Strings" / Tipos</span>' +
+                '</div>' +
+                '<button onclick="copyActiveEtlMCode(this)" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-sans font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer">' +
+                  '<i class="fa-solid fa-copy"></i> Copiar Código M' +
+                '</button>' +
               '</div>' +
             '</div>' +
 
@@ -7750,9 +7906,11 @@ in
             '<div class="pq-ide-footer">' +
               '<div class="flex items-center gap-2 text-emerald-300 font-bold">' +
                 '<i class="fa-solid fa-circle-check text-emerald-400"></i>' +
-                '<span>No se han detectado errores de sintaxis.</span>' +
+                '<span>No se han detectado errores de sintaxis &bull; Compatible con Tabla1, Table1 y Datos_Crudos_ETL</span>' +
               '</div>' +
-              '<div class="font-mono text-[11px] text-slate-400">Lenguaje Power Query M &bull; 5 Columnas Calculadas Incluidas &bull; ' + config.name + '</div>' +
+              '<button onclick="copyActiveEtlMCode(this)" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/10 hover:bg-white/20 text-emerald-200 font-sans font-bold text-[11px] cursor-pointer transition-all">' +
+                '<i class="fa-solid fa-clipboard"></i> Copiar Script' +
+              '</button>' +
             '</div>' +
           '</div>' +
 
