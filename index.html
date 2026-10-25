@@ -8791,6 +8791,47 @@ in
       const container = document.getElementById('dashboardStepByStepManual');
       if (!container) return;
 
+      // Calcular métricas en vivo del dataset actual para alimentar la emulación 3D de Excel en Fase 1 y Fase 2
+      const ds = (CURRENT_DATASET && CURRENT_DATASET.length) ? CURRENT_DATASET : [];
+      const sums = ds.reduce((acc, r) => {
+        acc.grossTotal += (r._metricPrimary || 0);
+        acc.secondaryTotal += (r._metricSecondary || 0);
+        acc.marginTotal += (r._metricMargin || 0);
+        acc.realTotal += (r._metricReal || 0);
+        acc.totalCount++;
+        if (r._cleanStatus === 'Cancelado' || r._cleanStatus === 'Anulado' || r._cleanStatus === 'Rechazada' || r._cleanStatus === 'Desvinculado' || r._cleanStatus === 'Castigado / Incobrable') {
+          acc.failedCount++;
+        }
+        acc.tonsTotal += Number(r.TONELADAS_CARGA || 0);
+        acc.daysMoraSum += Number(r.DIAS_MORA || 0);
+        return acc;
+      }, { grossTotal: 0, secondaryTotal: 0, marginTotal: 0, realTotal: 0, totalCount: 0, failedCount: 0, tonsTotal: 0, daysMoraSum: 0 });
+
+      const regMap = {}, catMap = {}, monthMap = {}, entMap = {};
+      ds.forEach(r => {
+        const rk = r._cleanRegion || 'Sede Principal';
+        if (!regMap[rk]) regMap[rk] = { p: 0, s: 0 };
+        regMap[rk].p += (r._metricPrimary || 0);
+        regMap[rk].s += (r._metricSecondary || 0);
+
+        const ck = r._categoryKey || 'Categoría A';
+        catMap[ck] = (catMap[ck] || 0) + (r._metricPrimary || 0);
+
+        const mk = (r._cleanDate || '2026-01').substring(0, 7);
+        if (!monthMap[mk]) monthMap[mk] = { p: 0, r: 0 };
+        monthMap[mk].p += (r._metricPrimary || 0);
+        monthMap[mk].r += (r._metricReal || 0);
+
+        const ek = r._cleanEntity || 'Responsable 1';
+        entMap[ek] = (entMap[ek] || 0) + (r._metricPrimary || 0);
+      });
+
+      const topRegs = Object.entries(regMap).sort((a, b) => b[1].p - a[1].p).slice(0, 2);
+      const topCats = Object.entries(catMap).sort((a, b) => b[1] - a[1]).slice(0, 2);
+      const topMonths = Object.entries(monthMap).sort((a, b) => a[0].localeCompare(b[0])).slice(0, 2);
+      const topEnts = Object.entries(entMap).sort((a, b) => b[1] - a[1]).slice(0, 2);
+      const sampleRow = ds[0] || {};
+
       const pivotRowsHtml = spec.pivots.map(p =>
         '<tr class="hover:bg-emerald-50/40 border-b border-slate-200 last:border-0 text-xs">' +
           '<td class="py-2.5 px-3 font-mono font-black text-[#107c41] whitespace-nowrap">' + p.id + '<div class="text-[10px] text-slate-500 font-normal">' + p.range + '</div></td>' +
@@ -8800,18 +8841,225 @@ in
         '</tr>'
       ).join('');
 
-      const kpiStepCards = spec.kpis.map(k =>
-        '<div class="p-3 bg-white rounded-xl border border-slate-200 space-y-1.5 text-xs shadow-2xs">' +
-          '<div class="flex items-center justify-between">' +
-            '<span class="px-2 py-0.5 rounded bg-[#107c41] text-white font-mono font-black text-[10px]">' + k.code + ' Celda ' + k.cell + '</span>' +
-            '<span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 font-bold text-slate-700">' + k.qRef + '</span>' +
-          '</div>' +
-          '<div class="font-black text-slate-900">' + k.label + '</div>' +
-          '<div class="text-[11px] font-semibold text-[#107c41] bg-emerald-50/80 px-2 py-1 rounded border border-emerald-200">' +
-            '<i class="fa-solid fa-hand-pointer mr-1"></i> <strong>Sin Fórmulas (Drag & Drop):</strong> ' + k.dragAction +
-          '</div>' +
-        '</div>'
-      ).join('');
+      // Emulación 3D de cada una de las 6 Tablas Dinámicas (Fase 1) como hoja real de Excel + Panel de 4 Cuadrantes
+      const pivot3DCardsHtml = spec.pivots.map((p, idx) => {
+        const colLetters = idx === 0 ? ['A', 'B', 'C'] : idx === 1 ? ['A', 'B', 'C'] : idx === 2 ? ['E', 'F', 'G'] : idx === 3 ? ['I', 'J', 'K'] : idx === 4 ? ['M', 'N', 'O'] : ['E', 'F', 'G'];
+        const startRow = idx === 0 ? 3 : idx === 5 ? 35 : 10;
+        let previewRow1 = ['Total General', 'RD$ ' + Math.round(sums.grossTotal).toLocaleString('es-DO'), 'RD$ ' + Math.round(sums.realTotal).toLocaleString('es-DO')];
+        let previewRow2 = ['Prom. / Margen', 'RD$ ' + Math.round(sums.marginTotal).toLocaleString('es-DO'), ((sums.marginTotal / (sums.grossTotal || 1)) * 100).toFixed(1) + '%'];
+        let rowHeaderTitle = 'Métrica KPI';
+        let colBTitle = '&Sigma; ' + spec.primaryCol;
+        let colCTitle = '&Sigma; ' + spec.secondaryCol;
+
+        if (idx === 1 && topRegs.length > 0) {
+          rowHeaderTitle = spec.slicers[0].field;
+          previewRow1 = [topRegs[0][0], 'RD$ ' + Math.round(topRegs[0][1].p).toLocaleString('es-DO'), 'RD$ ' + Math.round(topRegs[0][1].s).toLocaleString('es-DO')];
+          if (topRegs[1]) previewRow2 = [topRegs[1][0], 'RD$ ' + Math.round(topRegs[1][1].p).toLocaleString('es-DO'), 'RD$ ' + Math.round(topRegs[1][1].s).toLocaleString('es-DO')];
+        } else if (idx === 2 && topCats.length > 0) {
+          rowHeaderTitle = spec.catCol;
+          colCTitle = '% del Total General';
+          const p1 = ((topCats[0][1] / (sums.grossTotal || 1)) * 100).toFixed(1) + '%';
+          previewRow1 = [topCats[0][0], 'RD$ ' + Math.round(topCats[0][1]).toLocaleString('es-DO'), p1];
+          if (topCats[1]) {
+            const p2 = ((topCats[1][1] / (sums.grossTotal || 1)) * 100).toFixed(1) + '%';
+            previewRow2 = [topCats[1][0], 'RD$ ' + Math.round(topCats[1][1]).toLocaleString('es-DO'), p2];
+          }
+        } else if (idx === 3 && topMonths.length > 0) {
+          rowHeaderTitle = spec.dateCol + ' (Mes)';
+          colCTitle = '&Sigma; ' + spec.realCol;
+          previewRow1 = [topMonths[0][0], 'RD$ ' + Math.round(topMonths[0][1].p).toLocaleString('es-DO'), 'RD$ ' + Math.round(topMonths[0][1].r).toLocaleString('es-DO')];
+          if (topMonths[1]) previewRow2 = [topMonths[1][0], 'RD$ ' + Math.round(topMonths[1][1].p).toLocaleString('es-DO'), 'RD$ ' + Math.round(topMonths[1][1].r).toLocaleString('es-DO')];
+        } else if (idx === 4 && topEnts.length > 0) {
+          rowHeaderTitle = spec.entityCol + ' (Top 8)';
+          colCTitle = 'Ranking #';
+          previewRow1 = [topEnts[0][0], 'RD$ ' + Math.round(topEnts[0][1]).toLocaleString('es-DO'), '#1 Líder'];
+          if (topEnts[1]) previewRow2 = [topEnts[1][0], 'RD$ ' + Math.round(topEnts[1][1]).toLocaleString('es-DO'), '#2 Top'];
+        } else if (idx === 5) {
+          rowHeaderTitle = spec.idCol + ' | ' + spec.entityCol;
+          colCTitle = '&Sigma; ' + spec.marginCol;
+          previewRow1 = [(sampleRow[spec.idCol] || 'ID-001') + ' · ' + (sampleRow._cleanEntity || 'Entidad'), 'RD$ ' + Math.round(sampleRow._metricPrimary || 0).toLocaleString('es-DO'), 'RD$ ' + Math.round(sampleRow._metricMargin || 0).toLocaleString('es-DO')];
+          previewRow2 = ['Total General (' + sums.totalCount + ' reg.)', 'RD$ ' + Math.round(sums.grossTotal).toLocaleString('es-DO'), 'RD$ ' + Math.round(sums.marginTotal).toLocaleString('es-DO')];
+        }
+
+        return (
+          '<div class="bg-white rounded-2xl border-2 border-slate-200 hover:border-[#107c41] shadow-md flex flex-col justify-between overflow-hidden pivot-3d-card transition-all">' +
+            // Barra Superior Estilo Ventana de Tabla Dinámica en Excel
+            '<div class="bg-gradient-to-r from-[#107c41] to-[#185c37] text-white px-4 py-2.5 flex items-center justify-between gap-2">' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="w-6 h-6 rounded-md bg-white text-[#107c41] font-mono font-black text-xs flex items-center justify-center shadow-2xs">' + (idx + 1) + '</span>' +
+                '<div>' +
+                  '<div class="font-mono font-black text-xs tracking-wide">' + p.id + '</div>' +
+                  '<div class="text-[10px] text-emerald-100 font-mono">' + p.range + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<span class="px-2 py-0.5 rounded bg-black/25 border border-white/20 text-[10px] font-mono font-bold text-emerald-200">Alt + N + V</span>' +
+            '</div>' +
+
+            '<div class="p-4 space-y-3 flex-1 flex flex-col justify-between bg-gradient-to-b from-slate-50/70 to-white">' +
+              // Simulación 3D de los 4 Cuadrantes del Panel "Campos de tabla dinámica" de Excel
+              '<div class="space-y-1.5">' +
+                '<div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center justify-between">' +
+                  '<span><i class="fa-solid fa-table-Columns text-[#107c41] mr-1"></i> Panel Campos de Tabla Dinámica (Arrastrar):</span>' +
+                  '<span class="text-[#107c41] font-mono">Drag &amp; Drop</span>' +
+                '</div>' +
+                '<div class="grid grid-cols-2 gap-1.5 text-[10px] font-mono bg-[#f3f2f1] p-2 rounded-xl border border-[#c8c6c4] shadow-inner">' +
+                  '<div class="bg-white p-1.5 rounded border border-slate-300">' +
+                    '<div class="text-[9px] font-bold text-slate-400 uppercase flex items-center gap-1"><i class="fa-solid fa-filter text-slate-400"></i> Filtros</div>' +
+                    '<div class="text-slate-500 truncate mt-0.5">Slicers [S1]-[S3]</div>' +
+                  '</div>' +
+                  '<div class="bg-white p-1.5 rounded border border-slate-300">' +
+                    '<div class="text-[9px] font-bold text-teal-700 uppercase flex items-center gap-1"><i class="fa-solid fa-grip-lines-vertical"></i> Columnas</div>' +
+                    '<div class="text-slate-800 font-bold truncate mt-0.5" title="' + p.cols + '">' + p.cols + '</div>' +
+                  '</div>' +
+                  '<div class="bg-blue-50/70 p-1.5 rounded border border-blue-300">' +
+                    '<div class="text-[9px] font-black text-blue-800 uppercase flex items-center gap-1"><i class="fa-solid fa-bars"></i> Filas (Soltar aquí)</div>' +
+                    '<div class="text-blue-950 font-bold leading-tight mt-0.5">' + p.rows + '</div>' +
+                  '</div>' +
+                  '<div class="bg-emerald-50/80 p-1.5 rounded border border-emerald-400">' +
+                    '<div class="text-[9px] font-black text-[#107c41] uppercase flex items-center gap-1"><i class="fa-solid fa-sigma"></i> Valores (&Sigma;)</div>' +
+                    '<div class="text-emerald-950 font-bold leading-tight mt-0.5">' + p.vals + '</div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+
+              // Simulación 3D de la Cuadrícula de Celdas de Excel resultante
+              '<div class="space-y-1">' +
+                '<div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center justify-between">' +
+                  '<span><i class="fa-solid fa-file-excel text-[#107c41] mr-1"></i> Vista Previa en Celdas de Excel:</span>' +
+                  '<span class="font-mono text-[9px] bg-emerald-50 text-emerald-800 px-1.5 py-0.2 rounded border border-emerald-200">Hoja Activa</span>' +
+                '</div>' +
+                '<div class="rounded-lg border border-[#8a8886] overflow-hidden font-mono text-[10px] bg-white shadow-xs">' +
+                  // Encabezado de Columnas de Excel (A | B | C)
+                  '<div class="grid grid-cols-12 bg-[#e1dfdd] text-slate-700 font-bold border-b border-[#8a8886] text-center">' +
+                    '<div class="col-span-1 py-0.5 border-r border-[#8a8886] bg-[#d2d0ce] text-[9px]">&#9698;</div>' +
+                    '<div class="col-span-5 py-0.5 border-r border-[#8a8886]">' + colLetters[0] + '</div>' +
+                    '<div class="col-span-3 py-0.5 border-r border-[#8a8886]">' + colLetters[1] + '</div>' +
+                    '<div class="col-span-3 py-0.5">' + colLetters[2] + '</div>' +
+                  '</div>' +
+                  // Fila Cabecera de Tabla Dinámica en Excel
+                  '<div class="grid grid-cols-12 bg-[#107c41] text-white font-bold border-b border-[#8a8886] items-center">' +
+                    '<div class="col-span-1 py-1 text-center bg-[#e1dfdd] text-slate-700 border-r border-[#8a8886] text-[9px]">' + startRow + '</div>' +
+                    '<div class="col-span-5 px-1.5 py-1 truncate border-r border-white/20">' + rowHeaderTitle + ' &#9662;</div>' +
+                    '<div class="col-span-3 px-1.5 py-1 truncate border-r border-white/20 text-right">' + colBTitle + '</div>' +
+                    '<div class="col-span-3 px-1.5 py-1 truncate text-right">' + colCTitle + '</div>' +
+                  '</div>' +
+                  // Fila de Datos 1
+                  '<div class="grid grid-cols-12 border-b border-slate-200 text-slate-800 items-center">' +
+                    '<div class="col-span-1 py-1 text-center bg-[#f3f2f1] text-slate-600 border-r border-[#c8c6c4] text-[9px] font-bold">' + (startRow + 1) + '</div>' +
+                    '<div class="col-span-5 px-1.5 py-1 truncate border-r border-slate-200 font-semibold">' + previewRow1[0] + '</div>' +
+                    '<div class="col-span-3 px-1.5 py-1 truncate border-r border-slate-200 text-right font-bold text-slate-900">' + previewRow1[1] + '</div>' +
+                    '<div class="col-span-3 px-1.5 py-1 truncate text-right text-[#107c41] font-bold">' + previewRow1[2] + '</div>' +
+                  '</div>' +
+                  // Fila de Datos 2 / Total
+                  '<div class="grid grid-cols-12 bg-emerald-50/70 text-emerald-950 font-bold items-center">' +
+                    '<div class="col-span-1 py-1 text-center bg-[#f3f2f1] text-slate-600 border-r border-[#c8c6c4] text-[9px]">' + (startRow + 2) + '</div>' +
+                    '<div class="col-span-5 px-1.5 py-1 truncate border-r border-emerald-200">' + previewRow2[0] + '</div>' +
+                    '<div class="col-span-3 px-1.5 py-1 truncate border-r border-emerald-200 text-right">' + previewRow2[1] + '</div>' +
+                    '<div class="col-span-3 px-1.5 py-1 truncate text-right text-[#107c41]">' + previewRow2[2] + '</div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+
+              // Pie de Destino en el Dashboard
+              '<div class="pt-2 border-t border-slate-200 flex items-center justify-between gap-2 text-[11px] font-bold text-[#107c41]">' +
+                '<span class="truncate"><i class="fa-solid fa-share-nodes mr-1"></i> ' + p.target + '</span>' +
+                '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-950 font-mono text-[9px] shrink-0">0 Fórmulas</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+
+      // Emulación 3D de las 6 Tarjetas KPI [K1] a [K6] en Celdas de Excel (Fase 2)
+      const kpiStepCards = spec.kpis.map((k, kIdx) => {
+        const rawVal = k.valFn(sums);
+        let formattedVal = '';
+        if (k.fmt === 'currency') formattedVal = 'RD$ ' + Math.round(rawVal).toLocaleString('es-DO');
+        else if (k.fmt === 'percent') formattedVal = Number(rawVal).toFixed(2) + '%';
+        else if (k.fmt === 'percent1') formattedVal = Number(rawVal).toFixed(1) + '%';
+        else if (k.fmt === 'tons') formattedVal = Number(rawVal).toLocaleString('es-DO') + ' Ton';
+        else if (k.fmt === 'days') formattedVal = Number(rawVal).toLocaleString('es-DO') + ' Días';
+        else formattedVal = String(rawVal);
+
+        const colPairs = [['E', 'F'], ['G', 'H'], ['I', 'J'], ['K', 'L'], ['M', 'N'], ['O', 'P']];
+        const cols = colPairs[kIdx] || ['E', 'F'];
+        const headerBgMap = {
+          blue: 'bg-[#0078d4]',
+          emerald: 'bg-[#107c41]',
+          indigo: 'bg-indigo-700',
+          teal: 'bg-[#008272]',
+          amber: 'bg-amber-600',
+          rose: 'bg-rose-600'
+        };
+        const valTextMap = {
+          blue: 'text-[#0078d4]',
+          emerald: 'text-[#107c41]',
+          indigo: 'text-indigo-800',
+          teal: 'text-[#008272]',
+          amber: 'text-amber-700',
+          rose: 'text-rose-700'
+        };
+        const hdrBg = headerBgMap[k.color] || 'bg-[#107c41]';
+        const valColor = valTextMap[k.color] || 'text-[#107c41]';
+
+        return (
+          '<div class="bg-white rounded-2xl border-2 border-slate-200 hover:border-[#0078d4] shadow-md flex flex-col justify-between overflow-hidden pivot-3d-card transition-all">' +
+            // Barra Superior de la Mini-Tabla Dinámica KPI
+            '<div class="' + hdrBg + ' text-white px-4 py-2 flex items-center justify-between gap-2">' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="px-2 py-0.5 rounded bg-black/25 font-mono font-black text-xs">' + k.code + '</span>' +
+                '<span class="font-mono font-bold text-xs">Celda ' + k.cell + '</span>' +
+              '</div>' +
+              '<span class="px-2 py-0.5 rounded bg-white/95 text-slate-900 font-mono font-black text-[10px]">Responde ' + k.qRef + '</span>' +
+            '</div>' +
+
+            '<div class="p-4 space-y-3 flex-1 flex flex-col justify-between bg-gradient-to-b from-slate-50/60 to-white">' +
+              // Simulación de la Celdas Reales E3:F5 en la Hoja de Excel
+              '<div class="space-y-1">' +
+                '<div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center justify-between">' +
+                  '<span><i class="fa-solid fa-table-cells text-[#107c41] mr-1"></i> Emulación de Celdas en Excel (' + k.cell + '):</span>' +
+                  '<span class="font-mono text-[9px] text-slate-500">Mini-TD #' + (kIdx + 1) + '</span>' +
+                '</div>' +
+                '<div class="rounded-lg border-2 border-[#8a8886] overflow-hidden font-mono text-xs bg-white shadow-xs">' +
+                  // Letras de Columnas de Excel (E | F)
+                  '<div class="grid grid-cols-12 bg-[#e1dfdd] text-slate-700 font-bold border-b border-[#8a8886] text-center text-[10px]">' +
+                    '<div class="col-span-2 py-0.5 border-r border-[#8a8886] bg-[#d2d0ce]">Fila</div>' +
+                    '<div class="col-span-5 py-0.5 border-r border-[#8a8886]">Col ' + cols[0] + '</div>' +
+                    '<div class="col-span-5 py-0.5">Col ' + cols[1] + '</div>' +
+                  '</div>' +
+                  // Fila 3 de Excel: Encabezado automático de la Mini-Tabla Dinámica
+                  '<div class="grid grid-cols-12 border-b border-[#c8c6c4] items-center bg-[#f3f2f1]">' +
+                    '<div class="col-span-2 py-1 text-center bg-[#e1dfdd] text-slate-700 border-r border-[#8a8886] text-[10px] font-bold">3</div>' +
+                    '<div class="col-span-10 px-2 py-1 text-[10px] font-black text-slate-700 truncate">&Sigma; ' + k.label + '</div>' +
+                  '</div>' +
+                  // Fila 4 de Excel: Valor Calculado por la Mini-Tabla Dinámica
+                  '<div class="grid grid-cols-12 border-b border-[#c8c6c4] items-center bg-white">' +
+                    '<div class="col-span-2 py-2 text-center bg-[#e1dfdd] text-slate-700 border-r border-[#8a8886] text-[10px] font-bold">4</div>' +
+                    '<div class="col-span-10 px-2.5 py-2 text-base sm:text-lg font-black ' + valColor + ' text-right tracking-tight bg-emerald-50/20">' + formattedVal + '</div>' +
+                  '</div>' +
+                  // Fila 5 de Excel: Subtítulo / Pie de Tarjeta
+                  '<div class="grid grid-cols-12 items-center bg-slate-50">' +
+                    '<div class="col-span-2 py-1 text-center bg-[#e1dfdd] text-slate-700 border-r border-[#8a8886] text-[10px] font-bold">5</div>' +
+                    '<div class="col-span-10 px-2 py-1 text-[10px] font-sans font-semibold text-slate-500 truncate">' + k.sub(sums) + '</div>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+
+              // Simulación del Cuadrante de Tabla Dinámica (Filas vacío, solo ∑ Valores)
+              '<div class="p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-300 space-y-1.5 text-[11px]">' +
+                '<div class="grid grid-cols-3 gap-1 text-[9px] font-mono text-center">' +
+                  '<div class="bg-white/90 py-0.5 px-1 rounded border border-slate-200 text-slate-400">☰ Filas: <strong>(Vacío)</strong></div>' +
+                  '<div class="bg-white/90 py-0.5 px-1 rounded border border-slate-200 text-slate-400">🏛️ Cols: <strong>(Vacío)</strong></div>' +
+                  '<div class="bg-[#107c41] text-white py-0.5 px-1 rounded font-bold">&Sigma; Valores: Activo</div>' +
+                '</div>' +
+                '<div class="text-[#107c41] font-bold leading-snug">' +
+                  '<i class="fa-solid fa-hand-pointer mr-1"></i> <strong>Acción Drag &amp; Drop:</strong> ' + k.dragAction +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
 
       const slicerStepCards = spec.slicers.map(s =>
         '<div class="p-3.5 bg-white rounded-xl border border-slate-200 space-y-1 text-xs shadow-2xs">' +
@@ -8885,46 +9133,104 @@ in
             '</div>' +
           '</div>' +
 
-          // FASE 1 Y FASE 2 (100% CON TABLAS DINÁMICAS, ARRASTRAR Y SOLTAR)
-          '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">' +
-
-            // FASE 1: Las 6 Tablas Dinámicas Base (Arrastrar y Soltar)
-            '<div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">' +
-              '<div class="flex items-center justify-between border-b border-slate-200 pb-2.5">' +
-                '<div class="flex items-center gap-2 font-black text-slate-900 text-sm">' +
-                  '<span class="w-6 h-6 rounded-lg bg-[#107c41] text-white flex items-center justify-center text-xs">1</span>' +
-                  '<span>Fase 1: Crear las Tablas Dinámicas (100% Arrastrar y Soltar)</span>' +
+          // =========================================================================
+          // SECCIÓN INDEPENDIENTE 1: FASE 1 — CREAR LAS 6 TABLAS DINÁMICAS (ANCHO COMPLETO + EMULACIÓN 3D DE EXCEL)
+          // =========================================================================
+          '<div class="p-5 sm:p-7 rounded-3xl bg-slate-50 border-2 border-[#107c41]/30 space-y-5 shadow-xs pivot-3d-scene">' +
+            '<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3.5">' +
+              '<div class="flex items-center gap-3">' +
+                '<span class="w-8 h-8 rounded-xl bg-[#107c41] text-white flex items-center justify-center text-sm font-black shadow-xs">1</span>' +
+                '<div>' +
+                  '<h4 class="text-base sm:text-lg font-black text-slate-900">Fase 1: Crear las Tablas Dinámicas (100% Arrastrar y Soltar)</h4>' +
+                  '<p class="text-xs text-slate-600 font-medium">Modelado 3D y emulación real en Microsoft Excel de las 6 Tablas Dinámicas que alimentan todo el Dashboard</p>' +
                 '</div>' +
-                '<span class="text-[11px] font-bold text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">Alt + N + V</span>' +
               '</div>' +
-              '<p class="text-xs text-slate-600 leading-relaxed font-medium">' +
-                'Desde tu tabla limpia de Power Query, ve a <strong>Insertar &rarr; Tabla dinámica</strong> y arma estas 6 Tablas Dinámicas simplemente arrastrando los campos con el mouse (sin escribir ni una fórmula):' +
-              '</p>' +
-              '<div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">' +
-                '<table class="w-full text-left border-collapse">' +
-                  '<thead class="bg-[#107c41] text-[10px] font-extrabold uppercase text-white">' +
-                    '<tr><th class="py-2 px-3">Tabla / Rango</th><th class="py-2 px-3">Arrastrar a Filas</th><th class="py-2 px-3">Arrastrar a &Sigma; Valores</th><th class="py-2 px-3">Zona que Alimenta</th></tr>' +
-                  '</thead>' +
-                  '<tbody>' + pivotRowsHtml + '</tbody>' +
-                '</table>' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="text-xs font-bold text-emerald-950 bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-300 font-mono">Atajo Excel: Alt + N + V</span>' +
               '</div>' +
             '</div>' +
 
-            // FASE 2: Cómo Crear las 6 Tarjetas KPI [K1] a [K6] Solo con Mini-Tablas Dinámicas
-            '<div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">' +
-              '<div class="flex items-center justify-between border-b border-slate-200 pb-2.5">' +
-                '<div class="flex items-center gap-2 font-black text-slate-900 text-sm">' +
-                  '<span class="w-6 h-6 rounded-lg bg-[#0078d4] text-white flex items-center justify-center text-xs">2</span>' +
-                  '<span>Fase 2: Tarjetas KPI [K1] a [K6] con Mini-Tablas Dinámicas (0 Fórmulas)</span>' +
-                '</div>' +
-                '<span class="text-[11px] font-bold text-blue-900 bg-blue-100 px-2 py-0.5 rounded border border-blue-200">Celdas E3:P5</span>' +
+            // Flujo Visual 3D de Creación en Excel (4 Pasos Gráficos)
+            '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">' +
+              '<div class="bg-white p-3.5 rounded-2xl border border-emerald-200 shadow-2xs space-y-1">' +
+                '<div class="font-black text-[#107c41] flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-[#107c41] text-white flex items-center justify-center text-[10px]">A</span> 1. Insertar Tabla Dinámica</div>' +
+                '<p class="text-slate-600 text-[11px]">Haz clic en cualquier celda de tu tabla limpia de Power Query y ve a <strong>Insertar &rarr; Tabla dinámica</strong> (<kbd class="px-1 border rounded font-mono text-[10px]">Alt+N+V</kbd>).</p>' +
               '</div>' +
-              '<p class="text-xs text-slate-600 leading-relaxed font-medium">' +
-                '<strong>¿Cómo hacer una Tarjeta KPI en Excel sin fórmulas?</strong> Inserta una Tabla Dinámica pequeña directamente en <code class="font-mono font-bold">E3</code>, <code class="font-mono font-bold">G3</code>, <code class="font-mono font-bold">I3</code>, <code class="font-mono font-bold">K3</code>, <code class="font-mono font-bold">M3</code> y <code class="font-mono font-bold">O3</code>. Deja <em>Filas</em> y <em>Columnas</em> vacías y arrastra únicamente la métrica al cuadrante <strong>&Sigma; Valores</strong>:' +
-              '</p>' +
-              '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">' + kpiStepCards + '</div>' +
+              '<div class="bg-white p-3.5 rounded-2xl border border-emerald-200 shadow-2xs space-y-1">' +
+                '<div class="font-black text-[#107c41] flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-[#107c41] text-white flex items-center justify-center text-[10px]">B</span> 2. Hoja Aux_Tablas_Dinamicas</div>' +
+                '<p class="text-slate-600 text-[11px]">Crea la hoja <code class="font-mono font-bold text-slate-900">Aux_Tablas_Dinamicas</code> para alojar <code class="font-mono font-bold">TD_KPIs</code> y <code class="font-mono font-bold">TD_1</code> a <code class="font-mono font-bold">TD_4</code> en las celdas indicadas abajo.</p>' +
+              '</div>' +
+              '<div class="bg-white p-3.5 rounded-2xl border border-emerald-200 shadow-2xs space-y-1">' +
+                '<div class="font-black text-[#107c41] flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-[#107c41] text-white flex items-center justify-center text-[10px]">C</span> 3. Arrastrar a Filas y &Sigma; Valores</div>' +
+                '<p class="text-slate-600 text-[11px]">En el panel derecho <em>Campos de tabla dinámica</em>, arrastra las dimensiones a <strong>☰ Filas</strong> y las métricas calculadas a <strong>&Sigma; Valores</strong>.</p>' +
+              '</div>' +
+              '<div class="bg-white p-3.5 rounded-2xl border border-emerald-200 shadow-2xs space-y-1">' +
+                '<div class="font-black text-[#107c41] flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-[#107c41] text-white flex items-center justify-center text-[10px]">D</span> 4. Porcentajes y Top 8 Nativos</div>' +
+                '<p class="text-slate-600 text-[11px]">En <code class="font-mono font-bold">TD_2</code> usa <em>Mostrar valores como &rarr; % del total general</em> y en <code class="font-mono font-bold">TD_4</code> aplica <em>Filtros de valor &rarr; 10 mejores (8)</em>.</p>' +
+              '</div>' +
             '</div>' +
 
+            // Emulación 3D de las 6 Tablas Dinámicas en Celdas de Excel
+            '<div class="space-y-2">' +
+              '<div class="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">' +
+                '<i class="fa-solid fa-cubes text-[#107c41]"></i> Emulación 3D en Excel de las 6 Tablas Dinámicas (Cuadrantes de Campos + Vista Previa de Celdas):' +
+              '</div>' +
+              '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">' +
+                pivot3DCardsHtml +
+              '</div>' +
+            '</div>' +
+
+            // Tabla Resumen de Referencia Rápida (Fase 1)
+            '<div class="overflow-x-auto rounded-2xl border border-slate-300 bg-white shadow-2xs">' +
+              '<table class="w-full text-left border-collapse">' +
+                '<thead class="bg-[#107c41] text-[10px] font-extrabold uppercase text-white">' +
+                  '<tr><th class="py-2.5 px-3">Tabla / Rango</th><th class="py-2.5 px-3">Arrastrar a Filas</th><th class="py-2.5 px-3">Arrastrar a &Sigma; Valores</th><th class="py-2.5 px-3">Zona que Alimenta</th></tr>' +
+                '</thead>' +
+                '<tbody>' + pivotRowsHtml + '</tbody>' +
+              '</table>' +
+            '</div>' +
+          '</div>' +
+
+          // =========================================================================
+          // SECCIÓN INDEPENDIENTE 2: FASE 2 — TARJETAS KPI [K1] A [K6] CON MINI-TABLAS DINÁMICAS (ANCHO COMPLETO + EMULACIÓN 3D EXCEL)
+          // =========================================================================
+          '<div class="p-5 sm:p-7 rounded-3xl bg-slate-50 border-2 border-[#0078d4]/30 space-y-5 shadow-xs pivot-3d-scene">' +
+            '<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3.5">' +
+              '<div class="flex items-center gap-3">' +
+                '<span class="w-8 h-8 rounded-xl bg-[#0078d4] text-white flex items-center justify-center text-sm font-black shadow-xs">2</span>' +
+                '<div>' +
+                  '<h4 class="text-base sm:text-lg font-black text-slate-900">Fase 2: Tarjetas KPI [K1] a [K6] con Mini-Tablas Dinámicas (0 Fórmulas)</h4>' +
+                  '<p class="text-xs text-slate-600 font-medium">Emulación 3D de cómo construir las 6 Tarjetas KPI directamente en las celdas <code class="font-mono font-bold">E3:P5</code> de Excel sin escribir ni una sola fórmula</p>' +
+                '</div>' +
+              '</div>' +
+              '<span class="text-xs font-bold text-blue-950 bg-blue-100 px-3 py-1 rounded-lg border border-blue-300 font-mono">Rango en Hoja: Celdas E3:P5</span>' +
+            '</div>' +
+
+            // Anatomía 3D Paso a Paso de una Mini-Tabla Dinámica KPI en Excel
+            '<div class="bg-white border border-blue-200 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">' +
+              '<div class="text-xs font-black text-slate-900 flex items-center gap-2">' +
+                '<i class="fa-solid fa-wand-magic-sparkles text-[#0078d4]"></i> ¿Cómo hacer una Tarjeta KPI en Excel sin fórmulas? (Técnica de Mini-Tabla Dinámica de 1 Solo Valor):' +
+              '</div>' +
+              '<div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">' +
+                '<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">' +
+                  '<div class="font-black text-[#0078d4]">Paso 1: Ubicarse en la Celda Destino</div>' +
+                  '<p class="text-slate-600 text-[11px]">En la hoja <code class="font-mono font-bold">Dashboard_Ejecutivo</code>, inserta 6 Tablas Dinámicas pequeñas empezando exactamente en las celdas <code class="font-mono font-bold text-slate-900">E3</code>, <code class="font-mono font-bold text-slate-900">G3</code>, <code class="font-mono font-bold text-slate-900">I3</code>, <code class="font-mono font-bold text-slate-900">K3</code>, <code class="font-mono font-bold text-slate-900">M3</code> y <code class="font-mono font-bold text-slate-900">O3</code>.</p>' +
+                '</div>' +
+                '<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">' +
+                  '<div class="font-black text-[#107c41]">Paso 2: Solo Arrastrar a &Sigma; Valores</div>' +
+                  '<p class="text-slate-600 text-[11px]">Deja los cuadrantes <strong>☰ Filas</strong> y <strong>🏛️ Columnas</strong> completamente vacíos y suelta únicamente la métrica en <strong>&Sigma; Valores</strong>. Excel mostrará una tarjeta de 2 filas (Título en fila 3 y Monto en fila 4).</p>' +
+                '</div>' +
+                '<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">' +
+                  '<div class="font-black text-purple-800">Paso 3: Formato de Número y Borde</div>' +
+                  '<p class="text-slate-600 text-[11px]">Haz clic derecho sobre el monto en la fila 4 &rarr; <strong>Formato de número...</strong> &rarr; elige <strong>Moneda (RD$)</strong> o <strong>Porcentaje (%)</strong> y aplica un borde de cuadro grueso al bloque de 2 columnas (ej. <code class="font-mono font-bold">E3:F5</code>).</p>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+
+            // Grid 3D de las 6 Tarjetas KPI [K1] a [K6] emulando las celdas reales E3:F5 ... O3:P5 de Excel
+            '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">' +
+              kpiStepCards +
+            '</div>' +
           '</div>' +
 
           // FASE 3 Y FASE 4: Slicers + Gráficos Dinámicos de Excel
