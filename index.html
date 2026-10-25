@@ -4805,7 +4805,7 @@
             {
               Fase_o_Paso: 'MANDATO OFICIAL',
               Titulo_Operacion: 'Proyecto 2: Logística, Transporte & Fletes (' + CURRENT_DATASET.length + ' registros)',
-              Columnas_Implicadas: 'Llave Primaria: GUIA_DESPACHO (17 Campos)',
+              Columnas_Implicadas: 'Llave Primaria: NUM_MANIFIESTO (17 Campos)',
               Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Objetivo: Auditar guías de carga, tonelaje transportado, tarifas por tonelada, costos de peajes/combustible, margen operativo por ruta y despachos anulados.',
               Formula_M_O_Configuracion_Exacta: 'Cifras Control -> Flete Bruto: RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + ' | Flete Real: RD$ ' + Math.round(sums.real).toLocaleString('es-DO') + ' | Margen Flete: RD$ ' + Math.round(sums.margin).toLocaleString('es-DO') + ' (' + marginPct + ')'
             },
@@ -4833,8 +4833,8 @@
             {
               Fase_o_Paso: 'Paso 4 (ETL)',
               Titulo_Operacion: 'Separación de Fecha de Salida y Relleno de Tipo de Carga',
-              Columnas_Implicadas: 'FECHA_SALIDA, TIPO_CARGA',
-              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Dividir FECHA_SALIDA por delimitador "(" para aislar la fecha sin ventana horaria. En TIPO_CARGA reemplazar null/vacío por "Carga Estándar".',
+              Columnas_Implicadas: 'FECHA_DESPACHO, TIPO_CARGA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Dividir FECHA_DESPACHO por delimitador "(" para aislar la fecha sin ventana horaria. En TIPO_CARGA reemplazar null/vacío por "Carga Estándar".',
               Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, null, "Carga Estándar", Replacer.ReplaceValue, {"TIPO_CARGA"})'
             },
             {
