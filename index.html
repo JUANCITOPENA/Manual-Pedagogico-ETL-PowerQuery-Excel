@@ -6667,31 +6667,40 @@
 // Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
-        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
-    )[Name] otherwise {},
-    RutasCandidatas = List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+    PerfilesWindows = List.Select(
+        {"User"} & (try
+            let
+                nombres = Table.Column(Folder.Contents("C:\\Users"), "Name")
+            in
+                if List.Count(nombres) >= 0 then nombres else {}
+        otherwise {}),
+        each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
+    ),
+    RutasCandidatas = List.Distinct(List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
-    }),
-    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
-        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    })),
+    EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
+        [
+            Ruta = ruta,
+            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+                not Text.StartsWith(f[Name], "~$") and
+                not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
+                List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
+            ),
+            Cantidad = Table.RowCount(Archivos)
+        ]
     ),
-    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
-    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
-                      then CarpetasConArchivos{0}
+    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
+    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    ArchivosValidos = if List.Count(RutasConArchivos) > 0
+                      then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
-
-    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
-    ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
-        not Text.StartsWith([Name], "~$") and
-        List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
-    ),
     ExtraerTablas = Table.AddColumn(ArchivosValidos, "TablaExtraida", each
         let
             ext = Text.Lower([Extension]),
@@ -6716,8 +6725,11 @@ let
             tabla
     ),
     TablasDelSector = List.Select(ExtraerTablas[TablaExtraida], each
-        List.Contains(Table.ColumnNames(_), "CLIENTE") and
-        not List.Contains(Table.ColumnNames(_), "SUBTOTAL_VALIDADO")
+        (try (
+            List.Contains(Table.ColumnNames(_), "CLIENTE") and
+            not List.Contains(Table.ColumnNames(_), "SUBTOTAL_VALIDADO") and
+            not Table.IsEmpty(_)
+        ) otherwise false)
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
@@ -6872,31 +6884,40 @@ in
 // Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
-        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
-    )[Name] otherwise {},
-    RutasCandidatas = List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+    PerfilesWindows = List.Select(
+        {"User"} & (try
+            let
+                nombres = Table.Column(Folder.Contents("C:\\Users"), "Name")
+            in
+                if List.Count(nombres) >= 0 then nombres else {}
+        otherwise {}),
+        each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
+    ),
+    RutasCandidatas = List.Distinct(List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
-    }),
-    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
-        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    })),
+    EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
+        [
+            Ruta = ruta,
+            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+                not Text.StartsWith(f[Name], "~$") and
+                not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
+                List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
+            ),
+            Cantidad = Table.RowCount(Archivos)
+        ]
     ),
-    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
-    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
-                      then CarpetasConArchivos{0}
+    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
+    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    ArchivosValidos = if List.Count(RutasConArchivos) > 0
+                      then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
-
-    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
-    ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
-        not Text.StartsWith([Name], "~$") and
-        List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
-    ),
     ExtraerTablas = Table.AddColumn(ArchivosValidos, "TablaExtraida", each
         let
             ext = Text.Lower([Extension]),
@@ -6921,8 +6942,11 @@ let
             tabla
     ),
     TablasDelSector = List.Select(ExtraerTablas[TablaExtraida], each
-        List.Contains(Table.ColumnNames(_), "EMPRESA_CLIENTE") and
-        not List.Contains(Table.ColumnNames(_), "SUBTOTAL_FLETE_CALC")
+        (try (
+            List.Contains(Table.ColumnNames(_), "EMPRESA_CLIENTE") and
+            not List.Contains(Table.ColumnNames(_), "SUBTOTAL_FLETE_CALC") and
+            not Table.IsEmpty(_)
+        ) otherwise false)
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
@@ -7077,31 +7101,40 @@ in
 // Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
-        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
-    )[Name] otherwise {},
-    RutasCandidatas = List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+    PerfilesWindows = List.Select(
+        {"User"} & (try
+            let
+                nombres = Table.Column(Folder.Contents("C:\\Users"), "Name")
+            in
+                if List.Count(nombres) >= 0 then nombres else {}
+        otherwise {}),
+        each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
+    ),
+    RutasCandidatas = List.Distinct(List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
-    }),
-    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
-        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    })),
+    EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
+        [
+            Ruta = ruta,
+            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+                not Text.StartsWith(f[Name], "~$") and
+                not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
+                List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
+            ),
+            Cantidad = Table.RowCount(Archivos)
+        ]
     ),
-    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
-    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
-                      then CarpetasConArchivos{0}
+    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
+    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    ArchivosValidos = if List.Count(RutasConArchivos) > 0
+                      then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
-
-    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
-    ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
-        not Text.StartsWith([Name], "~$") and
-        List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
-    ),
     ExtraerTablas = Table.AddColumn(ArchivosValidos, "TablaExtraida", each
         let
             ext = Text.Lower([Extension]),
@@ -7126,8 +7159,11 @@ let
             tabla
     ),
     TablasDelSector = List.Select(ExtraerTablas[TablaExtraida], each
-        List.Contains(Table.ColumnNames(_), "NOMBRE_DEUDOR") and
-        not List.Contains(Table.ColumnNames(_), "INTERES_MORA_CALC")
+        (try (
+            List.Contains(Table.ColumnNames(_), "NOMBRE_DEUDOR") and
+            not List.Contains(Table.ColumnNames(_), "INTERES_MORA_CALC") and
+            not Table.IsEmpty(_)
+        ) otherwise false)
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
@@ -7284,31 +7320,40 @@ in
 // Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
-        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
-    )[Name] otherwise {},
-    RutasCandidatas = List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+    PerfilesWindows = List.Select(
+        {"User"} & (try
+            let
+                nombres = Table.Column(Folder.Contents("C:\\Users"), "Name")
+            in
+                if List.Count(nombres) >= 0 then nombres else {}
+        otherwise {}),
+        each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
+    ),
+    RutasCandidatas = List.Distinct(List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
-    }),
-    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
-        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    })),
+    EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
+        [
+            Ruta = ruta,
+            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+                not Text.StartsWith(f[Name], "~$") and
+                not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
+                List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
+            ),
+            Cantidad = Table.RowCount(Archivos)
+        ]
     ),
-    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
-    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
-                      then CarpetasConArchivos{0}
+    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
+    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    ArchivosValidos = if List.Count(RutasConArchivos) > 0
+                      then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
-
-    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
-    ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
-        not Text.StartsWith([Name], "~$") and
-        List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
-    ),
     ExtraerTablas = Table.AddColumn(ArchivosValidos, "TablaExtraida", each
         let
             ext = Text.Lower([Extension]),
@@ -7333,8 +7378,11 @@ let
             tabla
     ),
     TablasDelSector = List.Select(ExtraerTablas[TablaExtraida], each
-        List.Contains(Table.ColumnNames(_), "NOMBRE_COLABORADOR") and
-        not List.Contains(Table.ColumnNames(_), "AFP_LEGAL_287")
+        (try (
+            List.Contains(Table.ColumnNames(_), "NOMBRE_COLABORADOR") and
+            not List.Contains(Table.ColumnNames(_), "AFP_LEGAL_287") and
+            not Table.IsEmpty(_)
+        ) otherwise false)
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
@@ -7488,31 +7536,40 @@ in
 // Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC o Disco C:\ / D:\
     RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
-        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
-    )[Name] otherwise {},
-    RutasCandidatas = List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+    PerfilesWindows = List.Select(
+        {"User"} & (try
+            let
+                nombres = Table.Column(Folder.Contents("C:\\Users"), "Name")
+            in
+                if List.Count(nombres) >= 0 then nombres else {}
+        otherwise {}),
+        each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
+    ),
+    RutasCandidatas = List.Distinct(List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
-    }),
-    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
-        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    })),
+    EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
+        [
+            Ruta = ruta,
+            Archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
+                not Text.StartsWith(f[Name], "~$") and
+                not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
+                List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
+            ),
+            Cantidad = Table.RowCount(Archivos)
+        ]
     ),
-    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
-    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
-                      then CarpetasConArchivos{0}
+    // IMPORTANTE: [Cantidad] > 0 se evalúa como booleano DENTRO de try para ignorar sin error carpetas que no existan
+    RutasConArchivos = List.Select(EvaluarRutas, each (try [Cantidad] > 0 otherwise false)),
+    ArchivosValidos = if List.Count(RutasConArchivos) > 0
+                      then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
                       else #table({"Content", "Name", "Extension"}, {}),
-
-    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
-    ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
-        not Text.StartsWith([Name], "~$") and
-        List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
-    ),
     ExtraerTablas = Table.AddColumn(ArchivosValidos, "TablaExtraida", each
         let
             ext = Text.Lower([Extension]),
@@ -7537,8 +7594,11 @@ let
             tabla
     ),
     TablasDelSector = List.Select(ExtraerTablas[TablaExtraida], each
-        List.Contains(Table.ColumnNames(_), "EXPEDIENTE_PACIENTE") and
-        not List.Contains(Table.ColumnNames(_), "COPAGO_VALIDADO")
+        (try (
+            List.Contains(Table.ColumnNames(_), "EXPEDIENTE_PACIENTE") and
+            not List.Contains(Table.ColumnNames(_), "COPAGO_VALIDADO") and
+            not Table.IsEmpty(_)
+        ) otherwise false)
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
