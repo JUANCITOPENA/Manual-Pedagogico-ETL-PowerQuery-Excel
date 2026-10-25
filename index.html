@@ -9134,6 +9134,153 @@ in
           '</div>' +
 
           // =========================================================================
+          // REPRODUCTOR DE VIDEO TUTORIAL INTERACTIVO EN VIVO (SIMULADOR ANIMADO EXCEL 365 DRAG & DROP)
+          // =========================================================================
+          '<div id="excelVideoPlayerRoot" class="rounded-3xl bg-[#0f172a] border-2 border-[#107c41] overflow-hidden shadow-2xl text-white">' +
+            // Barra Superior del Reproductor de Video
+            '<div class="bg-gradient-to-r from-[#107c41] via-[#185c37] to-[#0f172a] px-5 py-3 flex flex-wrap items-center justify-between gap-3 border-b border-white/15">' +
+              '<div class="flex items-center gap-3">' +
+                '<span class="w-9 h-9 rounded-xl bg-white text-[#107c41] flex items-center justify-center text-base font-black shadow-md"><i class="fa-solid fa-clapperboard"></i></span>' +
+                '<div>' +
+                  '<div class="flex items-center gap-2">' +
+                    '<span class="px-2 py-0.5 rounded bg-rose-600 text-white font-mono font-black text-[10px] uppercase tracking-wider animate-pulse">&bull; VIDEO SIMULADOR INTERACTIVO</span>' +
+                    '<span id="excelVidSceneBadge" class="px-2 py-0.5 rounded bg-white/15 text-emerald-200 font-mono text-[10px] font-bold">Escena 1 / 6 &bull; 00:00 / 00:36</span>' +
+                  '</div>' +
+                  '<h4 class="text-sm sm:text-base font-black text-white mt-0.5">Video Tutorial Animado: Creando las Tablas Dinámicas y Tarjetas KPI en Excel (' + config.name + ')</h4>' +
+                '</div>' +
+              '</div>' +
+              '<div class="flex items-center gap-2">' +
+                '<button id="excelVidVoiceBtn" onclick="toggleExcelVideoVoice()" class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold border border-white/20 cursor-pointer transition-all flex items-center gap-1.5">' +
+                  '<i class="fa-solid fa-volume-high text-emerald-300"></i> <span>Narración Voz: ON</span>' +
+                '</button>' +
+                '<button id="excelVidTopPlayBtn" onclick="toggleExcelVideoPlay()" class="px-4 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 text-xs font-black shadow-md cursor-pointer transition-all flex items-center gap-1.5">' +
+                  '<i class="fa-solid fa-play"></i> <span>Reproducir Video</span>' +
+                '</button>' +
+              '</div>' +
+            '</div>' +
+
+            // Pantalla Principal del Video (Simulación Exacta de Microsoft Excel 365 + Cursor Animado)
+            '<div id="excelVideoStage" class="relative bg-[#f3f2f1] text-slate-900 select-none overflow-hidden">' +
+              // Cinta de Opciones (Ribbon) de Excel dentro del Video
+              '<div class="bg-[#107c41] text-white px-4 py-1.5 flex items-center justify-between text-[11px] font-semibold">' +
+                '<div class="flex items-center gap-3">' +
+                  '<span class="font-black"><i class="fa-solid fa-file-excel mr-1"></i> ' + spec.workbookName + '</span>' +
+                  '<span class="px-2 py-0.5 rounded bg-white text-[#107c41] font-black text-[10px]">Insertar</span>' +
+                  '<span class="opacity-80">Analizar tabla dinámica</span>' +
+                  '<span class="opacity-80">Diseño</span>' +
+                  '<span class="opacity-80">Datos</span>' +
+                '</div>' +
+                '<span id="excelVidRibbonHighlight" class="px-2.5 py-0.5 rounded bg-amber-300 text-slate-950 font-mono font-black text-[10px]">Atajo Activo: Alt + N + V (Insertar Tabla Dinámica)</span>' +
+              '</div>' +
+
+              // Barra de Fórmulas de Excel dentro del Video
+              '<div class="bg-white border-b border-[#c8c6c4] px-3 py-1 flex items-center gap-2 text-[11px] font-mono">' +
+                '<span id="excelVidActiveCellBox" class="px-2 py-0.5 bg-[#f3f2f1] border border-[#8a8886] font-black text-[#107c41] rounded-xs min-w-[65px] text-center">A10</span>' +
+                '<span class="text-slate-400 font-bold italic">fx</span>' +
+                '<span id="excelVidFormulaBarText" class="text-slate-700 font-semibold truncate">(0 Fórmulas manuales &mdash; 100% Arrastrar y Soltar en Tabla Dinámica)</span>' +
+              '</div>' +
+
+              // Cuerpo Dividido de Excel: Izquierda Hoja de Cálculo (68%) | Derecha Panel "Campos de tabla dinámica" (32%)
+              '<div class="grid grid-cols-1 lg:grid-cols-12 min-h-[340px] relative">' +
+
+                // IZQUIERDA: Hoja de Cálculo de Excel Animada en Tiempo Real
+                '<div class="lg:col-span-8 bg-white border-r border-[#c8c6c4] p-3.5 flex flex-col justify-between space-y-3">' +
+                  '<div id="excelVidSheetCanvas" class="space-y-2.5 transition-all duration-500">' +
+                    // Contenido dinámico inyectado por renderExcelVideoScene()
+                  '</div>' +
+                  // Pestañas de Hojas de Excel en la parte inferior de la ventana
+                  '<div class="flex items-center gap-1 pt-2 border-t border-[#c8c6c4] text-[10px] font-mono font-bold">' +
+                    '<span class="px-2.5 py-1 rounded-t bg-slate-200 text-slate-600">Datos_PowerQuery</span>' +
+                    '<span id="excelVidTabAux" class="px-2.5 py-1 rounded-t bg-white border-t-2 border-t-[#107c41] text-[#107c41] shadow-2xs">Aux_Tablas_Dinamicas</span>' +
+                    '<span id="excelVidTabDash" class="px-2.5 py-1 rounded-t bg-slate-200 text-slate-600">Dashboard_Ejecutivo</span>' +
+                  '</div>' +
+                '</div>' +
+
+                // DERECHA: Panel "Campos de tabla dinámica" de Excel con sus 4 Cuadrantes
+                '<div class="lg:col-span-4 bg-[#f8f9fa] p-3 flex flex-col justify-between space-y-2.5 text-xs">' +
+                  '<div class="space-y-1.5">' +
+                    '<div class="flex items-center justify-between border-b border-slate-300 pb-1.5">' +
+                      '<span class="font-black text-slate-800 text-[11px] flex items-center gap-1.5"><i class="fa-solid fa-table-list text-[#107c41]"></i> Campos de tabla dinámica</span>' +
+                      '<span class="text-[9px] font-mono bg-emerald-100 text-emerald-900 px-1.5 py-0.5 rounded font-bold">Power Query</span>' +
+                    '</div>' +
+                    '<div id="excelVidFieldChecklist" class="bg-white border border-slate-300 rounded-lg p-2 space-y-1 max-h-[120px] overflow-y-auto font-mono text-[10px]">' +
+                      // Lista de campos animada por escena
+                    '</div>' +
+                  '</div>' +
+
+                  // Los 4 Cuadrantes Oficiales de Excel
+                  '<div class="space-y-1">' +
+                    '<div class="text-[9px] font-bold uppercase text-slate-500">Arrastre campos entre las áreas siguientes:</div>' +
+                    '<div class="grid grid-cols-2 gap-1.5 font-mono text-[10px]">' +
+                      '<div id="excelVidQuadFilters" class="bg-white border border-slate-300 rounded-lg p-2 min-h-[58px] transition-all">' +
+                        '<div class="text-[9px] font-bold text-slate-500 uppercase flex items-center gap-1"><i class="fa-solid fa-filter"></i> Filtros</div>' +
+                        '<div id="excelVidQuadFiltersBody" class="mt-1 text-slate-700 font-bold text-[10px]"></div>' +
+                      '</div>' +
+                      '<div id="excelVidQuadCols" class="bg-white border border-slate-300 rounded-lg p-2 min-h-[58px] transition-all">' +
+                        '<div class="text-[9px] font-bold text-teal-800 uppercase flex items-center gap-1"><i class="fa-solid fa-grip-lines-vertical"></i> Columnas</div>' +
+                        '<div id="excelVidQuadColsBody" class="mt-1 text-slate-800 font-bold text-[10px]"></div>' +
+                      '</div>' +
+                      '<div id="excelVidQuadRows" class="bg-white border-2 border-blue-300 rounded-lg p-2 min-h-[68px] transition-all">' +
+                        '<div class="text-[9px] font-black text-blue-800 uppercase flex items-center gap-1"><i class="fa-solid fa-bars"></i> Filas</div>' +
+                        '<div id="excelVidQuadRowsBody" class="mt-1 space-y-1"></div>' +
+                      '</div>' +
+                      '<div id="excelVidQuadVals" class="bg-white border-2 border-emerald-400 rounded-lg p-2 min-h-[68px] transition-all">' +
+                        '<div class="text-[9px] font-black text-[#107c41] uppercase flex items-center gap-1"><i class="fa-solid fa-sigma"></i> Valores</div>' +
+                        '<div id="excelVidQuadValsBody" class="mt-1 space-y-1"></div>' +
+                      '</div>' +
+                    '</div>' +
+                  '</div>' +
+                '</div>' +
+
+                // CURSOR ANIMADO + PÍLDORA FLOTANTE DRAG & DROP EN PANTALLA
+                '<div id="excelVidFloatingCursor" style="left: 72%; top: 28%; transition: left 1.15s cubic-bezier(0.22, 1, 0.36, 1), top 1.15s cubic-bezier(0.22, 1, 0.36, 1);" class="pointer-events-none absolute z-30 flex items-center gap-1.5">' +
+                  '<div class="relative">' +
+                    '<span id="excelVidCursorRipple" class="absolute -inset-2 rounded-full bg-emerald-400/50 animate-ping"></span>' +
+                    '<div class="w-7 h-7 rounded-full bg-slate-950/90 text-white border-2 border-emerald-400 flex items-center justify-center shadow-xl text-xs">' +
+                      '<i class="fa-solid fa-hand-pointer text-emerald-300"></i>' +
+                    '</div>' +
+                  '</div>' +
+                  '<div id="excelVidDraggingPill" class="px-2.5 py-1 rounded-lg bg-[#107c41] text-white font-mono font-black text-[10px] shadow-xl border border-emerald-200 whitespace-nowrap">' +
+                    'Arrastrando [' + spec.primaryCol + ']' +
+                  '</div>' +
+                '</div>' +
+
+              '</div>' +
+            '</div>' +
+
+            // Subtítulo Narrado del Instructor (Estilo Video Educativo)
+            '<div class="bg-slate-950/95 px-5 py-3 border-t border-white/10 flex items-start gap-3">' +
+              '<span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono font-black text-[10px] shrink-0 mt-0.5">SUBTÍTULO EN VIVO</span>' +
+              '<p id="excelVidSubtitleText" class="text-xs sm:text-sm text-slate-100 font-medium leading-relaxed"></p>' +
+            '</div>' +
+
+            // Barra de Controles del Reproductor + Línea de Tiempo de 6 Escenas
+            '<div class="bg-[#0f172a] px-5 py-3.5 border-t border-white/15 space-y-3">' +
+              // Barra de progreso lineal
+              '<div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden cursor-pointer" onclick="nextExcelVideoScene()">' +
+                '<div id="excelVidProgressBar" style="width: 16.6%; transition: width 0.5s ease;" class="h-full bg-gradient-to-r from-emerald-400 to-[#0078d4]"></div>' +
+              '</div>' +
+              // Botones de reproducción + 6 capítulos clicables
+              '<div class="flex flex-wrap items-center justify-between gap-2">' +
+                '<div class="flex items-center gap-1.5">' +
+                  '<button onclick="prevExcelVideoScene()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-600 cursor-pointer"><i class="fa-solid fa-backward-step mr-1"></i>Anterior</button>' +
+                  '<button id="excelVidBottomPlayBtn" onclick="toggleExcelVideoPlay()" class="px-4 py-1.5 rounded-lg bg-[#107c41] hover:bg-emerald-600 text-white text-xs font-black border border-emerald-400 cursor-pointer"><i class="fa-solid fa-play mr-1"></i>Reproducir</button>' +
+                  '<button onclick="nextExcelVideoScene()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-600 cursor-pointer">Siguiente<i class="fa-solid fa-forward-step ml-1"></i></button>' +
+                  '<button onclick="setExcelVideoScene(0)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 cursor-pointer" title="Reiniciar Video"><i class="fa-solid fa-rotate-left"></i></button>' +
+                '</div>' +
+                '<div class="flex flex-wrap items-center gap-1 text-[10px] font-mono">' +
+                  '<button id="excelVidChap-0" onclick="setExcelVideoScene(0)" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-black cursor-pointer">1. Alt+N+V</button>' +
+                  '<button id="excelVidChap-1" onclick="setExcelVideoScene(1)" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">2. KPIs [K1-K6]</button>' +
+                  '<button id="excelVidChap-2" onclick="setExcelVideoScene(2)" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">3. TD_1 + [G1]</button>' +
+                  '<button id="excelVidChap-3" onclick="setExcelVideoScene(3)" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">4. TD_2 % + [G2]</button>' +
+                  '<button id="excelVidChap-4" onclick="setExcelVideoScene(4)" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">5. TD_3 y Top 8</button>' +
+                  '<button id="excelVidChap-5" onclick="setExcelVideoScene(5)" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">6. Slicers [S1-S3]</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          // =========================================================================
           // SECCIÓN INDEPENDIENTE 1: FASE 1 — CREAR LAS 6 TABLAS DINÁMICAS (ANCHO COMPLETO + EMULACIÓN 3D DE EXCEL)
           // =========================================================================
           '<div class="p-5 sm:p-7 rounded-3xl bg-slate-50 border-2 border-[#107c41]/30 space-y-5 shadow-xs pivot-3d-scene">' +
@@ -9347,6 +9494,400 @@ in
           '</details>' +
 
         '</div>';
+
+      // Inicializar el Reproductor de Video Interactivo de Excel en la Escena 1
+      setExcelVideoScene(0, false);
+    }
+
+    let EXCEL_VIDEO_STATE = {
+      sceneIdx: 0,
+      isPlaying: false,
+      voiceEnabled: true,
+      timerId: null,
+      subStepTimerId: null
+    };
+
+    function speakExcelVideoSubtitle(text) {
+      if (!EXCEL_VIDEO_STATE.voiceEnabled || typeof window.speechSynthesis === 'undefined') return;
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'es-ES';
+        utter.rate = 1.04;
+        window.speechSynthesis.speak(utter);
+      } catch (e) {}
+    }
+
+    function toggleExcelVideoVoice() {
+      EXCEL_VIDEO_STATE.voiceEnabled = !EXCEL_VIDEO_STATE.voiceEnabled;
+      const btn = document.getElementById('excelVidVoiceBtn');
+      if (btn) {
+        btn.innerHTML = EXCEL_VIDEO_STATE.voiceEnabled
+          ? '<i class="fa-solid fa-volume-high text-emerald-300"></i> <span>Narración Voz: ON</span>'
+          : '<i class="fa-solid fa-volume-xmark text-slate-400"></i> <span>Narración Voz: OFF</span>';
+      }
+      if (!EXCEL_VIDEO_STATE.voiceEnabled && typeof window.speechSynthesis !== 'undefined') {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function updateExcelVideoPlayButtons() {
+      const topBtn = document.getElementById('excelVidTopPlayBtn');
+      const botBtn = document.getElementById('excelVidBottomPlayBtn');
+      if (EXCEL_VIDEO_STATE.isPlaying) {
+        if (topBtn) topBtn.innerHTML = '<i class="fa-solid fa-pause"></i> <span>Pausar Video</span>';
+        if (botBtn) botBtn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i>Pausar';
+      } else {
+        if (topBtn) topBtn.innerHTML = '<i class="fa-solid fa-play"></i> <span>Reproducir Video</span>';
+        if (botBtn) botBtn.innerHTML = '<i class="fa-solid fa-play mr-1"></i>Reproducir';
+      }
+    }
+
+    function toggleExcelVideoPlay() {
+      if (EXCEL_VIDEO_STATE.isPlaying) {
+        EXCEL_VIDEO_STATE.isPlaying = false;
+        if (EXCEL_VIDEO_STATE.timerId) clearTimeout(EXCEL_VIDEO_STATE.timerId);
+        if (EXCEL_VIDEO_STATE.subStepTimerId) clearTimeout(EXCEL_VIDEO_STATE.subStepTimerId);
+        if (typeof window.speechSynthesis !== 'undefined') window.speechSynthesis.cancel();
+        updateExcelVideoPlayButtons();
+      } else {
+        EXCEL_VIDEO_STATE.isPlaying = true;
+        updateExcelVideoPlayButtons();
+        setExcelVideoScene(EXCEL_VIDEO_STATE.sceneIdx, true);
+      }
+    }
+
+    function nextExcelVideoScene() {
+      const nextIdx = (EXCEL_VIDEO_STATE.sceneIdx + 1) % 6;
+      setExcelVideoScene(nextIdx, EXCEL_VIDEO_STATE.isPlaying);
+    }
+
+    function prevExcelVideoScene() {
+      const prevIdx = (EXCEL_VIDEO_STATE.sceneIdx + 5) % 6;
+      setExcelVideoScene(prevIdx, EXCEL_VIDEO_STATE.isPlaying);
+    }
+
+    function setExcelVideoScene(idx, speakAndContinue) {
+      EXCEL_VIDEO_STATE.sceneIdx = idx;
+      if (EXCEL_VIDEO_STATE.timerId) clearTimeout(EXCEL_VIDEO_STATE.timerId);
+      if (EXCEL_VIDEO_STATE.subStepTimerId) clearTimeout(EXCEL_VIDEO_STATE.subStepTimerId);
+
+      const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
+      const spec = DASHBOARD_EXCEL_MANUAL_SPECS[ind] || DASHBOARD_EXCEL_MANUAL_SPECS.retail;
+      const config = INDUSTRY_CONFIGS[ind] || INDUSTRY_CONFIGS.retail;
+      const ds = (CURRENT_DATASET && CURRENT_DATASET.length) ? CURRENT_DATASET : [];
+
+      let gross = 0, sec = 0, margin = 0, real = 0;
+      const regMap = {}, catMap = {}, entMap = {};
+      ds.forEach(r => {
+        gross += (r._metricPrimary || 0);
+        sec += (r._metricSecondary || 0);
+        margin += (r._metricMargin || 0);
+        real += (r._metricReal || 0);
+        const rk = r._cleanRegion || 'Sede 1';
+        regMap[rk] = (regMap[rk] || 0) + (r._metricPrimary || 0);
+        const ck = r._categoryKey || 'Cat 1';
+        catMap[ck] = (catMap[ck] || 0) + (r._metricPrimary || 0);
+        const ek = r._cleanEntity || 'Líder 1';
+        entMap[ek] = (entMap[ek] || 0) + (r._metricPrimary || 0);
+      });
+      const topR = Object.entries(regMap).sort((a, b) => b[1] - a[1]);
+      const topC = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+      const topE = Object.entries(entMap).sort((a, b) => b[1] - a[1]);
+
+      const fieldsList = [
+        spec.idCol,
+        spec.dateCol,
+        spec.slicers[0].field,
+        spec.entityCol,
+        spec.catCol,
+        spec.primaryCol,
+        spec.secondaryCol,
+        spec.marginCol
+      ];
+
+      const scenes = [
+        {
+          time: '00:00 / 00:36',
+          ribbon: '1. Pestaña Insertar -> Tabla dinámica (Atajo: Alt + N + V)',
+          cell: 'A3',
+          formula: 'Origen: Tabla_PowerQuery_Limpia -> Destino: Aux_Tablas_Dinamicas!A3',
+          activeTab: 'aux',
+          checkedFields: [spec.primaryCol],
+          filtersHtml: '<span class="text-slate-400">(Vacío)</span>',
+          colsHtml: '<span class="text-slate-400">(Vacío)</span>',
+          rowsHtml: '<span class="text-slate-400">(Arrastra aquí...)</span>',
+          valsHtml: '<span class="text-slate-400">(Arrastra aquí...)</span>',
+          cursorStart: { left: '18%', top: '6%' },
+          cursorEnd: { left: '42%', top: '45%' },
+          pillText: 'Insertar Tabla Dinámica (Alt + N + V)',
+          subtitle: 'Escena 1: En Excel, haz clic dentro de tu tabla limpia de Power Query, pulsa Insertar -> Tabla dinámica (Alt + N + V) y elige la hoja Aux_Tablas_Dinamicas.',
+          voice: 'Escena uno. En Excel, pulsa Alt más N más V para insertar una Tabla Dinámica desde tu tabla limpia de Power Query hacia la hoja auxiliar.',
+          sheetHtml:
+            '<div class="p-4 rounded-2xl bg-emerald-50/70 border-2 border-dashed border-[#107c41] flex flex-col sm:flex-row items-center justify-between gap-4">' +
+              '<div class="space-y-1">' +
+                '<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#107c41] text-white font-mono text-[10px] font-black">CUADRO DE DIÁLOGO DE EXCEL</div>' +
+                '<h5 class="text-sm font-black text-slate-900">Crear tabla dinámica desde el Modelo / Tabla de Power Query</h5>' +
+                '<p class="text-xs text-slate-600">Tabla o rango seleccionado: <code class="font-mono font-bold text-[#107c41]">Tabla_PowerQuery_' + ind.toUpperCase() + ' (' + ds.length.toLocaleString('es-DO') + ' filas limpias)</code></p>' +
+                '<p class="text-xs text-slate-600">Ubicación: <code class="font-mono font-bold text-blue-800">Aux_Tablas_Dinamicas!$A$3</code></p>' +
+              '</div>' +
+              '<div class="px-4 py-2.5 rounded-xl bg-[#107c41] text-white font-mono text-xs font-black shadow-md shrink-0">✓ Aceptar (0 Fórmulas)</div>' +
+            '</div>'
+        },
+        {
+          time: '00:06 / 00:36',
+          ribbon: '2. Fase 2: Mini-Tablas Dinámicas KPI [K1] a [K6] en Celdas E3:P5',
+          cell: 'E3:P5',
+          formula: 'Filas: (Vacío) | Columnas: (Vacío) | ∑ Valores: Suma de ' + spec.primaryCol + ', ' + spec.marginCol,
+          activeTab: 'dash',
+          checkedFields: [spec.primaryCol, spec.secondaryCol, spec.marginCol],
+          filtersHtml: '<span class="text-slate-400">(Vacío)</span>',
+          colsHtml: '<span class="text-slate-400">(Vacío)</span>',
+          rowsHtml: '<span class="text-slate-400 font-bold">¡Dejar Vacío!</span>',
+          valsHtml:
+            '<div class="px-1.5 py-0.5 rounded bg-[#107c41] text-white font-bold truncate">&Sigma; Suma de ' + spec.primaryCol + '</div>' +
+            '<div class="px-1.5 py-0.5 rounded bg-[#0078d4] text-white font-bold truncate">&Sigma; Suma de ' + spec.marginCol + '</div>',
+          cursorStart: { left: '76%', top: '26%' },
+          cursorEnd: { left: '84%', top: '76%' },
+          pillText: 'Soltar [' + spec.primaryCol + '] en ∑ Valores',
+          subtitle: 'Escena 2 (Fase 2 — KPIs Sin Fórmulas): Nos ubicamos en las celdas E3, G3, I3, K3, M3 y O3. Dejamos Filas en blanco y arrastramos la métrica directo a ∑ Valores.',
+          voice: 'Escena dos. Para crear las seis tarjetas KPI en las celdas E tres a P cinco sin fórmulas, dejamos Filas vacío y soltamos cada métrica directamente en el cuadrante Valores.',
+          sheetHtml:
+            '<div class="space-y-2">' +
+              '<div class="text-[11px] font-black text-[#0078d4] uppercase flex items-center justify-between">' +
+                '<span><i class="fa-solid fa-bolt mr-1"></i> Celdas E3:P5 en Vivo — Las 6 Mini-Tablas Dinámicas KPI recién creadas:</span>' +
+                '<span class="font-mono text-[10px] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">Filas = Vacío | Solo &Sigma; Valores</span>' +
+              '</div>' +
+              '<div class="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-xs">' +
+                '<div class="p-2.5 rounded-lg border-2 border-[#0078d4] bg-blue-50/40">' +
+                  '<div class="text-[9px] text-slate-500 font-bold">[K1] Celda E3:F5 &bull; Fila 3:</div>' +
+                  '<div class="text-[10px] font-black text-slate-700 truncate">&Sigma; ' + spec.kpis[0].label + '</div>' +
+                  '<div class="text-sm font-black text-[#0078d4] mt-1">RD$ ' + Math.round(gross).toLocaleString('es-DO') + '</div>' +
+                '</div>' +
+                '<div class="p-2.5 rounded-lg border-2 border-[#107c41] bg-emerald-50/40">' +
+                  '<div class="text-[9px] text-slate-500 font-bold">[K2] Celda G3:H5 &bull; Fila 3:</div>' +
+                  '<div class="text-[10px] font-black text-slate-700 truncate">&Sigma; ' + spec.kpis[1].label + '</div>' +
+                  '<div class="text-sm font-black text-[#107c41] mt-1">RD$ ' + Math.round(real).toLocaleString('es-DO') + '</div>' +
+                '</div>' +
+                '<div class="p-2.5 rounded-lg border-2 border-teal-600 bg-teal-50/40">' +
+                  '<div class="text-[9px] text-slate-500 font-bold">[K3/K4] Celda I3:L5 &bull; Fila 3:</div>' +
+                  '<div class="text-[10px] font-black text-slate-700 truncate">&Sigma; ' + spec.marginCol + '</div>' +
+                  '<div class="text-sm font-black text-teal-800 mt-1">RD$ ' + Math.round(margin).toLocaleString('es-DO') + ' (' + ((margin / (gross || 1)) * 100).toFixed(1) + '%)</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>'
+        },
+        {
+          time: '00:12 / 00:36',
+          ribbon: '3. Fase 1: Crear TD_1 (Celda A10:C16) -> Alimenta Gráfico [G1]',
+          cell: 'A10:C16',
+          formula: 'Filas: [' + spec.slicers[0].field + '] | ∑ Valores: Suma de ' + spec.primaryCol + ' y ' + spec.secondaryCol,
+          activeTab: 'aux',
+          checkedFields: [spec.slicers[0].field, spec.primaryCol, spec.secondaryCol],
+          filtersHtml: '<span class="text-slate-400">(Vacío)</span>',
+          colsHtml: '<span class="text-teal-800 font-bold">&Sigma; Valores</span>',
+          rowsHtml: '<div class="px-1.5 py-0.5 rounded bg-blue-600 text-white font-bold truncate">☰ ' + spec.slicers[0].field + '</div>',
+          valsHtml:
+            '<div class="px-1.5 py-0.5 rounded bg-[#107c41] text-white font-bold truncate">&Sigma; ' + spec.primaryCol + '</div>' +
+            '<div class="px-1.5 py-0.5 rounded bg-slate-700 text-white font-bold truncate">&Sigma; ' + spec.secondaryCol + '</div>',
+          cursorStart: { left: '75%', top: '20%' },
+          cursorEnd: { left: '72%', top: '76%' },
+          pillText: 'Arrastrar [' + spec.slicers[0].field + '] a ☰ Filas',
+          subtitle: 'Escena 3 (Tabla Dinámica TD_1): Arrastramos [' + spec.slicers[0].field + '] al cuadrante Filas y [' + spec.primaryCol + '] a Valores. Luego insertamos el Gráfico de Columnas [G1].',
+          voice: 'Escena tres. Para la Tabla Dinámica uno, arrastramos ' + spec.slicers[0].title + ' al cuadrante Filas y los montos a Valores. Desde ahí insertamos el gráfico de columnas G uno.',
+          sheetHtml:
+            '<div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">' +
+              '<div class="sm:col-span-7 rounded-lg border border-[#8a8886] overflow-hidden font-mono text-[11px]">' +
+                '<div class="bg-[#107c41] text-white px-2.5 py-1 font-bold flex justify-between"><span>Celda A10: ' + spec.slicers[0].field + ' &#9662;</span><span>&Sigma; ' + spec.primaryCol + '</span></div>' +
+                (topR.slice(0, 3).map(r => '<div class="px-2.5 py-1 border-b border-slate-200 flex justify-between bg-white"><span class="font-semibold">' + r[0] + '</span><span class="font-bold text-[#107c41]">RD$ ' + Math.round(r[1]).toLocaleString('es-DO') + '</span></div>').join('')) +
+                '<div class="px-2.5 py-1 bg-emerald-50 font-black text-emerald-950 flex justify-between"><span>Total general</span><span>RD$ ' + Math.round(gross).toLocaleString('es-DO') + '</span></div>' +
+              '</div>' +
+              '<div class="sm:col-span-5 p-3 rounded-xl bg-slate-50 border border-slate-300 space-y-1.5">' +
+                '<div class="text-[10px] font-black text-[#107c41] uppercase">📊 Gráfico [G1] Conectado (E7:J19)</div>' +
+                (topR.slice(0, 3).map(r => {
+                  const w = Math.max(18, Math.round((r[1] / (topR[0][1] || 1)) * 100));
+                  return '<div class="space-y-0.5"><div class="flex justify-between text-[9px] font-mono"><span>' + r[0] + '</span><span class="font-bold">RD$ ' + Math.round(r[1]).toLocaleString('es-DO') + '</span></div><div class="w-full bg-slate-200 h-2.5 rounded-xs overflow-hidden"><div style="width:' + w + '%" class="bg-[#107c41] h-full"></div></div></div>';
+                }).join('')) +
+              '</div>' +
+            '</div>'
+        },
+        {
+          time: '00:18 / 00:36',
+          ribbon: '4. Fase 1: Crear TD_2 (% del Total General) -> Alimenta Anillo [G2]',
+          cell: 'E10:G17',
+          formula: 'Clic derecho sobre los números -> Mostrar valores como -> % del total general',
+          activeTab: 'aux',
+          checkedFields: [spec.catCol, spec.primaryCol],
+          filtersHtml: '<span class="text-slate-400">(Vacío)</span>',
+          colsHtml: '<span class="text-slate-400">(Vacío)</span>',
+          rowsHtml: '<div class="px-1.5 py-0.5 rounded bg-blue-600 text-white font-bold truncate">☰ ' + spec.catCol + '</div>',
+          valsHtml:
+            '<div class="px-1.5 py-0.5 rounded bg-[#107c41] text-white font-bold truncate">&Sigma; ' + spec.primaryCol + '</div>' +
+            '<div class="px-1.5 py-0.5 rounded bg-amber-600 text-white font-bold truncate">% del Total General</div>',
+          cursorStart: { left: '75%', top: '24%' },
+          cursorEnd: { left: '84%', top: '78%' },
+          pillText: 'Mostrar valores como -> % del total general',
+          subtitle: 'Escena 4 (Tabla Dinámica TD_2): Arrastramos [' + spec.catCol + '] a Filas y en ∑ Valores hacemos Clic derecho -> Mostrar valores como -> % del total general.',
+          voice: 'Escena cuatro. Arrastramos ' + spec.catCol + ' a Filas, y con clic derecho elegimos Mostrar valores como porcentaje del total general para alimentar el gráfico de anillos G dos.',
+          sheetHtml:
+            '<div class="rounded-lg border border-[#8a8886] overflow-hidden font-mono text-[11px]">' +
+              '<div class="bg-[#0078d4] text-white px-3 py-1 font-bold grid grid-cols-12"> <span class="col-span-5">Celda E10: ' + spec.catCol + ' &#9662;</span><span class="col-span-4 text-right">&Sigma; ' + spec.primaryCol + '</span><span class="col-span-3 text-right">% Participación</span></div>' +
+              (topC.slice(0, 4).map(c => {
+                const pct = ((c[1] / (gross || 1)) * 100).toFixed(1) + '%';
+                return '<div class="px-3 py-1 border-b border-slate-200 grid grid-cols-12 bg-white"><span class="col-span-5 font-semibold truncate">' + c[0] + '</span><span class="col-span-4 text-right font-bold">RD$ ' + Math.round(c[1]).toLocaleString('es-DO') + '</span><span class="col-span-3 text-right font-black text-[#0078d4]">' + pct + '</span></div>';
+              }).join('')) +
+              '<div class="px-3 py-1 bg-blue-50 font-black text-blue-950 grid grid-cols-12"><span class="col-span-5">Total general</span><span class="col-span-4 text-right">RD$ ' + Math.round(gross).toLocaleString('es-DO') + '</span><span class="col-span-3 text-right">100.0%</span></div>' +
+            '</div>'
+        },
+        {
+          time: '00:24 / 00:36',
+          ribbon: '5. Fase 1: Crear TD_3 (Meses) y TD_4 (Top 8 ' + spec.entityCol + ')',
+          cell: 'M10:N19',
+          formula: 'Filtro de valor -> Diez mejores... -> Cambiar 10 por 8 y Ordenar de Mayor a Menor',
+          activeTab: 'aux',
+          checkedFields: [spec.dateCol, spec.entityCol, spec.primaryCol],
+          filtersHtml: '<span class="text-amber-700 font-bold">Top 8 Mejores</span>',
+          colsHtml: '<span class="text-slate-400">(Vacío)</span>',
+          rowsHtml: '<div class="px-1.5 py-0.5 rounded bg-purple-700 text-white font-bold truncate">☰ ' + spec.entityCol + ' (Top 8)</div>',
+          valsHtml: '<div class="px-1.5 py-0.5 rounded bg-[#107c41] text-white font-bold truncate">&Sigma; ' + spec.primaryCol + ' (&darr;)</div>',
+          cursorStart: { left: '75%', top: '22%' },
+          cursorEnd: { left: '72%', top: '76%' },
+          pillText: 'Arrastrar [' + spec.entityCol + '] -> Top 8',
+          subtitle: 'Escena 5 (TD_3 y TD_4): Agrupamos [' + spec.dateCol + '] por Meses para la tendencia [G3], y filtramos los 8 mejores en [' + spec.entityCol + '] para el Ranking [G4].',
+          voice: 'Escena cinco. Agrupamos la fecha por meses en la tabla dinámica tres y filtramos los ocho mejores de ' + spec.entityCol + ' ordenados de mayor a menor en la tabla dinámica cuatro.',
+          sheetHtml:
+            '<div class="rounded-lg border border-[#8a8886] overflow-hidden font-mono text-[11px]">' +
+              '<div class="bg-amber-600 text-white px-3 py-1 font-bold flex justify-between"><span>Celda M10: Top 8 ' + spec.entityCol + ' (Orden Mayor a Menor)</span><span>&Sigma; ' + spec.primaryCol + '</span></div>' +
+              (topE.slice(0, 4).map((e, i) => '<div class="px-3 py-1 border-b border-slate-200 flex justify-between bg-white"><span class="font-bold text-slate-800">#' + (i + 1) + ' &middot; ' + e[0] + '</span><span class="font-black text-amber-800">RD$ ' + Math.round(e[1]).toLocaleString('es-DO') + '</span></div>').join('')) +
+            '</div>'
+        },
+        {
+          time: '00:30 / 00:36',
+          ribbon: '6. Fase 3: Insertar Slicers [S1]-[S3] -> Clic Derecho -> Conexiones de Informes',
+          cell: 'A3:C35',
+          formula: 'Conexiones de informes: [✓] TD_KPIs  [✓] TD_1  [✓] TD_2  [✓] TD_3  [✓] TD_4  [✓] TD_5',
+          activeTab: 'dash',
+          checkedFields: [spec.slicers[0].field, spec.slicers[1].field, spec.slicers[2].field],
+          filtersHtml: '<div class="px-1.5 py-0.5 rounded bg-emerald-700 text-white font-bold truncate">🔗 3 Slicers Activos</div>',
+          colsHtml: '<span class="text-emerald-800 font-bold">Conectados</span>',
+          rowsHtml: '<div class="px-1.5 py-0.5 rounded bg-[#107c41] text-white font-bold truncate">☑️ 6 Tablas Vinculadas</div>',
+          valsHtml: '<div class="px-1.5 py-0.5 rounded bg-[#0078d4] text-white font-bold truncate">⚡ Filtro en 1 Clic</div>',
+          cursorStart: { left: '50%', top: '25%' },
+          cursorEnd: { left: '28%', top: '48%' },
+          pillText: 'Clic Derecho -> Conexiones de informes (Marcar las 6 TDs)',
+          subtitle: 'Escena 6 (Toque Maestro): Insertamos los 3 Segmentadores [S1]-[S3] en A3:C35 y en "Conexiones de informes" marcamos las 6 Tablas Dinámicas para que filtren todo al instante.',
+          voice: 'Escena seis. Insertamos los tres segmentadores de datos y en Conexiones de informes marcamos todas las tablas dinámicas para que un solo clic filtre todo el dashboard.',
+          sheetHtml:
+            '<div class="p-3.5 rounded-xl bg-emerald-950 text-white border-2 border-emerald-400 space-y-2 font-mono text-xs">' +
+              '<div class="flex items-center justify-between border-b border-white/20 pb-1.5">' +
+                '<span class="font-black text-emerald-300"><i class="fa-solid fa-link mr-1"></i> Ventana de Excel: Conexiones de informes (' + spec.slicers[0].field + ')</span>' +
+                '<span class="px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-black text-[10px]">6 / 6 Marcadas</span>' +
+              '</div>' +
+              '<div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-[11px]">' +
+                '<div class="p-1.5 rounded bg-white/10 border border-emerald-400/50">☑️ <strong>TD_KPIs</strong> (E3:P5)</div>' +
+                '<div class="p-1.5 rounded bg-white/10 border border-emerald-400/50">☑️ <strong>TD_1</strong> (Gráfico G1)</div>' +
+                '<div class="p-1.5 rounded bg-white/10 border border-emerald-400/50">☑️ <strong>TD_2</strong> (Anillo G2)</div>' +
+                '<div class="p-1.5 rounded bg-white/10 border border-emerald-400/50">☑️ <strong>TD_3</strong> (Líneas G3)</div>' +
+                '<div class="p-1.5 rounded bg-white/10 border border-emerald-400/50">☑️ <strong>TD_4</strong> (Top 8 G4)</div>' +
+                '<div class="p-1.5 rounded bg-white/10 border border-emerald-400/50">☑️ <strong>TD_5</strong> (Tabla T5)</div>' +
+              '</div>' +
+            '</div>'
+        }
+      ];
+
+      const sc = scenes[idx] || scenes[0];
+
+      const badgeEl = document.getElementById('excelVidSceneBadge');
+      if (badgeEl) badgeEl.textContent = 'Escena ' + (idx + 1) + ' / 6 • ' + sc.time;
+
+      const ribEl = document.getElementById('excelVidRibbonHighlight');
+      if (ribEl) ribEl.textContent = sc.ribbon;
+
+      const cellEl = document.getElementById('excelVidActiveCellBox');
+      if (cellEl) cellEl.textContent = sc.cell;
+
+      const fxEl = document.getElementById('excelVidFormulaBarText');
+      if (fxEl) fxEl.textContent = sc.formula;
+
+      const canvasEl = document.getElementById('excelVidSheetCanvas');
+      if (canvasEl) canvasEl.innerHTML = sc.sheetHtml;
+
+      const tabAux = document.getElementById('excelVidTabAux');
+      const tabDash = document.getElementById('excelVidTabDash');
+      if (tabAux && tabDash) {
+        if (sc.activeTab === 'dash') {
+          tabDash.className = 'px-2.5 py-1 rounded-t bg-white border-t-2 border-t-[#107c41] text-[#107c41] shadow-2xs';
+          tabAux.className = 'px-2.5 py-1 rounded-t bg-slate-200 text-slate-600';
+        } else {
+          tabAux.className = 'px-2.5 py-1 rounded-t bg-white border-t-2 border-t-[#107c41] text-[#107c41] shadow-2xs';
+          tabDash.className = 'px-2.5 py-1 rounded-t bg-slate-200 text-slate-600';
+        }
+      }
+
+      const flEl = document.getElementById('excelVidFieldChecklist');
+      if (flEl) {
+        flEl.innerHTML = fieldsList.map(f => {
+          const isChecked = sc.checkedFields.includes(f);
+          return (
+            '<div class="flex items-center justify-between px-1.5 py-0.5 rounded ' + (isChecked ? 'bg-emerald-50 text-emerald-950 font-black border border-emerald-300' : 'text-slate-600') + '">' +
+              '<span>' + (isChecked ? '☑️ ' : '⬜ ') + f + '</span>' +
+              (isChecked ? '<span class="text-[9px] text-[#107c41] font-bold">Activo</span>' : '') +
+            '</div>'
+          );
+        }).join('');
+      }
+
+      const qf = document.getElementById('excelVidQuadFiltersBody');
+      if (qf) qf.innerHTML = sc.filtersHtml;
+      const qc = document.getElementById('excelVidQuadColsBody');
+      if (qc) qc.innerHTML = sc.colsHtml;
+      const qr = document.getElementById('excelVidQuadRowsBody');
+      if (qr) qr.innerHTML = sc.rowsHtml;
+      const qv = document.getElementById('excelVidQuadValsBody');
+      if (qv) qv.innerHTML = sc.valsHtml;
+
+      const subEl = document.getElementById('excelVidSubtitleText');
+      if (subEl) subEl.textContent = sc.subtitle;
+
+      const progEl = document.getElementById('excelVidProgressBar');
+      if (progEl) progEl.style.width = (((idx + 1) / 6) * 100).toFixed(1) + '%';
+
+      for (let i = 0; i < 6; i++) {
+        const chBtn = document.getElementById('excelVidChap-' + i);
+        if (chBtn) {
+          chBtn.className = (i === idx)
+            ? 'px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-black cursor-pointer shadow-xs'
+            : 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer';
+        }
+      }
+
+      // Animar el cursor desde el origen (Lista de campos / Cinta) hasta el destino (Cuadrante / Hoja)
+      const curEl = document.getElementById('excelVidFloatingCursor');
+      const pillEl = document.getElementById('excelVidDraggingPill');
+      if (pillEl) pillEl.textContent = sc.pillText;
+      if (curEl) {
+        curEl.style.left = sc.cursorStart.left;
+        curEl.style.top = sc.cursorStart.top;
+        EXCEL_VIDEO_STATE.subStepTimerId = setTimeout(() => {
+          if (curEl) {
+            curEl.style.left = sc.cursorEnd.left;
+            curEl.style.top = sc.cursorEnd.top;
+          }
+        }, 450);
+      }
+
+      if (speakAndContinue) {
+        speakExcelVideoSubtitle(sc.voice);
+        EXCEL_VIDEO_STATE.timerId = setTimeout(() => {
+          if (!EXCEL_VIDEO_STATE.isPlaying) return;
+          if (idx < 5) {
+            setExcelVideoScene(idx + 1, true);
+          } else {
+            EXCEL_VIDEO_STATE.isPlaying = false;
+            updateExcelVideoPlayButtons();
+          }
+        }, 6500);
+      }
     }
 
     /* =====================================================================
