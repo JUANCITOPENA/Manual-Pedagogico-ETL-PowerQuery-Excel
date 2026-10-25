@@ -4686,35 +4686,478 @@
 
     function downloadExcel() {
       try {
+        const industryKey = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
         if (!CURRENT_DATASET || CURRENT_DATASET.length === 0) {
-          showToast("No existen datos generados para exportar.", "error");
-          return;
+          CURRENT_DATASET = generateDataset();
         }
+
+        const config = INDUSTRY_CONFIGS[industryKey] || INDUSTRY_CONFIGS.retail;
+        const hojaCase = (typeof HOJA_DE_TRABAJO_DATA !== 'undefined' && HOJA_DE_TRABAJO_DATA[industryKey])
+          ? HOJA_DE_TRABAJO_DATA[industryKey]
+          : null;
 
         const cleanData = CURRENT_DATASET.map(sanitizeForExport);
         const wb = XLSX.utils.book_new();
 
+        // HOJA 1: Datos Crudos del Set de Datos Activo
         const wsData = XLSX.utils.json_to_sheet(cleanData);
+        const dataKeys = Object.keys(cleanData[0] || {});
+        wsData['!cols'] = dataKeys.map(k => ({ wch: Math.max(k.length + 4, 18) }));
         XLSX.utils.book_append_sheet(wb, wsData, "Datos_Crudos_ETL");
 
-                const guiaData = [
-          { Paso: 1, Titulo: 'Conexión a Fuentes de Datos', Accion_PowerQuery: 'Datos -> Obtener datos -> Desde una carpeta (o Texto/CSV o JSON) -> Combinar y transformar.', Codigo_M: '= Folder.Files("C:\\Carpeta_Empresa")' },
-          { Paso: 2, Titulo: 'Limpiar Espacios Fantasmas (Recortar y Limpiar)', Accion_PowerQuery: 'Seleccionar texto con Ctrl. Pestaña Transformar -> Formato -> Recortar y Limpiar. Reemplazar doble espacio.', Codigo_M: '= Table.TransformColumns(#"Paso", {{"REGION", Text.Trim, type text}, {"CLIENTE", Text.Clean, type text}})' },
-          { Paso: 3, Titulo: 'Reparar Caracteres Corruptos (Leetspeak)', Accion_PowerQuery: 'Reemplazar @, 4, 3, 0 por vocales y #, $$ por vacío. SOLO en columnas de texto.', Codigo_M: '= Table.ReplaceValue(#"Paso", "@", "a", Replacer.ReplaceText, {"CLIENTE"})' },
-          { Paso: 4, Titulo: 'Normalización y Tipos de Datos', Accion_PowerQuery: 'Poner en Mayúsculas Cada Palabra. Asignar Fecha, Entero, Texto y Número Decimal Fijo.', Codigo_M: '= Table.TransformColumnTypes(#"Paso", {{"FECHA_VENTA", type date}, {"CANTIDAD", Int64.Type}, {"TOTAL_FACTURA", Currency.Type}})' },
-          { Paso: 5, Titulo: 'Columna: Subtotal Calculado ($)', Accion_PowerQuery: 'Agregar columna -> Columna personalizada -> =[CANTIDAD] * [PRECIO_VENTA]. Tipo Moneda.', Codigo_M: '= Table.AddColumn(#"Paso", "SUBTOTAL_CALCULADO", each [CANTIDAD] * [PRECIO_VENTA], Currency.Type)' },
-          { Paso: 6, Titulo: 'Columna: Margen Bruto ($)', Accion_PowerQuery: 'Agregar columna -> Columna personalizada -> =[SUBTOTAL] - [COSTO_TOTAL]. Tipo Moneda.', Codigo_M: '= Table.AddColumn(#"Paso", "MARGEN_BRUTO", each [SUBTOTAL] - [COSTO_TOTAL], Currency.Type)' },
-          { Paso: 7, Titulo: 'Columna: Total con ITBIS (18%)', Accion_PowerQuery: 'Agregar columna -> Columna personalizada -> =[SUBTOTAL] + [ITBIS_18]. Tipo Moneda.', Codigo_M: '= Table.AddColumn(#"Paso", "TOTAL_CON_ITBIS", each [SUBTOTAL] + [ITBIS_18], Currency.Type)' },
-          { Paso: 8, Titulo: 'Columna: Ingreso Real Efectivo', Accion_PowerQuery: 'Columna personalizada: if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA].', Codigo_M: '= Table.AddColumn(#"Paso", "INGRESO_REAL", each if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA], Currency.Type)' },
-          { Paso: 9, Titulo: 'Columna: % de Margen sobre Venta', Accion_PowerQuery: 'Columna personalizada: if [SUBTOTAL] <> 0 and [SUBTOTAL] <> null then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0. Tipo Porcentaje.', Codigo_M: '= Table.AddColumn(#"Paso", "PORC_MARGEN", each if [SUBTOTAL] <> 0 and [SUBTOTAL] <> null then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0, Percentage.Type)' },
-          { Paso: 10, Titulo: 'Cerrar y Cargar al Modelo de Datos', Accion_PowerQuery: 'Inicio -> Cerrar y Cargar en... -> Crear únicamente la conexión y Agregar al Modelo de Datos.', Codigo_M: 'Consolidación automática mensual pulsando Ctrl + Alt + F5 (Actualizar Todo).' }
-        ];
+        // Calcular cifras de control reales del set de datos descargado
+        const sums = CURRENT_DATASET.reduce((acc, row) => {
+          acc.gross += (row._metricPrimary || 0);
+          acc.cost += (row._metricSecondary || 0);
+          acc.margin += (row._metricMargin || 0);
+          acc.real += (row._metricReal || 0);
+          if (row._cleanStatus === 'Cancelado' || row._cleanStatus === 'Anulado' || row._cleanStatus === 'Rechazada' || row._cleanStatus === 'Desvinculado' || row._cleanStatus === 'Castigado / Incobrable') {
+            acc.failed++;
+          }
+          return acc;
+        }, { gross: 0, cost: 0, margin: 0, real: 0, failed: 0 });
+        const marginPct = sums.gross > 0 ? ((sums.margin / sums.gross) * 100).toFixed(2) + '%' : '0.00%';
+        const failPct = ((sums.failed / (CURRENT_DATASET.length || 1)) * 100).toFixed(2) + '%';
+
+        // RECETAS MAESTRAS PERSONALIZADAS POR CADA SET DE DATOS (5 INDUSTRIAS)
+        const recetasPorIndustria = {
+          retail: [
+            {
+              Fase_o_Paso: 'MANDATO OFICIAL',
+              Titulo_Operacion: 'Proyecto 1: Supermercado & Retail Masivo (' + CURRENT_DATASET.length + ' registros)',
+              Columnas_Implicadas: 'Llave Primaria: NUM_FACTURA (17 Campos)',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Objetivo: Auditar facturación POS, limpiar nombres con leetspeak, calcular ITBIS (18%), Margen Bruto e Ingreso Real descontando facturas Canceladas.',
+              Formula_M_O_Configuracion_Exacta: 'Cifras Control -> Bruto: RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + ' | Real: RD$ ' + Math.round(sums.real).toLocaleString('es-DO') + ' | Margen: RD$ ' + Math.round(sums.margin).toLocaleString('es-DO') + ' (' + marginPct + ')'
+            },
+            {
+              Fase_o_Paso: 'Paso 1 (ETL)',
+              Titulo_Operacion: 'Conexión a Carpeta Local y Consolidación',
+              Columnas_Implicadas: 'Archivo Fuente / Carpeta Mensual',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Examinar ruta -> Combinar y Transformar datos.',
+              Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_Supermercado_Retail")'
+            },
+            {
+              Fase_o_Paso: 'Paso 2 (ETL)',
+              Titulo_Operacion: 'Limpieza de Espacios Fantasmas (Trim & Clean)',
+              Columnas_Implicadas: 'REGION, CLIENTE, VENDEDOR, CATEGORIA, PRODUCTO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Seleccionar columnas de texto -> Pestaña Transformar -> Formato -> Recortar (Trim) y Limpiar (Clean). Poner En Mayúsculas Cada Palabra.',
+              Formula_M_O_Configuracion_Exacta: '= Table.TransformColumns(Origen, {{"REGION", each Text.Proper(Text.Trim(Text.Clean(_))), type text}, {"CLIENTE", Text.Trim, type text}, {"VENDEDOR", Text.Trim, type text}})'
+            },
+            {
+              Fase_o_Paso: 'Paso 3 (ETL)',
+              Titulo_Operacion: 'Desinfección de Caracteres Corruptos (Leetspeak POS)',
+              Columnas_Implicadas: 'CLIENTE, VENDEDOR',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Reemplazar los valores corruptos inyectados en cajas POS: @ -> a, 4 -> a, 3 -> e, 0 -> o, 1 -> i, # -> vacío, $$ -> vacío.',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, "@", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 4 (ETL)',
+              Titulo_Operacion: 'Extracción de Fecha Pura y Relleno de Nulos',
+              Columnas_Implicadas: 'FECHA_VENTA, CANAL_VENTA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En FECHA_VENTA: Transformar -> Dividir columna -> Por delimitador espacio o "(" para aislar YYYY-MM-DD y tipar como Fecha. En CANAL_VENTA: Reemplazar null o vacío por "Sucursal Física".',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, null, "Sucursal Física", Replacer.ReplaceValue, {"CANAL_VENTA"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 5 (Cálculo M)',
+              Titulo_Operacion: 'Validación de Subtotal Comercial (RD$)',
+              Columnas_Implicadas: 'CANTIDAD, PRECIO_VENTA -> SUBTOTAL',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna -> Columna personalizada: multiplicar unidades por precio unitario para auditar el SUBTOTAL.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "SUBTOTAL_VALIDADO", each [CANTIDAD] * [PRECIO_VENTA], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 6 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de ITBIS DGII (18%) y Total Factura',
+              Columnas_Implicadas: 'SUBTOTAL, ITBIS_18, TOTAL_FACTURA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna personalizada para verificar que ITBIS_18 = [SUBTOTAL] * 0.18 y TOTAL_FACTURA = [SUBTOTAL] + [ITBIS_18].',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "TOTAL_CON_ITBIS", each [SUBTOTAL] + [ITBIS_18], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 7 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Margen Bruto (RD$) y % Margen',
+              Columnas_Implicadas: 'SUBTOTAL, COSTO_TOTAL -> MARGEN_BRUTO, PORC_MARGEN',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna personalizada de Margen Bruto ([SUBTOTAL] - [COSTO_TOTAL]) y Porcentaje de Margen sobre Venta.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "PORC_MARGEN", each if [SUBTOTAL] <> 0 then ([SUBTOTAL] - [COSTO_TOTAL]) / [SUBTOTAL] else 0, Percentage.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 8 (Cálculo M)',
+              Titulo_Operacion: 'Columna Condicional: Ingreso Real Efectivo (RD$)',
+              Columnas_Implicadas: 'ESTATUS_FACTURA, TOTAL_FACTURA -> INGRESO_REAL',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna condicional: si ESTATUS_FACTURA es "Cancelado", el ingreso efectivo es 0; de lo contrario, TOTAL_FACTURA.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "INGRESO_REAL", each if [ESTATUS_FACTURA] = "Cancelado" then 0 else [TOTAL_FACTURA], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 9 (Modelo)',
+              Titulo_Operacion: 'Carga al Modelo de Datos (Power Pivot / VertiPaq)',
+              Columnas_Implicadas: 'Tabla Consolidada Retail',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Inicio -> Cerrar y cargar en... -> Seleccionar "Crear únicamente conexión" y activar casilla "Agregar estos datos al Modelo de datos".',
+              Formula_M_O_Configuracion_Exacta: 'Atajo de actualización instantánea: Ctrl + Alt + F5'
+            },
+            {
+              Fase_o_Paso: 'Paso 10 (BI)',
+              Titulo_Operacion: 'Tablas Dinámicas, Segmentadores y Dashboard Retail',
+              Columnas_Implicadas: 'REGION, VENDEDOR, CATEGORIA, CANAL_VENTA, ESTATUS_FACTURA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Crear Tablas Dinámicas para responder las 25 preguntas de Supermercado. Conectar Slicers por REGION, ESTATUS_FACTURA y CANAL_VENTA.',
+              Formula_M_O_Configuracion_Exacta: 'KPIs: Total Facturado, Ingreso Real, Costo Total, Margen Bruto RD$, % Margen, % Cancelaciones y Cumplimiento de Meta (95%).'
+            }
+          ],
+
+          logistica: [
+            {
+              Fase_o_Paso: 'MANDATO OFICIAL',
+              Titulo_Operacion: 'Proyecto 2: Logística, Transporte & Fletes (' + CURRENT_DATASET.length + ' registros)',
+              Columnas_Implicadas: 'Llave Primaria: GUIA_DESPACHO (17 Campos)',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Objetivo: Auditar guías de carga, tonelaje transportado, tarifas por tonelada, costos de peajes/combustible, margen operativo por ruta y despachos anulados.',
+              Formula_M_O_Configuracion_Exacta: 'Cifras Control -> Flete Bruto: RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + ' | Flete Real: RD$ ' + Math.round(sums.real).toLocaleString('es-DO') + ' | Margen Flete: RD$ ' + Math.round(sums.margin).toLocaleString('es-DO') + ' (' + marginPct + ')'
+            },
+            {
+              Fase_o_Paso: 'Paso 1 (ETL)',
+              Titulo_Operacion: 'Conexión a Carpeta de Manifiestos de Carga',
+              Columnas_Implicadas: 'Carpeta Mensual de Guías de Despacho',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Combinar y Transformar datos de báscula y despacho.',
+              Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_Logistica_Fletes")'
+            },
+            {
+              Fase_o_Paso: 'Paso 2 (ETL)',
+              Titulo_Operacion: 'Limpieza de Espacios y Estandarización de Rutas',
+              Columnas_Implicadas: 'RUTA_ORIGEN_DESTINO, EMPRESA_CLIENTE, CHOFER_FLOTA, TIPO_CARGA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Seleccionar columnas de texto -> Transformar -> Formato -> Recortar (Trim) y Limpiar (Clean). Normalizar RUTA_ORIGEN_DESTINO.',
+              Formula_M_O_Configuracion_Exacta: '= Table.TransformColumns(Origen, {{"RUTA_ORIGEN_DESTINO", each Text.Proper(Text.Trim(Text.Clean(_))), type text}, {"EMPRESA_CLIENTE", Text.Trim, type text}, {"CHOFER_FLOTA", Text.Trim, type text}})'
+            },
+            {
+              Fase_o_Paso: 'Paso 3 (ETL)',
+              Titulo_Operacion: 'Corrección de Leetspeak en Clientes y Choferes',
+              Columnas_Implicadas: 'EMPRESA_CLIENTE, CHOFER_FLOTA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Reemplazar caracteres corruptos de digitación en báscula: @ -> a, 4 -> a, 3 -> e, 0 -> o, 1 -> i, # -> vacío, $$ -> vacío.',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, "@", "a", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 4 (ETL)',
+              Titulo_Operacion: 'Separación de Fecha de Salida y Relleno de Tipo de Carga',
+              Columnas_Implicadas: 'FECHA_SALIDA, TIPO_CARGA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Dividir FECHA_SALIDA por delimitador "(" para aislar la fecha sin ventana horaria. En TIPO_CARGA reemplazar null/vacío por "Carga Estándar".',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, null, "Carga Estándar", Replacer.ReplaceValue, {"TIPO_CARGA"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 5 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Subtotal de Flete por Tonelaje (RD$)',
+              Columnas_Implicadas: 'TONELADAS_CARGA, TARIFA_POR_TON -> SUBTOTAL_FLETE',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna personalizada multiplicando las toneladas transportadas por la tarifa por tonelada.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "SUBTOTAL_FLETE_CALC", each [TONELADAS_CARGA] * [TARIFA_POR_TON], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 6 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Flete Total con Peajes y Combustible (RD$)',
+              Columnas_Implicadas: 'SUBTOTAL_FLETE, PEAJES_COMBUSTIBLE -> TOTAL_FLETE_RD',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna personalizada sumando el subtotal del flete más el cargo de peajes y combustible.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "TOTAL_FLETE_CALC", each [SUBTOTAL_FLETE] + [PEAJES_COMBUSTIBLE], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 7 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Margen Operativo del Viaje y % Rentabilidad',
+              Columnas_Implicadas: 'TOTAL_FLETE_RD, COSTO_OPERATIVO -> MARGEN_FLETE, PORC_MARGEN_RUTA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Restar COSTO_OPERATIVO al TOTAL_FLETE_RD y dividir entre TOTAL_FLETE_RD para obtener la rentabilidad porcentual por viaje.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "PORC_MARGEN_RUTA", each if [TOTAL_FLETE_RD] <> 0 then ([TOTAL_FLETE_RD] - [COSTO_OPERATIVO]) / [TOTAL_FLETE_RD] else 0, Percentage.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 8 (Cálculo M)',
+              Titulo_Operacion: 'Columna Condicional: Flete Efectivo Real (Sin Anulados)',
+              Columnas_Implicadas: 'ESTATUS_DESPACHO, TOTAL_FLETE_RD -> FLETE_EFECTIVO_REAL',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Si ESTATUS_DESPACHO es "Anulado", asignar 0; en caso contrario conservar TOTAL_FLETE_RD.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "FLETE_EFECTIVO_REAL", each if [ESTATUS_DESPACHO] = "Anulado" then 0 else [TOTAL_FLETE_RD], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 9 (Modelo)',
+              Titulo_Operacion: 'Carga al Modelo de Datos (Power Pivot / VertiPaq)',
+              Columnas_Implicadas: 'Tabla Consolidada Logística',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Inicio -> Cerrar y cargar en... -> Crear únicamente conexión + Agregar estos datos al Modelo de datos.',
+              Formula_M_O_Configuracion_Exacta: 'Actualización automática de manifiestos con Ctrl + Alt + F5'
+            },
+            {
+              Fase_o_Paso: 'Paso 10 (BI)',
+              Titulo_Operacion: 'Tablas Dinámicas, Segmentadores y Dashboard de Flota',
+              Columnas_Implicadas: 'RUTA_ORIGEN_DESTINO, CHOFER_FLOTA, TIPO_CARGA, MODALIDAD_FLETE, ESTATUS_DESPACHO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Construir Tablas Dinámicas y Dashboard para responder las 25 preguntas de Logística y Fletes.',
+              Formula_M_O_Configuracion_Exacta: 'KPIs: Total Flete RD$, Flete Efectivo, Costo Operativo, Margen Flete RD$, % Margen, Toneladas Totales y % Despachos Anulados.'
+            }
+          ],
+
+          finanzas: [
+            {
+              Fase_o_Paso: 'MANDATO OFICIAL',
+              Titulo_Operacion: 'Proyecto 3: Finanzas Corporativas & Cartera CxC (' + CURRENT_DATASET.length + ' registros)',
+              Columnas_Implicadas: 'Llave Primaria: NUM_PAGARE (18 Campos)',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Objetivo: Auditar cartera de crédito, tramos de antigüedad de saldos (0-30, 31-60, 61-90, +90 días), intereses moratorios, abonos recuperados y saldo pendiente por cobrar.',
+              Formula_M_O_Configuracion_Exacta: 'Cifras Control -> Total Exigible: RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + ' | Abonos Cobrados: RD$ ' + Math.round(sums.real).toLocaleString('es-DO') + ' | Saldo Pendiente: RD$ ' + Math.round(sums.margin).toLocaleString('es-DO')
+            },
+            {
+              Fase_o_Paso: 'Paso 1 (ETL)',
+              Titulo_Operacion: 'Conexión a Carpeta de Cortes de Cartera y Pagarés',
+              Columnas_Implicadas: 'Carpeta Mensual de Cuentas por Cobrar (CxC)',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Combinar y Transformar reportes de cartera.',
+              Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_Finanzas_CarteraCxC")'
+            },
+            {
+              Fase_o_Paso: 'Paso 2 (ETL)',
+              Titulo_Operacion: 'Limpieza de Espacios en Sucursales, Deudores y Oficiales',
+              Columnas_Implicadas: 'SUCURSAL_CARTERA, NOMBRE_DEUDOR, OFICIAL_CREDITO, LINEA_CREDITO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Aplicar Transformar -> Formato -> Recortar (Trim), Limpiar (Clean) y Poner En Mayúsculas Cada Palabra en SUCURSAL_CARTERA.',
+              Formula_M_O_Configuracion_Exacta: '= Table.TransformColumns(Origen, {{"SUCURSAL_CARTERA", each Text.Proper(Text.Trim(Text.Clean(_))), type text}, {"NOMBRE_DEUDOR", Text.Trim, type text}, {"OFICIAL_CREDITO", Text.Trim, type text}})'
+            },
+            {
+              Fase_o_Paso: 'Paso 3 (ETL)',
+              Titulo_Operacion: 'Desinfección de Caracteres Corruptos en Deudores y Oficiales',
+              Columnas_Implicadas: 'NOMBRE_DEUDOR, OFICIAL_CREDITO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Reemplazar caracteres leetspeak en expedientes de crédito: @ -> a, 4 -> a, 3 -> e, 0 -> o, 1 -> i, # -> vacío, $$ -> vacío.',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, "@", "a", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 4 (ETL)',
+              Titulo_Operacion: 'Relleno de Nulos en Canal de Pago y Tipado de Fechas',
+              Columnas_Implicadas: 'FECHA_EMISION, FECHA_VENCIMIENTO, CANAL_PAGO, DIAS_MORA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En CANAL_PAGO reemplazar null o vacío por "Banca en Línea". Tipar FECHA_EMISION y FECHA_VENCIMIENTO como Fecha y DIAS_MORA como Entero.',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, null, "Banca en Línea", Replacer.ReplaceValue, {"CANAL_PAGO"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 5 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Interés Moratorio Devengado (Base 365 días)',
+              Columnas_Implicadas: 'MONTO_PRINCIPAL, TASA_INTERES_ANUAL, DIAS_MORA -> INTERES_MORA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Auditar el interés por mora multiplicando Capital * (Tasa Anual / 100) * (Días de Mora / 365).',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "INTERES_MORA_CALC", each Number.Round([MONTO_PRINCIPAL] * ([TASA_INTERES_ANUAL] / 100) * ([DIAS_MORA] / 365), 2), Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 6 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Saldo Total Exigible y Saldo Pendiente (RD$)',
+              Columnas_Implicadas: 'MONTO_PRINCIPAL, INTERES_MORA, ABONO_RECUPERADO -> SALDO_PENDIENTE',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Verificar que SALDO_TOTAL_EXIGIBLE = [MONTO_PRINCIPAL] + [INTERES_MORA] y SALDO_PENDIENTE = [SALDO_TOTAL_EXIGIBLE] - [ABONO_RECUPERADO].',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "SALDO_PENDIENTE_CALC", each [SALDO_TOTAL_EXIGIBLE] - [ABONO_RECUPERADO], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 7 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de % de Recuperación Efectiva de Cartera',
+              Columnas_Implicadas: 'ABONO_RECUPERADO, SALDO_TOTAL_EXIGIBLE -> PORC_RECUPERACION',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna personalizada dividiendo ABONO_RECUPERADO entre SALDO_TOTAL_EXIGIBLE. Formato Porcentaje.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "PORC_RECUPERACION", each if [SALDO_TOTAL_EXIGIBLE] <> 0 then [ABONO_RECUPERADO] / [SALDO_TOTAL_EXIGIBLE] else 0, Percentage.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 8 (Cálculo M)',
+              Titulo_Operacion: 'Clasificación de Tramo de Mora (Aging de Cartera)',
+              Columnas_Implicadas: 'DIAS_MORA -> TRAMO_MORA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Columna condicional por antigüedad: >90d = "Incobrable (+90d)", >60d = "Mora Alta (61-90d)", >30d = "Vencido (31-60d)", sino "Corriente (0-30d)".',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "AGING_VALIDADO", each if [DIAS_MORA] > 90 then "Incobrable (+90d)" else if [DIAS_MORA] > 60 then "Mora Alta (61-90d)" else if [DIAS_MORA] > 30 then "Vencido (31-60d)" else "Corriente (0-30d)", type text)'
+            },
+            {
+              Fase_o_Paso: 'Paso 9 (Modelo)',
+              Titulo_Operacion: 'Carga al Modelo de Datos Financiero (VertiPaq)',
+              Columnas_Implicadas: 'Tabla Consolidada Finanzas CxC',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Inicio -> Cerrar y cargar en... -> Crear únicamente conexión + Agregar estos datos al Modelo de datos.',
+              Formula_M_O_Configuracion_Exacta: 'Actualización de cortes de tesorería con Ctrl + Alt + F5'
+            },
+            {
+              Fase_o_Paso: 'Paso 10 (BI)',
+              Titulo_Operacion: 'Tablas Dinámicas, Segmentadores y Dashboard de Tesorería',
+              Columnas_Implicadas: 'SUCURSAL_CARTERA, OFICIAL_CREDITO, LINEA_CREDITO, TRAMO_MORA, CANAL_PAGO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Configurar Tablas Dinámicas y Dashboard para responder las 25 preguntas de Finanzas y Cartera CxC.',
+              Formula_M_O_Configuracion_Exacta: 'KPIs: Cartera Total Exigible, Abonos Recuperados, Saldo Pendiente, % Recuperación, Días Mora Promedio y Cartera en Riesgo (+90d).'
+            }
+          ],
+
+          rrhh: [
+            {
+              Fase_o_Paso: 'MANDATO OFICIAL',
+              Titulo_Operacion: 'Proyecto 4: Recursos Humanos, Nómina & TSS (' + CURRENT_DATASET.length + ' registros)',
+              Columnas_Implicadas: 'Llave Primaria: COD_EMPLEADO (18 Campos)',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Objetivo: Auditar nómina general, horas extras, retenciones de ley (AFP 2.87%, SFS 3.04%, ISR), sueldo neto pagado, aporte patronal TSS (14.19%) y rotación.',
+              Formula_M_O_Configuracion_Exacta: 'Cifras Control -> Sueldo Bruto Total: RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + ' | Sueldo Neto Pagado: RD$ ' + Math.round(sums.real).toLocaleString('es-DO') + ' | Tasa Desvinculación: ' + failPct
+            },
+            {
+              Fase_o_Paso: 'Paso 1 (ETL)',
+              Titulo_Operacion: 'Conexión a Carpeta de Archivos de Nómina Mensual',
+              Columnas_Implicadas: 'Carpeta de Novedades de Nómina y TSS',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Combinar y Transformar archivos de nómina.',
+              Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_RRHH_Nomina_TSS")'
+            },
+            {
+              Fase_o_Paso: 'Paso 2 (ETL)',
+              Titulo_Operacion: 'Limpieza de Espacios en Sedes, Colaboradores y Supervisores',
+              Columnas_Implicadas: 'SEDE_PLANTA, NOMBRE_COLABORADOR, SUPERVISOR_TURNO, DEPARTAMENTO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Aplicar Transformar -> Formato -> Recortar (Trim), Limpiar (Clean) y Poner En Mayúsculas Cada Palabra en SEDE_PLANTA.',
+              Formula_M_O_Configuracion_Exacta: '= Table.TransformColumns(Origen, {{"SEDE_PLANTA", each Text.Proper(Text.Trim(Text.Clean(_))), type text}, {"NOMBRE_COLABORADOR", Text.Trim, type text}, {"SUPERVISOR_TURNO", Text.Trim, type text}})'
+            },
+            {
+              Fase_o_Paso: 'Paso 3 (ETL)',
+              Titulo_Operacion: 'Desinfección de Caracteres Corruptos en Ficha de Personal',
+              Columnas_Implicadas: 'NOMBRE_COLABORADOR, SUPERVISOR_TURNO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Reemplazar caracteres corruptos en nombres de empleados y supervisores: @ -> a, 4 -> a, 3 -> e, 0 -> o, 1 -> i, # -> vacío, $$ -> vacío.',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, "@", "a", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 4 (ETL)',
+              Titulo_Operacion: 'Imputación de Departamentos Nulos y Tipado de Fecha Ingreso',
+              Columnas_Implicadas: 'DEPARTAMENTO, FECHA_INGRESO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En DEPARTAMENTO reemplazar null o vacío por "Operaciones Planta". Tipar FECHA_INGRESO como Fecha.',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, null, "Operaciones Planta", Replacer.ReplaceValue, {"DEPARTAMENTO"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 5 (Cálculo M)',
+              Titulo_Operacion: 'Validación de Retenciones de Ley TSS (AFP 2.87% y SFS 3.04%)',
+              Columnas_Implicadas: 'SUELDO_BRUTO -> RETENCION_AFP_287, RETENCION_SFS_304',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Verificar que RETENCION_AFP_287 = [SUELDO_BRUTO] * 0.0287 y RETENCION_SFS_304 = [SUELDO_BRUTO] * 0.0304.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "AFP_VALIDADO", each Number.Round([SUELDO_BRUTO] * 0.0287, 2), Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 6 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Total Descuentos y Sueldo Neto Pagado (RD$)',
+              Columnas_Implicadas: 'RETENCION_AFP_287, RETENCION_SFS_304, RETENCION_ISR -> TOTAL_DESCUENTOS, SUELDO_NETO_PAGADO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Sumar las 3 retenciones para obtener TOTAL_DESCUENTOS y restarlo de SUELDO_BRUTO para obtener SUELDO_NETO_PAGADO.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "SUELDO_NETO_CALC", each [SUELDO_BRUTO] - ([RETENCION_AFP_287] + [RETENCION_SFS_304] + [RETENCION_ISR]), Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 7 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Aporte Patronal TSS (14.19%) y Costo Total Empresa',
+              Columnas_Implicadas: 'SUELDO_BRUTO, APORTE_PATRONAL_TSS -> COSTO_TOTAL_EMPLEADOR',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna personalizada sumando SUELDO_BRUTO + APORTE_PATRONAL_TSS (14.19% de carga patronal).',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "COSTO_TOTAL_EMPLEADOR", each [SUELDO_BRUTO] + [APORTE_PATRONAL_TSS], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 8 (Cálculo M)',
+              Titulo_Operacion: 'Proporción de Sueldo Neto vs Sueldo Bruto (%)',
+              Columnas_Implicadas: 'SUELDO_NETO_PAGADO, SUELDO_BRUTO -> PORC_NETO_PERCIBIDO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Calcular el porcentaje neto recibido en cuenta por el colaborador ([SUELDO_NETO_PAGADO] / [SUELDO_BRUTO]).',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "PORC_NETO_PERCIBIDO", each if [SUELDO_BRUTO] <> 0 then [SUELDO_NETO_PAGADO] / [SUELDO_BRUTO] else 0, Percentage.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 9 (Modelo)',
+              Titulo_Operacion: 'Carga al Modelo de Datos de Capital Humano (VertiPaq)',
+              Columnas_Implicadas: 'Tabla Consolidada Nómina RRHH',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Inicio -> Cerrar y cargar en... -> Crear únicamente conexión + Agregar estos datos al Modelo de datos.',
+              Formula_M_O_Configuracion_Exacta: 'Actualización mensual de planilla con Ctrl + Alt + F5'
+            },
+            {
+              Fase_o_Paso: 'Paso 10 (BI)',
+              Titulo_Operacion: 'Tablas Dinámicas, Segmentadores y Dashboard de RRHH',
+              Columnas_Implicadas: 'SEDE_PLANTA, DEPARTAMENTO, CARGO_PUESTO, SUPERVISOR_TURNO, ESTATUS_LABORAL',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Diseñar Tablas Dinámicas y Dashboard para responder las 25 preguntas de Recursos Humanos y Nómina.',
+              Formula_M_O_Configuracion_Exacta: 'KPIs: Masa Salarial Bruta, Total Retenciones Ley, Sueldo Neto Pagado, Horas Extras, Aporte Patronal TSS y % Rotación (Desvinculados).'
+            }
+          ],
+
+          salud: [
+            {
+              Fase_o_Paso: 'MANDATO OFICIAL',
+              Titulo_Operacion: 'Proyecto 5: Salud, Clínicas & Coberturas ARS (' + CURRENT_DATASET.length + ' registros)',
+              Columnas_Implicadas: 'Llave Primaria: NUM_AUTORIZACION (15 Campos)',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Objetivo: Auditar reclamaciones médicas ante ARS, cobertura autorizada, copagos de pacientes, costos de insumos quirúrgicos, margen clínico y glosas médicas.',
+              Formula_M_O_Configuracion_Exacta: 'Cifras Control -> Facturado: RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + ' | Margen Clínica: RD$ ' + Math.round(sums.margin).toLocaleString('es-DO') + ' (' + marginPct + ') | Tasa Rechazo/Glosa: ' + failPct
+            },
+            {
+              Fase_o_Paso: 'Paso 1 (ETL)',
+              Titulo_Operacion: 'Conexión a Carpeta de Reclamaciones y Lotes ARS',
+              Columnas_Implicadas: 'Carpeta Mensual de Autorizaciones Clínicas',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Combinar y Transformar lotes de facturación médica.',
+              Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_Salud_Clinicas_ARS")'
+            },
+            {
+              Fase_o_Paso: 'Paso 2 (ETL)',
+              Titulo_Operacion: 'Limpieza de Espacios en Sedes Clínicas, Pacientes y Médicos',
+              Columnas_Implicadas: 'SEDE_CLINICA, EXPEDIENTE_PACIENTE, MEDICO_TRATANTE, ESPECIALIDAD_MEDICA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Seleccionar columnas de texto -> Transformar -> Formato -> Recortar (Trim), Limpiar (Clean) y Poner En Mayúsculas Cada Palabra en SEDE_CLINICA.',
+              Formula_M_O_Configuracion_Exacta: '= Table.TransformColumns(Origen, {{"SEDE_CLINICA", each Text.Proper(Text.Trim(Text.Clean(_))), type text}, {"EXPEDIENTE_PACIENTE", Text.Trim, type text}, {"MEDICO_TRATANTE", Text.Trim, type text}})'
+            },
+            {
+              Fase_o_Paso: 'Paso 3 (ETL)',
+              Titulo_Operacion: 'Desinfección de Caracteres Corruptos en Expedientes y Médicos',
+              Columnas_Implicadas: 'EXPEDIENTE_PACIENTE, MEDICO_TRATANTE',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Reemplazar caracteres corruptos en admisión hospitalaria: @ -> a, 4 -> a, 3 -> e, 0 -> o, 1 -> i, # -> vacío, $$ -> vacío.',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, "@", "a", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 4 (ETL)',
+              Titulo_Operacion: 'Aislamiento de Fecha de Atención y Relleno de ARS Nulas',
+              Columnas_Implicadas: 'FECHA_ATENCION, ASEGURADORA_ARS',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Dividir FECHA_ATENCION por delimitador "(" para separar la fecha contable del turno médico. En ASEGURADORA_ARS reemplazar null/vacío por "Particular Privado".',
+              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, null, "Particular Privado", Replacer.ReplaceValue, {"ASEGURADORA_ARS"})'
+            },
+            {
+              Fase_o_Paso: 'Paso 5 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Copago Directo del Paciente (RD$)',
+              Columnas_Implicadas: 'MONTO_TOTAL_FACTURADO, COBERTURA_ARS -> COPAGO_PACIENTE',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna personalizada restando COBERTURA_ARS al MONTO_TOTAL_FACTURADO para validar el copago cobrado en caja.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "COPAGO_VALIDADO", each [MONTO_TOTAL_FACTURADO] - [COBERTURA_ARS], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 6 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de Margen Operativo Clínico (RD$)',
+              Columnas_Implicadas: 'MONTO_TOTAL_FACTURADO, COSTO_INSUMOS -> MARGEN_CLINICA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Restar el costo de insumos y medicamentos quirúrgicos (COSTO_INSUMOS) al MONTO_TOTAL_FACTURADO.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "MARGEN_CLINICA_CALC", each [MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 7 (Cálculo M)',
+              Titulo_Operacion: 'Cálculo de % de Rentabilidad Médica y % Cobertura ARS',
+              Columnas_Implicadas: 'MARGEN_CLINICA, COBERTURA_ARS, MONTO_TOTAL_FACTURADO',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Agregar columna personalizada de % Margen Clínico ([MARGEN_CLINICA] / [MONTO_TOTAL_FACTURADO]). Formato Porcentaje.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "PORC_MARGEN_SALUD", each if [MONTO_TOTAL_FACTURADO] <> 0 then [MARGEN_CLINICA] / [MONTO_TOTAL_FACTURADO] else 0, Percentage.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 8 (Cálculo M)',
+              Titulo_Operacion: 'Columna Condicional: Ingreso Efectivo sin Glosas Rechazadas',
+              Columnas_Implicadas: 'ESTATUS_RECLAMACION, MONTO_TOTAL_FACTURADO -> INGRESO_EFECTIVO_CLINICA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Si ESTATUS_RECLAMACION es "Rechazada", el cobro efectivo de la autorización es 0; de lo contrario, MONTO_TOTAL_FACTURADO.',
+              Formula_M_O_Configuracion_Exacta: '= Table.AddColumn(PasoAnterior, "INGRESO_EFECTIVO_CLINICA", each if [ESTATUS_RECLAMACION] = "Rechazada" then 0 else [MONTO_TOTAL_FACTURADO], Currency.Type)'
+            },
+            {
+              Fase_o_Paso: 'Paso 9 (Modelo)',
+              Titulo_Operacion: 'Carga al Modelo de Datos Hospitalario (VertiPaq)',
+              Columnas_Implicadas: 'Tabla Consolidada Salud & ARS',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Inicio -> Cerrar y cargar en... -> Crear únicamente conexión + Agregar estos datos al Modelo de datos.',
+              Formula_M_O_Configuracion_Exacta: 'Actualización de lotes de auditoría médica con Ctrl + Alt + F5'
+            },
+            {
+              Fase_o_Paso: 'Paso 10 (BI)',
+              Titulo_Operacion: 'Tablas Dinámicas, Segmentadores y Dashboard Clínico ARS',
+              Columnas_Implicadas: 'SEDE_CLINICA, ESPECIALIDAD_MEDICA, MEDICO_TRATANTE, ASEGURADORA_ARS, ESTATUS_RECLAMACION',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Construir Tablas Dinámicas y Dashboard para responder las 25 preguntas de Salud, Clínicas y Coberturas ARS.',
+              Formula_M_O_Configuracion_Exacta: 'KPIs: Total Facturado, Cobertura ARS, Copago Paciente, Costo Insumos, Margen Clínica RD$, % Margen y % Glosas/Rechazos.'
+            }
+          ]
+        };
+
+        const guiaData = [...(recetasPorIndustria[industryKey] || recetasPorIndustria.retail)];
+
+        // Agregar también las 25 preguntas específicas del proyecto en la misma hoja de mandato para que el estudiante tenga todo alineado
+        if (hojaCase && Array.isArray(hojaCase.preguntas)) {
+          guiaData.push({
+            Fase_o_Paso: '---',
+            Titulo_Operacion: '--- BANCO DE 25 PREGUNTAS ANALÍTICAS DEL PROYECTO: ' + hojaCase.title.toUpperCase() + ' ---',
+            Columnas_Implicadas: '--- HERRAMIENTA SUGERIDA ---',
+            Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: '--- INTERROGANTE DE AUDITORÍA Y GUÍA DE CONFIGURACIÓN EN TABLA DINÁMICA / DASHBOARD ---',
+            Formula_M_O_Configuracion_Exacta: '--- KPI CLAVE A VALIDAR ---'
+          });
+
+          hojaCase.preguntas.forEach(q => {
+            guiaData.push({
+              Fase_o_Paso: 'Pregunta ' + q.num + ' (' + q.id + ')',
+              Titulo_Operacion: q.pregunta,
+              Columnas_Implicadas: q.badge,
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: q.guia,
+              Formula_M_O_Configuracion_Exacta: 'KPI: ' + q.kpi
+            });
+          });
+        }
+
         const wsGuia = XLSX.utils.json_to_sheet(guiaData);
+        wsGuia['!cols'] = [
+          { wch: 22 },
+          { wch: 52 },
+          { wch: 36 },
+          { wch: 85 },
+          { wch: 75 }
+        ];
         XLSX.utils.book_append_sheet(wb, wsGuia, "Receta_Maestra_PowerQuery");
 
-        const fileName = `${INDUSTRY_CONFIGS[ACTIVE_INDUSTRY].name.replace(/\s+/g, '_')}_ETL_${CURRENT_DATASET.length}_Filas.xlsx`;
+        const fileName = `${config.name.replace(/\s+/g, '_')}_ETL_${CURRENT_DATASET.length}_Filas.xlsx`;
         XLSX.writeFile(wb, fileName);
-        showToast("Libro Excel (.xlsx) con 2 hojas descargado correctamente.", "success");
+        showToast("Libro Excel (.xlsx) descargado con Datos y Receta Maestra de " + config.badge, "success");
       } catch (err) {
         console.error(err);
         showToast("Error inesperado al construir el libro Excel.", "error");
