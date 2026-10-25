@@ -51,6 +51,9 @@
   <!-- SheetJS para exportación nativa a Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
+  <!-- html2pdf.js para Exportación Ejecutiva de Hoja de Trabajo en PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <!-- Font Awesome 6 Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -364,6 +367,12 @@
           <i class="fa-solid fa-table-cells text-indigo-600 text-xs"></i>
           <span>5. Tabla Dinámica</span>
         </button>
+
+        <button onclick="switchTab('hojadetrabajo')" id="navBtn-hojadetrabajo" class="nav-item px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60">
+          <i class="fa-solid fa-clipboard-question text-emerald-700 text-xs"></i>
+          <span>6. Hoja de Trabajo</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-900 border border-emerald-300">25 Retos</span>
+        </button>
       </nav>
 
       <!-- Acción Rápida: Descarga Directa & Repositorio GitHub -->
@@ -372,7 +381,11 @@
           <i class="fa-brands fa-github text-sm"></i>
           <span class="hidden sm:inline">GitHub</span>
         </a>
-        <button onclick="downloadExcel()" title="Descargar libro Excel con datos y receta" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold shadow-sm transition-all">
+                <button onclick="downloadHojaTrabajoPDF()" title="Descargar Hoja de Trabajo Oficial en PDF (25 Preguntas x Industria)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#008272] hover:bg-[#00695c] active:scale-95 text-white text-xs font-bold shadow-sm transition-all">
+          <i class="fa-solid fa-file-pdf text-sm text-red-100"></i>
+          <span class="hidden sm:inline">Hoja de Trabajo PDF</span>
+        </button>
+<button onclick="downloadExcel()" title="Descargar libro Excel con datos y receta" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold shadow-sm transition-all">
           <i class="fa-regular fa-file-excel text-sm"></i>
           <span class="hidden sm:inline">Descargar Excel</span>
         </button>
@@ -2628,6 +2641,270 @@
 
     </section>
 
+  
+    <!-- ==============================================================
+         TAB 6: HOJA DE TRABAJO & BANCO DE 25 PREGUNTAS ANALÍTICAS (POR INDUSTRIA)
+    ============================================================== -->
+    <section id="tab-hojadetrabajo" class="space-y-8 hidden">
+
+      <!-- Header Hero de la Hoja de Trabajo -->
+      <div class="bg-gradient-to-br from-white via-slate-50 to-emerald-50/40 border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black bg-emerald-100 text-emerald-950 border border-emerald-300">
+                <i class="fa-solid fa-graduation-cap text-emerald-700"></i> HOJA DE TRABAJO OFICIAL
+              </span>
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black bg-blue-100 text-blue-900 border border-blue-300">
+                <i class="fa-solid fa-list-check"></i> 125 Preguntas Analíticas (25 x Proyecto)
+              </span>
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                <i class="fa-solid fa-award"></i> Nivel: Business Intelligence & Power Query
+              </span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+              Hoja de Trabajo: Protocolo ETL, Tablas Dinámicas, Dashboards & 25 Preguntas Clave
+            </h2>
+            <p class="text-sm text-slate-600 max-w-4xl leading-relaxed">
+              Esta guía práctica pedagógica desafía al analista a responder <strong class="text-slate-900">25 preguntas analíticas críticas por cada industria</strong> utilizando las herramientas estándar de Microsoft: <span class="bg-emerald-100 px-1 py-0.5 rounded font-extrabold text-emerald-950">Power Query (M)</span>, <span class="bg-teal-100 px-1 py-0.5 rounded font-extrabold text-teal-950">Tablas Dinámicas</span> y <span class="bg-amber-100 px-1 py-0.5 rounded font-extrabold text-amber-950">Dashboards Ejecutivos</span>.
+            </p>
+          </div>
+
+          <!-- Botones de Acción de la Hoja de Trabajo -->
+          <div class="flex flex-col sm:flex-row lg:flex-col gap-2 shrink-0">
+            <button onclick="downloadHojaTrabajoPDF()" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#008272] to-[#107c41] hover:from-[#00695c] hover:to-[#0d6535] active:scale-95 text-white text-sm font-black shadow-lg shadow-emerald-700/20 transition-all cursor-pointer">
+              <i class="fa-solid fa-file-pdf text-lg"></i>
+              <span>Descargar Hoja de Trabajo (PDF)</span>
+            </button>
+            <button onclick="downloadExcel()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 active:scale-95 text-emerald-800 text-xs font-bold border border-emerald-300 shadow-xs transition-all cursor-pointer">
+              <i class="fa-regular fa-file-excel text-emerald-600 text-sm"></i>
+              <span>Descargar Dataset en Excel (.xlsx)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sub-Pestañas Interactivas por Caso / Industria -->
+        <div class="pt-4 border-t border-slate-200">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-diagram-project text-emerald-600"></i> Selecciona el Proyecto / Industria para cargar sus 25 preguntas:
+          </div>
+          <div class="flex flex-wrap items-center gap-2" id="hojaTrabajoIndustryTabs">
+            <button onclick="switchHojaTrabajoSubTab('retail')" id="htTabBtn-retail" class="ht-tab-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 bg-emerald-700 text-white shadow-sm border border-emerald-800">
+              <i class="fa-solid fa-cart-shopping"></i>
+              <span>1. Supermercado & Retail</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white">25 Qs</span>
+            </button>
+            <button onclick="switchHojaTrabajoSubTab('logistica')" id="htTabBtn-logistica" class="ht-tab-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-300">
+              <i class="fa-solid fa-truck-fast text-teal-700"></i>
+              <span>2. Logística & Fletes</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-800 border">25 Qs</span>
+            </button>
+            <button onclick="switchHojaTrabajoSubTab('finanzas')" id="htTabBtn-finanzas" class="ht-tab-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-300">
+              <i class="fa-solid fa-building-columns text-blue-700"></i>
+              <span>3. Finanzas & Tesorería</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-800 border">25 Qs</span>
+            </button>
+            <button onclick="switchHojaTrabajoSubTab('rrhh')" id="htTabBtn-rrhh" class="ht-tab-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-300">
+              <i class="fa-solid fa-users text-purple-700"></i>
+              <span>4. Recursos Humanos</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-800 border">25 Qs</span>
+            </button>
+            <button onclick="switchHojaTrabajoSubTab('salud')" id="htTabBtn-salud" class="ht-tab-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-300">
+              <i class="fa-solid fa-hospital text-rose-700"></i>
+              <span>5. Salud & Clínicas ARS</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-800 border">25 Qs</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTRUCTURA PRINCIPAL DIVIDIDA EN 2 CARDS CON BORDES ANIMADOS -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- CARD 1: FICHA TÉCNICA, EDA, METADATOS Y PROTOCOLO ETL (40% Ancho / 5 Columnas) -->
+        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 shadow-excel-card space-y-6">
+          
+          <!-- Encabezado de la Card 1 -->
+          <div class="pb-4 border-b border-slate-200">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info"></i> Ficha Técnica & EDA
+              </span>
+              <span id="htProjectBadge" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-900 border border-emerald-300">
+                Supermercado
+              </span>
+            </div>
+            <h3 id="htProjectTitle" class="text-xl font-black text-slate-900 mt-1">
+              Supermercado & Retail Masivo
+            </h3>
+            <p id="htProjectDesc" class="text-xs text-slate-600 mt-1 leading-relaxed">
+              Consolidación de ventas minoristas en 4 regiones con 25 distribuidoras. Requiere conciliación de quiebres de stock, ITBIS y corrección ortográfica de clientes.
+            </p>
+          </div>
+
+          <!-- Métricas Clave de Control para Validación -->
+          <div class="space-y-2">
+            <h4 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+              <i class="fa-solid fa-bullseye text-amber-600"></i> Cifras Maestras de Control (Resultados Esperados)
+            </h4>
+            <div id="htControlMetricsContainer" class="grid grid-cols-2 gap-2 text-xs">
+              <!-- Se puebla dinámicamente -->
+            </div>
+            <p class="text-[11px] text-slate-400 italic">
+              * Utiliza estas cifras para contrastar tus Tablas Dinámicas y confirmar que el ETL purificó correctamente el 100% de filas.
+            </p>
+          </div>
+
+          <!-- Campos y Análisis EDA del Dataset -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-table-list text-blue-600"></i> Estructura de Campos & Tipado
+              </h4>
+              <span id="htFieldCountBadge" class="text-[11px] font-mono font-bold text-slate-500">17 Campos</span>
+            </div>
+            <div id="htFieldsList" class="max-h-48 overflow-y-auto border border-slate-200 rounded-xl p-2 bg-slate-50 space-y-1.5 text-xs">
+              <!-- Lista de campos poblada vía JS -->
+            </div>
+          </div>
+
+          <!-- Protocolo ETL en Power Query: 5 Pasos Mandatorios -->
+          <div class="space-y-3 pt-2 border-t border-slate-200">
+            <h4 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+              <i class="fa-solid fa-filter text-teal-700"></i> Pasos Obligatorios en Power Query (M)
+            </h4>
+            
+            <div class="space-y-2 text-xs">
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                  <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">1</span>
+                  <span>Conexión y Fusión de Carpeta</span>
+                </div>
+                <p class="text-slate-600 pl-6 text-[11px]">
+                  <code>Datos &rarr; Obtener datos &rarr; Desde una carpeta</code>. Seleccionar archivos mensuales y pulsar <strong>Combinar y Transformar</strong>.
+                </p>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                  <span class="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px] font-black">2</span>
+                  <span>Desinfección de Texto & Leetspeak</span>
+                </div>
+                <p class="text-slate-600 pl-6 text-[11px]">
+                  Aplicar <code>Text.Trim</code> y <code>Text.Clean</code>. Reemplazar <code>@&rarr;a</code>, <code>4&rarr;a</code>, <code>3&rarr;e</code>, <code>0&rarr;o</code>, <code>#&rarr;vacío</code> en columnas de texto.
+                </p>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                  <span class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black">3</span>
+                  <span>Estandarización de Fechas & Horas</span>
+                </div>
+                <p class="text-slate-600 pl-6 text-[11px]">
+                  Dividir la columna de fecha por delimitador de espacio o aplicar <code>DateTime.Date</code> para aislar la fecha contable sin ventana horaria.
+                </p>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                  <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-black">4</span>
+                  <span>Columnas de Negocio Calculadas (M)</span>
+                </div>
+                <p class="text-slate-600 pl-6 text-[11px]">
+                  Crear <code>SUBTOTAL</code>, <code>MARGEN_BRUTO</code> y <code>INGRESO_REAL</code> (evaluando con condicional si el estatus no está Cancelado / Anulado).
+                </p>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                  <span class="w-5 h-5 rounded-full bg-emerald-800 text-white flex items-center justify-center text-[10px] font-black">5</span>
+                  <span>Carga al Modelo de Datos VertiPaq</span>
+                </div>
+                <p class="text-slate-600 pl-6 text-[11px]">
+                  Cerrar y Cargar en... &rarr; <em>Crear únicamente conexión</em> + <em>Agregar estos datos al Modelo de Datos</em>. Actualizar con <kbd class="px-1 py-0.5 bg-white border rounded font-mono text-[10px]">Ctrl+Alt+F5</kbd>.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Botón de Descarga Rápida en Card 1 -->
+          <div class="pt-2">
+            <button onclick="downloadHojaTrabajoPDF()" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 text-xs font-black border border-slate-300 shadow-xs transition-all cursor-pointer">
+              <i class="fa-solid fa-print text-emerald-700"></i>
+              <span>Imprimir / Exportar Documento PDF Completo</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- CARD 2: BANCO DE 25 PREGUNTAS ANALÍTICAS CON CHECKLIST & FILTROS (60% Ancho / 7 Columnas) -->
+        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 shadow-excel-card space-y-5">
+          
+          <!-- Encabezado de la Card 2 con Barra de Progreso -->
+          <div class="pb-4 border-b border-slate-200 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                  <i class="fa-solid fa-list-check"></i> Cuestionario Analítico Directivo
+                </div>
+                <h3 class="text-xl font-black text-slate-900 mt-0.5">
+                  25 Preguntas de Auditoría & Análisis de Datos
+                </h3>
+              </div>
+
+              <!-- Indicador de Progreso Resuelto -->
+              <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-1.5 text-right shrink-0">
+                <div class="text-[10px] font-bold uppercase text-emerald-800">Progreso Resuelto</div>
+                <div id="htProgressLabel" class="text-sm font-black text-emerald-950 font-mono">0 / 25 (0%)</div>
+              </div>
+            </div>
+
+            <!-- Barra de Progreso Visual -->
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+              <div id="htProgressBar" class="bg-gradient-to-r from-emerald-500 to-[#008272] h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Filtros de Preguntas por Herramienta y Buscador -->
+            <div class="flex flex-col sm:flex-row items-center gap-2 pt-1">
+              <!-- Buscador Rápido -->
+              <div class="relative w-full sm:w-1/2">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <input type="text" id="htQuestionSearch" oninput="searchHojaTrabajo(this.value)" placeholder="Buscar en preguntas (ej: ITBIS, margen, ruta)..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-sans">
+              </div>
+
+              <!-- Filtro por Herramienta -->
+              <div class="flex items-center gap-1 w-full sm:w-1/2 justify-start sm:justify-end overflow-x-auto pb-1 sm:pb-0 text-xs">
+                <button onclick="filterHojaTrabajo('all')" id="htFilterBtn-all" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-white shadow-xs">Todas</button>
+                <button onclick="filterHojaTrabajo('pivot')" id="htFilterBtn-pivot" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">Tablas Dinámicas</button>
+                <button onclick="filterHojaTrabajo('dashboard')" id="htFilterBtn-dashboard" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">Dashboard</button>
+                <button onclick="filterHojaTrabajo('etl')" id="htFilterBtn-etl" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">ETL / M</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Contenedor con Scroll de las 25 Preguntas -->
+          <div id="htQuestionsContainer" class="space-y-3 max-h-[680px] overflow-y-auto pr-1">
+            <!-- Renderizado dinámico de las 25 preguntas -->
+          </div>
+
+          <!-- Acciones de Pie de Card 2 -->
+          <div class="pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <span class="text-slate-500">
+              <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Tip: Arrastra los campos indicados a la tabla dinámica para obtener el valor numérico exacto.
+            </span>
+            <button onclick="resetHojaTrabajoCheckboxes()" class="text-slate-500 hover:text-rose-600 font-bold transition-colors">
+              <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Reiniciar Checklists
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
   </main>
 
   <!-- ==============================================================
@@ -3779,6 +4056,11 @@
       renderDashboard();
       renderDashboardTable();
       renderPivotTable();
+      try {
+        if (typeof renderHojaTrabajo === 'function') {
+          renderHojaTrabajo(industryKey);
+        }
+      } catch(e) {}
 
       showToast(`Industria Activa: ${config.name}`, 'success');
     }
@@ -3816,6 +4098,14 @@
         } else if (tabId === 'fundamentos') {
           requestAnimationFrame(() => {
             try { initSeniorityCharts(); } catch(e) { console.warn(e); }
+          });
+        } else if (tabId === 'hojadetrabajo') {
+          requestAnimationFrame(() => {
+            try {
+              renderHojaTrabajo(ACTIVE_HOJA_INDUSTRY || ACTIVE_INDUSTRY);
+            } catch(e) {
+              console.warn('Error al inicializar Hoja de Trabajo:', e);
+            }
           });
         }
       } catch(err) {
@@ -4785,6 +5075,928 @@
         });
       }
     }
+
+    
+    /* =====================================================================
+       18. HOJA DE TRABAJO: BANCO MAESTRO DE 125 PREGUNTAS (25 X INDUSTRIA)
+           FICHA TÉCNICA, ANÁLISIS EDA & GENERADOR DE PDF PROFESIONAL
+    ===================================================================== */
+    let ACTIVE_HOJA_INDUSTRY = 'retail';
+    let HT_CURRENT_FILTER = 'all';
+    let HT_CURRENT_SEARCH = '';
+
+    const HOJA_DE_TRABAJO_DATA = {
+      retail: {
+        title: "Supermercado & Retail Masivo",
+        badge: "Supermercado",
+        desc: "Cadena de supermercados con 4 regiones y 25 distribuidores. Desafíos: quiebres de inventario, ITBIS (18%), devoluciones y depuración de nombres con leetspeak en cajas POS.",
+        eda: {
+          registros: "1,500 a 5,000 transacciones mensuales",
+          campos: 17,
+          llavePrimaria: "NUM_FACTURA (FAC-RET-XXXXX)",
+          tipoProblemas: "Espacios dobles y finales, texto en leetspeak (@, 4, 3, 0), fechas con ventana horaria, nulos en canal.",
+          limpiezaM: "Text.Trim, Text.Clean, Table.ReplaceValue, DateTime.Date, Table.AddColumn (SUBTOTAL, MARGEN, INGRESO_REAL)."
+        },
+        preguntas: [
+          {
+            id: "RET-01",
+            num: 1,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Cuál es el Monto Total Facturado Bruto (TOTAL_FACTURA) de la cadena en el período analizado?",
+            guia: "Filas: (Ninguna) | Valores: Suma de TOTAL_FACTURA. Formato: Moneda RD$.",
+            kpi: "TOTAL_FACTURA"
+          },
+          {
+            id: "RET-02",
+            num: 2,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿A cuánto asciende el Ingreso Real Efectivo descontando facturas con estatus 'Cancelado'?",
+            guia: "Filas: ESTATUS_FACTURA | Valores: Suma de TOTAL_FACTURA y Suma de INGRESO_REAL. O filtrar cancelados.",
+            kpi: "INGRESO_REAL"
+          },
+          {
+            id: "RET-03",
+            num: 3,
+            herramienta: "dashboard",
+            badge: "Dashboard",
+            color: "blue",
+            pregunta: "¿Qué porcentaje del total facturado representan las cancelaciones por quiebre de stock?",
+            guia: "Cálculo: (Total Facturas Canceladas / Monto Total Facturado) * 100. Ver KPI Tasa Cancelaciones.",
+            kpi: "% Cancelación"
+          },
+          {
+            id: "RET-04",
+            num: 4,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿A cuánto asciende el Costo Total consolidado (COSTO_TOTAL) de los productos vendidos?",
+            guia: "Valores: Suma de COSTO_TOTAL. Contrasta con el Subtotal bruto sin impuestos.",
+            kpi: "COSTO_TOTAL"
+          },
+          {
+            id: "RET-05",
+            num: 5,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Cuál es el Margen Bruto comercial absoluto en RD$ (SUBTOTAL - COSTO_TOTAL)?",
+            guia: "Valores: Suma de MARGEN_BRUTO. Representa la ganancia comercial antes de gastos operativos.",
+            kpi: "MARGEN_BRUTO"
+          },
+          {
+            id: "RET-06",
+            num: 6,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Cuál es el Porcentaje de Margen Bruto sobre la venta (MARGEN_BRUTO / SUBTOTAL)?",
+            guia: "Campo calculado en Tabla Dinámica o columna PORC_MARGEN en Power Query. Formato: Porcentaje (%).",
+            kpi: "% Margen Venta"
+          },
+          {
+            id: "RET-07",
+            num: 7,
+            herramienta: "dashboard",
+            badge: "Dashboard",
+            color: "blue",
+            pregunta: "¿Cuál es la Región Geográfica con mayor volumen de facturación y cuál es su cuota porcentual?",
+            guia: "Filas: REGION | Valores: Suma de TOTAL_FACTURA y % del total general. Ver Gráfico 1 del Dashboard.",
+            kpi: "Top Región"
+          },
+          {
+            id: "RET-08",
+            num: 8,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Qué Región presenta el menor margen de ganancia porcentual y a qué factores se atribuye?",
+            guia: "Filas: REGION | Valores: Suma de MARGEN_BRUTO y Promedio de % Margen.",
+            kpi: "Región Menor Margen"
+          },
+          {
+            id: "RET-09",
+            num: 9,
+            herramienta: "dashboard",
+            badge: "Dashboard",
+            color: "blue",
+            pregunta: "¿Cuál es el Vendedor Estrella con mayor facturación acumulada y cuántas facturas emitió?",
+            guia: "Filas: VENDEDOR | Valores: Suma de TOTAL_FACTURA, Cuenta de NUM_FACTURA. Ver Gráfico Top 8 Vendedores.",
+            kpi: "Vendedor Estrella"
+          },
+          {
+            id: "RET-10",
+            num: 10,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Qué Vendedor registra la mayor tasa de pedidos en estatus 'Cancelado' o 'Pendiente'?",
+            guia: "Filas: VENDEDOR | Columnas: ESTATUS_FACTURA | Valores: Cuenta de facturas y % del total de fila.",
+            kpi: "Riesgo Vendedor"
+          },
+          {
+            id: "RET-11",
+            num: 11,
+            herramienta: "dashboard",
+            badge: "Dashboard",
+            color: "blue",
+            pregunta: "¿Cuáles son las 3 Categorías de productos más vendidas en unidades y en valor monetario?",
+            guia: "Filas: CATEGORIA | Valores: Suma de CANTIDAD y Suma de TOTAL_FACTURA. Ordenar de mayor a menor.",
+            kpi: "Top Categorías"
+          },
+          {
+            id: "RET-12",
+            num: 12,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Existe algún Producto específico cuyo margen de contribución sea inferior al 15%?",
+            guia: "Filas: PRODUCTO | Valores: Promedio de % Margen. Aplicar formato condicional tipo semáforo.",
+            kpi: "Producto Margen Crítico"
+          },
+          {
+            id: "RET-13",
+            num: 13,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Cuál es el Canal de Venta más rentable entre Sucursal Física, App Móvil, Preventa y Teléfono?",
+            guia: "Filas: CANAL_VENTA | Valores: Suma de TOTAL_FACTURA, Suma de MARGEN_BRUTO y % Margen.",
+            kpi: "Rentabilidad x Canal"
+          },
+          {
+            id: "RET-14",
+            num: 14,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Qué porcentaje de las facturas se cobraron bajo 'Contado Efectivo' vs crédito a 15 y 30 días?",
+            guia: "Filas: CONDICION_PAGO | Valores: Cuenta de facturas y mostrar valores como % del total general.",
+            kpi: "Mix de Pago"
+          },
+          {
+            id: "RET-15",
+            num: 15,
+            herramienta: "etl",
+            badge: "Power Query (M)",
+            color: "amber",
+            pregunta: "¿A cuánto asciende el ITBIS (18%) total recaudado que debe liquidarse ante la DGII?",
+            guia: "Valores: Suma de ITBIS_18. En Power Query verificar que = [SUBTOTAL] * 0.18 coincida con el cálculo.",
+            kpi: "ITBIS DGII"
+          },
+          {
+            id: "RET-16",
+            num: 16,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Quiénes conforman el Top 5 de Clientes con mayor volumen de compra acumulado?",
+            guia: "Filas: CLIENTE | Valores: Suma de TOTAL_FACTURA | Filtro: Top 10 (establecer en 5 mejores).",
+            kpi: "Top 5 Clientes"
+          },
+          {
+            id: "RET-17",
+            num: 17,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "¿Cuántas facturas tienen estatus 'Pendiente' y cuánto capital representan?",
+            guia: "Filtro o Filas: ESTATUS_FACTURA = 'Pendiente' | Valores: Cuenta de facturas y Suma de TOTAL_FACTURA.",
+            kpi: "Cartera Pendiente"
+          },
+          {
+            id: "RET-18",
+            num: 18,
+            herramienta: "pivot",
+            badge: "Tabla Dinámica",
+            color: "emerald",
+            pregunta: "En una matriz de CATEGORIA en filas y REGION en columnas, ¿qué celda concentra más ventas?",
+            guia: "Filas: CATEGORIA | Columnas: REGION | Valores: Suma de TOTAL_FACTURA. Buscar el valor máximo.",
+            kpi: "Matriz Cruce"
+          },
+          {
+            id: "RET-19",
+            num: 19,
+            herramienta: "dashboard",
+            badge: "Dashboard",
+            color: "blue",
+            pregunta: "Si activas el segmentador de la región 'Sur', ¿cuál es el producto y vendedor líder en esa zona?",
+            guia: "Segmentador: Seleccionar 'Sur'. Observar tabla de resumen y gráfico de vendedores.",
+            kpi: "Filtro Slicer Sur"
+          },
+          {
+            id: "RET-20",
+            num: 20,
+            herramienta: "dashboard",
+            badge: "Dashboard",
+            color: "blue",
+            pregunta: "¿Cuál es la tendencia mensual de ventas: se observa estacionalidad o crecimiento continuo?",
+            guia: "Ver Gráfico 3 del Dashboard (Tendencia Mensual: Bruto vs Real).",
+            kpi: "Tendencia Temporal"
+          },
+          {
+            id: "RET-21",
+            num: 21,
+            herramienta: "etl",
+            badge: "Power Query (M)",
+            color: "amber",
+            pregunta: "¿Qué porcentaje de filas presentaban impurezas tipográficas (leetspeak como 'Su9er', '@')?",
+            guia: "En Power Query: auditar columna con caracteres antes de Table.ReplaceValue. En data cruda: ~35%.",
+            kpi: "Calidad de Datos"
+          },
+          {
+            id: "RET-22",
+            num: 22,
+            herramienta: "etl",
+            badge: "Power Query (M)",
+            color: "amber",
+            pregunta: "¿Por qué la aplicación de Text.Trim y Text.Clean es indispensable para consolidar clientes?",
+            guia: "Explica: Espacios invisibles al final crean duplicados artificiales en tablas dinámicas ('Cliente ' != 'Cliente').",
+            kpi: "Gobernanza ETL"
+          },
+          {
+            id: "RET-23",
+            num: 23,
+            herramienta: "dashboard",
+            badge: "Dashboard",
+            color: "blue",
+            pregunta: "Frente a la Meta Comercial fijada al 95% del facturado, ¿cuál es el porcentaje de cumplimiento real?",
+            guia: "Ver Card de KPI '% Meta Comercial' en el dashboard. Fórmula: (Ingreso Real / Meta) * 100.",
+            kpi: "% Cumplimiento Meta"
+          },
+          {
+            id: "RET-24",
+            num: 24,
+            herramienta: "dashboard",
+            badge: "Dashboard",
+            color: "blue",
+            pregunta: "¿Qué gráfico del dashboard alerta más rápido a la gerencia sobre una caída en la rentabilidad?",
+            guia: "El Gráfico 1 (Facturación vs Costos) y el Gráfico 3 (Bruto vs Real por cancelaciones).",
+            kpi: "Análisis Visual"
+          },
+          {
+            id: "RET-25",
+            num: 25,
+            herramienta: "etl",
+            badge: "Power Query (M)",
+            color: "amber",
+            pregunta: "Si agregas 500 nuevas facturas a la carpeta del mes, ¿qué comando actualiza todo en 1 segundo?",
+            guia: "Atajo: Ctrl + Alt + F5 (Actualizar Todo). Power Query reejecuta los 10 pasos automáticamente.",
+            kpi: "Automatización Ctrl+Alt+F5"
+          }
+        ]
+      },
+
+      logistica: {
+        title: "Logística, Fletes & Cadena de Suministro",
+        badge: "Logística",
+        desc: "Flota interprovincial de transporte pesado. Desafíos: balance de toneladas transportadas, costos de gasoil y peajes, rutas críticas y cancelaciones por fallas mecánicas.",
+        eda: {
+          registros: "1,200 a 4,000 despachos de flete",
+          campos: 17,
+          llavePrimaria: "NUM_MANIFIESTO (MAN-LOG-XXXXX)",
+          tipoProblemas: "Decimales de toneladas con comas o puntos, nombres de choferes con caracteres, peajes mixtos.",
+          limpiezaM: "Double.From, Text.Trim, SplitColumn por delimitador, Table.AddColumn (TOTAL_FLETE, MARGEN_FLETE)."
+        },
+        preguntas: [
+          { id: "LOG-01", num: 1, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el Monto Total Facturado por concepto de Fletes (TOTAL_FLETE_RD)?", guia: "Valores: Suma de TOTAL_FLETE_RD en pesos dominicanos.", kpi: "TOTAL_FLETE" },
+          { id: "LOG-02", num: 2, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuántas Toneladas Métricas de Carga (TONELADAS_CARGA) fueron movilizadas en total?", guia: "Valores: Suma de TONELADAS_CARGA. Formato: Número con 1 decimal.", kpi: "TONELADAS_CARGA" },
+          { id: "LOG-03", num: 3, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende el gasto total acumulado en Peajes y Combustible (PEAJES_COMBUSTIBLE)?", guia: "Valores: Suma de PEAJES_COMBUSTIBLE. Comparar frente al flete bruto.", kpi: "PEAJES_COMBUSTIBLE" },
+          { id: "LOG-04", num: 4, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el Costo Operativo consolidado de la flota y a cuánto asciende el Margen Operativo?", guia: "Valores: Suma de COSTO_OPERATIVO y Suma de MARGEN_FLETE.", kpi: "MARGEN_FLETE" },
+          { id: "LOG-05", num: 5, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el Margen Operativo Porcentual promedio de la operación (MARGEN / TOTAL_FLETE)?", guia: "Campo Calculado: (Suma de MARGEN_FLETE / Suma de TOTAL_FLETE_RD) * 100. Meta: > 35%.", kpi: "% Margen Operativo" },
+          { id: "LOG-06", num: 6, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Cuál es la Ruta de Despacho más transitada en volumen de viajes y cuál en monto total?", guia: "Filas: RUTA_ORIGEN_DESTINO | Valores: Cuenta de manifiestos y Suma de TOTAL_FLETE_RD.", kpi: "Ruta Líder" },
+          { id: "LOG-07", num: 7, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es la Tarifa Promedio por Tonelada (TARIFA_POR_TON) según cada ruta interprovincial?", guia: "Filas: RUTA_ORIGEN_DESTINO | Valores: Promedio de TARIFA_POR_TON.", kpi: "Tarifa Promedio" },
+          { id: "LOG-08", num: 8, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Ruta reporta el mayor costo relativo de peajes y combustible por viaje?", guia: "Filas: RUTA_ORIGEN_DESTINO | Valores: Promedio de PEAJES_COMBUSTIBLE.", kpi: "Ruta Mayor Gasto" },
+          { id: "LOG-09", num: 9, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Quién es el Chofer de Flota con mayor cantidad de despachos y facturación acumulada?", guia: "Filas: CHOFER_FLOTA | Valores: Suma de TOTAL_FLETE_RD. Ver Gráfico Top 8 Choferes.", kpi: "Top Chofer" },
+          { id: "LOG-10", num: 10, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Placa de Cabezal (VEHICULO_PLACA) registra mayor cantidad de viajes 'Anulados' por avería?", guia: "Filas: VEHICULO_PLACA | Filtro: ESTATUS_DESPACHO = 'Anulado' | Valores: Cuenta de viajes.", kpi: "Vehículo con Averías" },
+          { id: "LOG-11", num: 11, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el Tipo de Carga con mayor margen monetario (Carga Seca, Refrigerada, Granel)?", guia: "Filas: TIPO_CARGA | Valores: Suma de MARGEN_FLETE y Suma de TOTAL_FLETE_RD.", kpi: "Tipo Carga Más Rentable" },
+          { id: "LOG-12", num: 12, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Modalidad de Flete resulta más rentable (Dedicado, Consolidado LTL o Urgente)?", guia: "Filas: MODALIDAD_FLETE | Valores: Suma de MARGEN_FLETE y % de margen sobre flete.", kpi: "Modalidad Flete" },
+          { id: "LOG-13", num: 13, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende el monto de ingresos perdidos por manifiestos en estatus 'Anulado'?", guia: "Filtro: ESTATUS_DESPACHO = 'Anulado' | Valores: Suma de TOTAL_FLETE_RD.", kpi: "Pérdida x Anulaciones" },
+          { id: "LOG-14", num: 14, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Qué porcentaje del total de despachos sufrieron anulación o cancelación en ruta?", guia: "Ver KPI 'Tasa Cancelaciones' en Dashboard. (Anulados / Total Manifiestos) * 100.", kpi: "Tasa Cancelación Fletes" },
+          { id: "LOG-15", num: 15, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Quién es la Empresa Cliente con mayor volumen de fletes y cuál es su condición de pago?", guia: "Filas: EMPRESA_CLIENTE, CONDICION_FLETE | Valores: Suma de TOTAL_FLETE_RD.", kpi: "Cliente Principal" },
+          { id: "LOG-16", num: 16, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "En una matriz de RUTA en filas y TIPO_CARGA en columnas, ¿qué cruce genera mayor flete?", guia: "Filas: RUTA_ORIGEN_DESTINO | Columnas: TIPO_CARGA | Valores: Suma de TOTAL_FLETE_RD.", kpi: "Matriz Fletes" },
+          { id: "LOG-17", num: 17, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuántos fletes se encuentran en estatus 'En Tránsito' y cuál es el valor en carretera?", guia: "Filtro: ESTATUS_DESPACHO = 'En Tránsito' | Valores: Cuenta y Suma de TOTAL_FLETE_RD.", kpi: "Carga en Tránsito" },
+          { id: "LOG-18", num: 18, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Cómo resolvió Power Query las discrepancias entre comas y puntos en las toneladas?", guia: "Uso de tipo 'Número decimal' con configuración regional invariante o ReplaceValue('.', ',').", kpi: "Normalización Decimal" },
+          { id: "LOG-19", num: 19, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el rendimiento económico por tonelada (TOTAL_FLETE / TONELADAS_CARGA)?", guia: "Campo calculado en Tabla Dinámica: = Suma de TOTAL_FLETE_RD / Suma de TONELADAS_CARGA.", kpi: "Rendimiento RD$/Ton" },
+          { id: "LOG-20", num: 20, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "Al segmentar por 'Cibao (Santiago Real)', ¿cuál es el chofer con más toneladas transportadas?", guia: "Slicer: 'Cibao' | Tabla dinámica: Chofer vs Suma de TONELADAS_CARGA.", kpi: "Chofer Líder Cibao" },
+          { id: "LOG-21", num: 21, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Qué paso M garantiza que el número de manifiesto conserve ceros a la izquierda (MAN-LOG-00045)?", guia: "Mantener formato de Texto (type text) y usar Text.PadStart en generación si fuera necesario.", kpi: "Integridad Código" },
+          { id: "LOG-22", num: 22, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el promedio de toneladas transportadas por viaje según el tipo de carga?", guia: "Filas: TIPO_CARGA | Valores: Promedio de TONELADAS_CARGA.", kpi: "Promedio Carga" },
+          { id: "LOG-23", num: 23, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "Si el combustible aumenta un 10%, ¿qué impacto tendría en el margen operativo neto?", guia: "Simular incremento: Multiplicar PEAJES_COMBUSTIBLE * 1.10 y restar del margen actual.", kpi: "Sensibilidad Combustible" },
+          { id: "LOG-24", num: 24, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Qué gráfico del dashboard compara los costos operativos frente al flete por ruta?", guia: "Gráfico 1: Facturación vs Costos Operativos por Ruta de Despacho.", kpi: "Comparativa Costos" },
+          { id: "LOG-25", num: 25, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Cómo se configuran los archivos CSV de fletes en una carpeta para actualización desasistida?", guia: "Obtener datos -> Desde carpeta -> Combinar y transformar. Todos los CSV heredan los tipos.", kpi: "Conector Carpeta M" }
+        ]
+      },
+
+      finanzas: {
+        title: "Finanzas, Tesorería & Cartera CxC",
+        badge: "Finanzas",
+        desc: "Gestión de cartera de crédito institucional y pagarés comerciales. Desafíos: tramos de morosidad, días de mora, cobros recuperados, provisiones y castigo de pagarés.",
+        eda: {
+          registros: "1,000 a 3,500 pagarés comerciales",
+          campos: 18,
+          llavePrimaria: "NUM_PAGARE (PAG-FIN-XXXXX)",
+          tipoProblemas: "Fechas de vencimiento sin formato, RNCs con espacios, tramos de mora sin clasificar.",
+          limpiezaM: "Date.FromText, Currency.Type, ConditionalColumn para tramos de mora, Table.AddColumn para saldos."
+        },
+        preguntas: [
+          { id: "FIN-01", num: 1, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende el Saldo Total Exigible (SALDO_TOTAL_EXIGIBLE) de la cartera?", guia: "Valores: Suma de SALDO_TOTAL_EXIGIBLE. Es el capital prestado más intereses adeudados.", kpi: "CARTERA_TOTAL" },
+          { id: "FIN-02", num: 2, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el Monto Total Efectivamente Cobrado (ABONO_RECUPERADO)?", guia: "Valores: Suma de ABONO_RECUPERADO en pesos dominicanos.", kpi: "ABONO_RECUPERADO" },
+          { id: "FIN-03", num: 3, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende el Saldo Pendiente por Cobrar en riesgo (SALDO_PENDIENTE)?", guia: "Valores: Suma de SALDO_PENDIENTE. Representa la cartera aún no recuperada.", kpi: "SALDO_PENDIENTE" },
+          { id: "FIN-04", num: 4, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Cuál es la Tasa Global de Recuperación de Cartera de la institución?", guia: "Cálculo: (Suma ABONO_RECUPERADO / Suma SALDO_TOTAL_EXIGIBLE) * 100. Ver KPI del Dashboard.", kpi: "% Recuperación" },
+          { id: "FIN-05", num: 5, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto ascienden los Intereses por Mora (INTERES_MORA) generados en el ciclo?", guia: "Valores: Suma de INTERES_MORA.", kpi: "INTERES_MORA" },
+          { id: "FIN-06", num: 6, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Cuál es el promedio general de Días de Mora (DIAS_MORA) de la cartera crediticia?", guia: "Ver KPI 'Días Mora Promedio' en el Dashboard o Promedio de DIAS_MORA en Tabla Dinámica.", kpi: "Días Mora Promedio" },
+          { id: "FIN-07", num: 7, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cómo se distribuye el saldo exigible entre los 4 Tramos de Mora (Corriente, Vencido, Alta, Incobrable)?", guia: "Filas: TRAMO_MORA | Valores: Suma de SALDO_TOTAL_EXIGIBLE y % del total general.", kpi: "Distribución Tramos" },
+          { id: "FIN-08", num: 8, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué porcentaje del saldo total se encuentra en el tramo crítico de 'Incobrable (+90d)'?", guia: "Filas: TRAMO_MORA = 'Incobrable (+90d)' | Valores: % del total general.", kpi: "% Incobrable" },
+          { id: "FIN-09", num: 9, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Cuál es la Sucursal de Cartera con mayor saldo exigible y cuál con mejor recuperación?", guia: "Filas: SUCURSAL_CARTERA | Valores: Suma SALDO_TOTAL, Suma ABONO_RECUPERADO y Tasa %.", kpi: "Sucursal Líder" },
+          { id: "FIN-10", num: 10, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Sucursal presenta la mayor proporción de cartera en estado 'En Mora' o 'Castigado'?", guia: "Filas: SUCURSAL_CARTERA | Columnas: ESTATUS_CARTERA | Valores: % de la fila.", kpi: "Sucursal Crítica" },
+          { id: "FIN-11", num: 11, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Quién es el Oficial de Crédito con mayor volumen recuperado y cuál es su tasa de efectividad?", guia: "Filas: OFICIAL_CREDITO | Valores: Suma ABONO_RECUPERADO y % de recuperación. Ver Gráfico 4.", kpi: "Top Oficial Cobro" },
+          { id: "FIN-12", num: 12, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Oficial de Crédito mantiene la mayor concentración de pagarés vencidos mayores a 60 días?", guia: "Filtro: DIAS_MORA > 60 | Filas: OFICIAL_CREDITO | Valores: Suma SALDO_PENDIENTE.", kpi: "Oficial Riesgo Mora" },
+          { id: "FIN-13", num: 13, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es la Línea Financiera con menor tasa de morosidad (Factoring, Pagaré, Microcrédito)?", guia: "Filas: LINEA_CREDITO | Valores: Promedio de DIAS_MORA y Tasa de Recuperación.", kpi: "Línea Financiera" },
+          { id: "FIN-14", num: 14, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Canal de Recaudo capta la mayor cantidad de abonos (Banca en Línea, Débito, Caja)?", guia: "Filas: CANAL_PAGO | Valores: Suma de ABONO_RECUPERADO y Cuenta de transacciones.", kpi: "Canal Recaudo" },
+          { id: "FIN-15", num: 15, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es la Tasa de Interés Anual promedio ponderada por monto de capital financiado?", guia: "Campo Calculado o Promedio de TASA_INTERES_ANUAL.", kpi: "Tasa Interés Ponderada" },
+          { id: "FIN-16", num: 16, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Quiénes conforman el Top 5 de deudores con mayor saldo pendiente de pago?", guia: "Filas: NOMBRE_DEUDOR | Valores: Suma de SALDO_PENDIENTE | Filtro: Top 5 deudores.", kpi: "Top Deudores" },
+          { id: "FIN-17", num: 17, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende la provisión contable sugerida para cubrir pagarés en mora alta (+60d)?", guia: "Filtro: DIAS_MORA > 60 | Valores: Suma de SALDO_PENDIENTE * 0.50 (provisión regulatoria).", kpi: "Provisión Cartera" },
+          { id: "FIN-18", num: 18, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "En una matriz de TRAMO_MORA en filas y SUCURSAL en columnas, ¿dónde está el mayor riesgo?", guia: "Filas: TRAMO_MORA | Columnas: SUCURSAL_CARTERA | Valores: Suma de SALDO_PENDIENTE.", kpi: "Matriz Riesgo Sucursal" },
+          { id: "FIN-19", num: 19, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "Al filtrar por Canal 'Débito Automático', ¿cuál es el porcentaje de cobranza lograda?", guia: "Slicer: 'Débito Automático' | Observar Tasa de Recuperación en KPI del Dashboard.", kpi: "Cobranza Débito Auto" },
+          { id: "FIN-20", num: 20, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Cuál es el comportamiento del recaudo mes a mes: se evidencia mejora o deterioro del flujo?", guia: "Ver Gráfico 3: Recaudo Mensual Efectivo vs Meta de Tesorería.", kpi: "Evolución Flujo" },
+          { id: "FIN-21", num: 21, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Cómo valida Power Query que el RNC del deudor cumpla el formato legal (1-XX-XXXXX-X)?", guia: "Uso de columnas por ejemplo o Text.Length y Text.StartsWith con condicional en M.", kpi: "Validación RNC" },
+          { id: "FIN-22", num: 22, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Por qué se utiliza Currency.Type (moneda fija con 4 decimales) en los saldos bancarios?", guia: "Evita errores de redondeo de punto flotante en cálculos financieros y de auditoría fiscal.", kpi: "Tipado Currency.Type" },
+          { id: "FIN-23", num: 23, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "Si la meta de cobro institucional era del 80%, ¿a cuánto asciende la brecha en RD$?", guia: "Cálculo: (Suma SALDO_TOTAL_EXIGIBLE * 0.80) - Suma ABONO_RECUPERADO.", kpi: "Brecha Cobranza" },
+          { id: "FIN-24", num: 24, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Qué indicador visual alerta cuando la cartera castigada supera el umbral tolerable (8%)?", guia: "KPI 'Tasa Incobrables / Castigo' en Dashboard (con semáforo rojo si > 8%).", kpi: "Alerta Castigo" },
+          { id: "FIN-25", num: 25, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Cómo se actualiza la cartera de préstamos al depositar el cierre contable del mes en la red?", guia: "Copiar nuevo archivo a la carpeta del servidor -> Ctrl + Alt + F5 en Excel.", kpi: "Refresh Automático" }
+        ]
+      },
+
+      rrhh: {
+        title: "Recursos Humanos & Planilla Multisucursal",
+        badge: "RRHH",
+        desc: "Gestión de nómina de personal en múltiples sedes industriales. Desafíos: retenciones de ley (TSS/ISR), sobrecosto de horas extras, aportes patronales (14.19%) y rotación de colaboradores.",
+        eda: {
+          registros: "800 a 2,500 colaboradores activos",
+          campos: 18,
+          llavePrimaria: "COD_EMPLEADO (EMP-RH-XXXXX)",
+          tipoProblemas: "Doble espacio en nombres, códigos de empleado con leetspeak, sueldos sin deducciones.",
+          limpiezaM: "Text.Clean, Text.Trim, Table.AddColumn para AFP (2.87%), SFS (3.04%), ISR escalonado y TSS Patronal (14.19%)."
+        },
+        preguntas: [
+          { id: "RH-01", num: 1, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende el costo total de la Masa Salarial Bruta (SUELDO_BRUTO)?", guia: "Valores: Suma de SUELDO_BRUTO en pesos dominicanos.", kpi: "MASA_SALARIAL_BRUTA" },
+          { id: "RH-02", num: 2, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el desembolso neto transferido a las cuentas de los empleados (SUELDO_NETO_PAGADO)?", guia: "Valores: Suma de SUELDO_NETO_PAGADO. Representa el flujo de caja líquido.", kpi: "SUELDO_NETO" },
+          { id: "RH-03", num: 3, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende el total de retenciones descontadas a los colaboradores (TOTAL_DESCUENTOS)?", guia: "Valores: Suma de TOTAL_DESCUENTOS (AFP + SFS + ISR).", kpi: "TOTAL_DESCUENTOS" },
+          { id: "RH-04", num: 4, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el monto total retenido para el fondo de pensiones de los trabajadores (AFP 2.87%)?", guia: "Valores: Suma de RETENCION_AFP_287. Debe ser exactamente el 2.87% del sueldo bruto.", kpi: "AFP 2.87%" },
+          { id: "RH-05", num: 5, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende la retención para el Seguro Familiar de Salud (SFS 3.04%)?", guia: "Valores: Suma de RETENCION_SFS_304.", kpi: "SFS 3.04%" },
+          { id: "RH-06", num: 6, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el monto total retenido por Impuesto Sobre la Renta (ISR) para liquidar ante la DGII?", guia: "Valores: Suma de RETENCION_ISR.", kpi: "ISR Nómina" },
+          { id: "RH-07", num: 7, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿A cuánto asciende el sobrecosto de Horas Extras y qué porcentaje representa de la masa bruta?", guia: "Valores: Suma de HORAS_EXTRAS_VALOR. Ver KPI Horas Extras en Dashboard.", kpi: "Sobrecosto Extras" },
+          { id: "RH-08", num: 8, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende el Aporte Patronal obligatorio a la TSS (14.19%) a cargo de la empresa?", guia: "Valores: Suma de APORTE_PATRONAL_TSS (14.19% de la masa bruta).", kpi: "TSS Patronal 14.19%" },
+          { id: "RH-09", num: 9, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el Costo Laboral Total Real de la empresa (SUELDO_BRUTO + APORTE_PATRONAL_TSS)?", guia: "Campo Calculado: = Suma SUELDO_BRUTO + Suma APORTE_PATRONAL_TSS.", kpi: "Costo Laboral Total" },
+          { id: "RH-10", num: 10, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Cuál es la Sede o Planta con mayor cantidad de colaboradores y mayor masa salarial?", guia: "Filas: SEDE_PLANTA | Valores: Cuenta COD_EMPLEADO y Suma SUELDO_BRUTO.", kpi: "Sede con Mayor Planilla" },
+          { id: "RH-11", num: 11, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Departamento reporta el salario promedio más elevado?", guia: "Filas: DEPARTAMENTO | Valores: Promedio de SUELDO_BRUTO. Ordenar descendente.", kpi: "Salario Promedio x Dpto" },
+          { id: "RH-12", num: 12, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Departamento concentra la mayor cantidad de horas extras pagadas?", guia: "Filas: DEPARTAMENTO | Valores: Suma de HORAS_EXTRAS_VALOR.", kpi: "Horas Extras x Dpto" },
+          { id: "RH-13", num: 13, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Quién es el Supervisor de Turno con mayor cantidad de personal a cargo y masa gestionada?", guia: "Filas: SUPERVISOR_TURNO | Valores: Suma SUELDO_BRUTO. Ver Gráfico 4.", kpi: "Top Supervisor" },
+          { id: "RH-14", num: 14, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cómo se distribuye la plantilla según el Tipo de Contrato (Indefinido, Fijo, Proyecto)?", guia: "Filas: TIPO_CONTRATO | Valores: Cuenta de empleados y % del total general.", kpi: "Mix de Contratos" },
+          { id: "RH-15", num: 15, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuántos colaboradores están en estatus 'Activo', 'Licencia Médica' y 'Desvinculado'?", guia: "Filas: ESTATUS_LABORAL | Valores: Cuenta de COD_EMPLEADO y % del total.", kpi: "Estatus de Personal" },
+          { id: "RH-16", num: 16, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Cuál es la Tasa de Rotación / Salidas de personal de la organización?", guia: "Ver KPI 'Tasa Bajas / Salidas' en el Dashboard: (Desvinculados / Total Personal) * 100.", kpi: "Tasa de Rotación" },
+          { id: "RH-17", num: 17, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuáles son los 5 Cargos o Puestos con mayor impacto en el presupuesto de nómina?", guia: "Filas: CARGO_PUESTO | Valores: Suma de SUELDO_BRUTO | Filtro: Top 5.", kpi: "Top 5 Cargos" },
+          { id: "RH-18", num: 18, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "En una matriz de DEPARTAMENTO en filas y SEDE en columnas, ¿dónde está el mayor gasto?", guia: "Filas: DEPARTAMENTO | Columnas: SEDE_PLANTA | Valores: Suma de SUELDO_BRUTO.", kpi: "Matriz Dpto x Sede" },
+          { id: "RH-19", num: 19, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "Al segmentar por la sede 'Sede Central Santiago', ¿cuál es el sueldo neto desembolsado?", guia: "Slicer: 'Sede Central Santiago' | Observar KPI Nómina Neta Pagada en Dashboard.", kpi: "Planilla Santiago" },
+          { id: "RH-20", num: 20, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es la brecha salarial promedio entre el personal de Tecnología vs Operaciones?", guia: "Filas: DEPARTAMENTO (filtrar TI y Operaciones) | Valores: Promedio de SUELDO_BRUTO.", kpi: "Brecha Salarial" },
+          { id: "RH-21", num: 21, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Qué pasos en Power Query limpiaron dobles espacios y corrigieron nombres de colaboradores?", guia: "Paso: Table.TransformColumns con Text.Clean y Text.Trim sobre la columna NOMBRE_COLABORADOR.", kpi: "Limpieza Nombres M" },
+          { id: "RH-22", num: 22, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Cómo se programó en M la exención de ISR para sueldos menores a RD$ 34,685.00?", guia: "Fórmula M: each if [SUELDO_BRUTO] > 34685 then ([SUELDO_BRUTO] - 34685) * 0.15 else 0.", kpi: "Fórmula M ISR" },
+          { id: "RH-23", num: 23, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "Si se reduce un 20% el sobretiempo de horas extras, ¿cuánto dinero en RD$ se ahorra la empresa?", guia: "Cálculo: Suma de HORAS_EXTRAS_VALOR * 0.20.", kpi: "Ahorro Horas Extras" },
+          { id: "RH-24", num: 24, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Qué visualización permite contrastar el costo de planilla bruta vs las deducciones de ley?", guia: "Gráfico 1: Masa Salarial vs Deducciones de Ley por Planta.", kpi: "Gráfico Deducciones" },
+          { id: "RH-25", num: 25, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Cómo se evita duplicar registros al consolidar los cierres de nómina quincenales en Power Query?", guia: "Uso de Quitar duplicados por COD_EMPLEADO + FECHA_INGRESO o llave compuesta.", kpi: "Deduplicación M" }
+        ]
+      },
+
+      salud: {
+        title: "Salud, Clínicas & Coberturas ARS",
+        badge: "Salud",
+        desc: "Facturación clínica, hospitalaria y ambulatoria. Desafíos: glosas de aseguradoras por auditoría médica, copagos en caja, costos de insumos quirúrgicos y rentabilidad médica.",
+        eda: {
+          registros: "1,500 a 4,500 atenciones hospitalarias",
+          campos: 15,
+          llavePrimaria: "NUM_AUTORIZACION (AUT-SAL-XXXXX)",
+          tipoProblemas: "Nombres de pacientes alterados con números, fechas con ventana de turno, autorizaciones glosadas.",
+          limpiezaM: "Text.Replace, Table.TransformColumnTypes, SplitColumn, Table.AddColumn para COPAGO y MARGEN_CLINICA."
+        },
+        preguntas: [
+          { id: "SAL-01", num: 1, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el Monto Total Facturado bruto por atenciones médicas (MONTO_TOTAL_FACTURADO)?", guia: "Valores: Suma de MONTO_TOTAL_FACTURADO en pesos dominicanos.", kpi: "TOTAL_FACTURADO_SALUD" },
+          { id: "SAL-02", num: 2, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende la Cobertura Liquidada y aprobada por las ARS (COBERTURA_ARS)?", guia: "Valores: Suma de COBERTURA_ARS.", kpi: "COBERTURA_ARS" },
+          { id: "SAL-03", num: 3, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el monto total recaudado en Copagos directos a los pacientes (COPAGO_PACIENTE)?", guia: "Valores: Suma de COPAGO_PACIENTE. Diferencia cobrada en recepción.", kpi: "COPAGO_PACIENTE" },
+          { id: "SAL-04", num: 4, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende el Costo de Insumos y medicamentos hospitalarios (COSTO_INSUMOS)?", guia: "Valores: Suma de COSTO_INSUMOS.", kpi: "COSTO_INSUMOS" },
+          { id: "SAL-05", num: 5, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el Margen Operativo consolidado de la red de clínicas (MARGEN_CLINICA)?", guia: "Valores: Suma de MARGEN_CLINICA (Total Facturado - Costo Insumos).", kpi: "MARGEN_CLINICA" },
+          { id: "SAL-06", num: 6, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el Margen Porcentual de rentabilidad promedio del servicio de salud?", guia: "Campo Calculado: (Suma MARGEN_CLINICA / Suma MONTO_TOTAL_FACTURADO) * 100.", kpi: "% Margen Salud" },
+          { id: "SAL-07", num: 7, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Qué Sede Clínica factura el mayor volumen y cuál atiende más pacientes?", guia: "Filas: SEDE_CLINICA | Valores: Suma MONTO_TOTAL_FACTURADO y Cuenta de expedientes.", kpi: "Clínica Líder" },
+          { id: "SAL-08", num: 8, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Sede Clínica reporta el mayor margen neto deduciendo insumos médicos?", guia: "Filas: SEDE_CLINICA | Valores: Suma de MARGEN_CLINICA.", kpi: "Sede Más Rentable" },
+          { id: "SAL-09", num: 9, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Cuál es la Especialidad Médica con mayor facturación (Cirugía, Hospitalización, etc.)?", guia: "Filas: ESPECIALIDAD_MEDICA | Valores: Suma MONTO_TOTAL_FACTURADO. Ver Gráfico 2.", kpi: "Especialidad Líder" },
+          { id: "SAL-10", num: 10, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Especialidad Médica presenta el mayor porcentaje de margen sobre facturación?", guia: "Filas: ESPECIALIDAD_MEDICA | Valores: Promedio de % Margen.", kpi: "Especialidad Más Rentable" },
+          { id: "SAL-11", num: 11, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Quién es el Médico Tratante con mayor volumen de procedimientos facturados?", guia: "Filas: MEDICO_TRATANTE | Valores: Suma MONTO_TOTAL_FACTURADO. Ver Gráfico Top 8 Médicos.", kpi: "Top Médico" },
+          { id: "SAL-12", num: 12, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué Médico o Servicio genera mayor cantidad de expedientes 'Glosados' o 'Rechazados'?", guia: "Filas: MEDICO_TRATANTE | Filtro: ESTATUS_RECLAMACION in ('Glosada', 'Rechazada') | Valores: Cuenta.", kpi: "Médico Mayor Glosa" },
+          { id: "SAL-13", num: 13, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Cuál es la Aseguradora ARS con mayor participación en la facturación total?", guia: "Filas: ASEGURADORA_ARS | Valores: Suma MONTO_TOTAL_FACTURADO y % del total general.", kpi: "ARS Principal" },
+          { id: "SAL-14", num: 14, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué ARS mantiene la mayor tasa de glosas y demoras en liquidación de expedientes?", guia: "Filas: ASEGURADORA_ARS | Columnas: ESTATUS_RECLAMACION | Valores: % de la fila.", kpi: "ARS Mayor Glosa" },
+          { id: "SAL-15", num: 15, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Qué porcentaje de las reclamaciones son 'Aprobada y Liquidada' sin objeción médica?", guia: "Filas: ESTATUS_RECLAMACION = 'Aprobada y Liquidada' | Valores: % del total general.", kpi: "% Aprobación ARS" },
+          { id: "SAL-16", num: 16, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿A cuánto asciende el capital retenido en estatus 'Glosada / En Revisión'?", guia: "Filtro: ESTATUS_RECLAMACION = 'Glosada / En Revisión' | Valores: Suma MONTO_TOTAL_FACTURADO.", kpi: "Capital en Glosa" },
+          { id: "SAL-17", num: 17, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es la proporción de pacientes atendidos como 'Particular Privado' (sin ARS)?", guia: "Filas: ASEGURADORA_ARS = 'Particular Privado' | Valores: Cuenta y Suma facturado.", kpi: "Pacientes Particulares" },
+          { id: "SAL-18", num: 18, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "En una matriz de ESPECIALIDAD en filas y ARS en columnas, ¿dónde está el mayor recaudo?", guia: "Filas: ESPECIALIDAD_MEDICA | Columnas: ASEGURADORA_ARS | Valores: Suma MONTO_TOTAL_FACTURADO.", kpi: "Matriz Especialidad ARS" },
+          { id: "SAL-19", num: 19, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "Al segmentar por 'Unión Médica Santiago (Cibao)', ¿cuál es la cobertura otorgada por Senasa?", guia: "Slicers: Clínica 'Unión Médica' + ARS 'Senasa' | Observar Cobertura ARS en Dashboard.", kpi: "Senasa en Santiago" },
+          { id: "SAL-20", num: 20, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "¿Cuál es el procedimiento médico de mayor costo unitario en el catálogo hospitalario?", guia: "Filas: SERVICIO_PROCEDIMIENTO | Valores: Máximo de MONTO_TOTAL_FACTURADO.", kpi: "Procedimiento Más Costoso" },
+          { id: "SAL-21", num: 21, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Qué pasos de limpieza en Power Query eliminaron caracteres extraños en los expedientes?", guia: "Text.Select o Table.ReplaceValue para desinfectar códigos y nombres de pacientes.", kpi: "Desinfección Expedientes" },
+          { id: "SAL-22", num: 22, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Por qué se aísla la fecha contable sin ventana horaria con DateTime.Date?", guia: "Permite consolidar atenciones por día epidemiológico sin fragmentar por turnos horarios.", kpi: "Normalización Fechas M" },
+          { id: "SAL-23", num: 23, herramienta: "pivot", badge: "Tabla Dinámica", color: "emerald", pregunta: "Si se recupera el 50% de las glosas médicas mediante refacturación, ¿cuánto ingresa a caja?", guia: "Cálculo: (Suma facturas en Glosada) * 0.50.", kpi: "Recuperación Glosas" },
+          { id: "SAL-24", num: 24, herramienta: "dashboard", badge: "Dashboard", color: "blue", pregunta: "¿Qué visualización permite monitorear la liquidación efectiva mensual vs facturado?", guia: "Gráfico 3: Evolución Mensual de Reclamaciones (Facturado vs Liquidado Efectivo).", kpi: "Gráfico Reclamaciones" },
+          { id: "SAL-25", num: 25, herramienta: "etl", badge: "Power Query (M)", color: "amber", pregunta: "¿Cómo se orquesta en Power Query la integración de reportes de glosas de distintas ARS?", guia: "Carpeta de liquidaciones -> Combinar archivos -> Transformación unificada M.", kpi: "Orquestación Multifuente" }
+        ]
+      }
+    };
+
+
+
+    /* =====================================================================
+       18. HOJA DE TRABAJO: BANCO MAESTRO DE 125 PREGUNTAS (25 X INDUSTRIA)
+           FICHA TÉCNICA, ANÁLISIS EDA & GENERADOR DE PDF PROFESIONAL
+    ===================================================================== */
+    /* Funciones de Persistencia de Checkboxes en LocalStorage */
+    function getHojaTrabajoCheckedSet(industry) {
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const stored = localStorage.getItem('HT_RESOLVED_' + (industry || ACTIVE_HOJA_INDUSTRY));
+          if (stored) return new Set(JSON.parse(stored));
+        }
+      } catch(e) {
+        console.warn('Error reading localStorage:', e);
+      }
+      return new Set();
+    }
+
+    function toggleHojaTrabajoCheck(qId) {
+      try {
+        const set = getHojaTrabajoCheckedSet(ACTIVE_HOJA_INDUSTRY);
+        if (set.has(qId)) {
+          set.delete(qId);
+        } else {
+          set.add(qId);
+        }
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('HT_RESOLVED_' + ACTIVE_HOJA_INDUSTRY, JSON.stringify([...set]));
+        }
+      } catch(e) {
+        console.warn('Error saving to localStorage:', e);
+      }
+      renderHojaTrabajoQuestions();
+    }
+
+    function resetHojaTrabajoCheckboxes() {
+      if (confirm('¿Deseas reiniciar todas las casillas de verificación para este proyecto?')) {
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem('HT_RESOLVED_' + ACTIVE_HOJA_INDUSTRY);
+          }
+        } catch(e) {}
+        renderHojaTrabajoQuestions();
+        showToast('Checklists reiniciados para este caso.', 'info');
+      }
+    }
+
+    function filterHojaTrabajo(tool) {
+      HT_CURRENT_FILTER = tool;
+      document.querySelectorAll('[id^="htFilterBtn-"]').forEach(btn => {
+        btn.classList.remove('bg-slate-800', 'text-white', 'shadow-xs');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      const active = document.getElementById('htFilterBtn-' + tool);
+      if (active) {
+        active.classList.remove('bg-slate-100', 'text-slate-700');
+        active.classList.add('bg-slate-800', 'text-white', 'shadow-xs');
+      }
+      renderHojaTrabajoQuestions();
+    }
+
+    function searchHojaTrabajo(query) {
+      HT_CURRENT_SEARCH = (query || '').trim();
+      renderHojaTrabajoQuestions();
+    }
+
+    /* Renderizado de las 25 Preguntas Analíticas */
+    function renderHojaTrabajoQuestions() {
+      const container = document.getElementById('htQuestionsContainer');
+      if (!container) return;
+
+      const dataCase = HOJA_DE_TRABAJO_DATA[ACTIVE_HOJA_INDUSTRY] || HOJA_DE_TRABAJO_DATA.retail;
+      const checkedSet = getHojaTrabajoCheckedSet(ACTIVE_HOJA_INDUSTRY);
+
+      // Filtrar preguntas
+      let filtered = (dataCase && dataCase.preguntas) ? dataCase.preguntas : [];
+      if (HT_CURRENT_FILTER !== 'all') {
+        filtered = filtered.filter(q => q.herramienta === HT_CURRENT_FILTER);
+      }
+      if (HT_CURRENT_SEARCH) {
+        const s = HT_CURRENT_SEARCH.toLowerCase();
+        filtered = filtered.filter(q => 
+          (q.pregunta && q.pregunta.toLowerCase().includes(s)) || 
+          (q.guia && q.guia.toLowerCase().includes(s)) || 
+          (q.kpi && q.kpi.toLowerCase().includes(s))
+        );
+      }
+
+      // Actualizar Barra de Progreso
+      const totalQs = (dataCase && dataCase.preguntas) ? dataCase.preguntas.length : 25;
+      const resolvedCount = checkedSet.size;
+      const pct = Math.round((resolvedCount / (totalQs || 1)) * 100);
+
+      const progLabel = document.getElementById('htProgressLabel');
+      if (progLabel) progLabel.textContent = resolvedCount + ' / ' + totalQs + ' (' + pct + '%)';
+
+      const progBar = document.getElementById('htProgressBar');
+      if (progBar) progBar.style.width = pct + '%';
+
+      if (!filtered || filtered.length === 0) {
+        container.innerHTML = '<div class="py-12 text-center text-slate-400"><i class="fa-solid fa-filter-circle-xmark text-2xl mb-2"></i><p class="text-xs">No se encontraron preguntas con el filtro o búsqueda actual.</p></div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(q => {
+        const isChecked = checkedSet.has(q.id);
+        const borderCls = isChecked ? 'border-emerald-400 bg-emerald-50/40' : 'border-slate-200 bg-slate-50/60 hover:bg-slate-50';
+        const badgeColor = q.color === 'emerald' ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : (q.color === 'blue' ? 'bg-blue-100 text-blue-900 border-blue-300' : 'bg-amber-100 text-amber-900 border-amber-300');
+
+        return '<div class="p-3.5 rounded-2xl border ' + borderCls + ' transition-all space-y-2">' +
+          '<div class="flex items-start justify-between gap-3">' +
+            '<div class="flex items-start gap-2.5">' +
+              '<input type="checkbox" id="chk-' + q.id + '" onchange="toggleHojaTrabajoCheck(\'' + q.id + '\')" ' + (isChecked ? 'checked' : '') + ' class="mt-1 w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer">' +
+              '<div>' +
+                '<div class="flex items-center gap-2 mb-1">' +
+                  '<span class="font-mono font-black text-xs text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">#' + q.num + '</span>' +
+                  '<span class="px-2 py-0.5 rounded text-[10px] font-black border ' + badgeColor + '">' + q.badge + '</span>' +
+                  '<span class="text-[10px] font-mono text-slate-400">' + q.id + '</span>' +
+                '</div>' +
+                '<h5 class="text-xs sm:text-sm font-bold text-slate-900 ' + (isChecked ? 'line-through text-slate-500' : '') + '">' +
+                  q.pregunta +
+                '</h5>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="pl-6 pt-1 text-[11px] text-slate-600 bg-white/70 p-2 rounded-xl border border-slate-200 space-y-1">' +
+            '<div class="font-semibold text-slate-700 flex items-center gap-1.5">' +
+              '<i class="fa-solid fa-compass text-teal-700 text-[10px]"></i>' +
+              '<span>Guía de Respuesta: ' + q.guia + '</span>' +
+            '</div>' +
+            '<div class="text-[10px] font-mono text-emerald-800 font-bold">' +
+              'Métrica Clave: ' + q.kpi +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    /* Renderizado de Toda la Sección Hoja de Trabajo */
+    function renderHojaTrabajo(industryKey) {
+      if (!industryKey) industryKey = ACTIVE_HOJA_INDUSTRY || 'retail';
+      ACTIVE_HOJA_INDUSTRY = industryKey;
+
+      const dataCase = HOJA_DE_TRABAJO_DATA[industryKey] || HOJA_DE_TRABAJO_DATA.retail;
+      const config = INDUSTRY_CONFIGS[industryKey] || INDUSTRY_CONFIGS.retail;
+
+      // Actualizar Sub-Tabs
+      document.querySelectorAll('.ht-tab-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-700', 'text-white', 'shadow-sm', 'border-emerald-800');
+        btn.classList.add('bg-white', 'text-slate-700', 'border-slate-300');
+      });
+      const activeBtn = document.getElementById('htTabBtn-' + industryKey);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white', 'text-slate-700', 'border-slate-300');
+        activeBtn.classList.add('bg-emerald-700', 'text-white', 'shadow-sm', 'border-emerald-800');
+      }
+
+      // Actualizar Encabezado Card 1
+      const badgeEl = document.getElementById('htProjectBadge');
+      if (badgeEl && dataCase) badgeEl.textContent = dataCase.badge;
+      const titleEl = document.getElementById('htProjectTitle');
+      if (titleEl && dataCase) titleEl.textContent = dataCase.title;
+      const descEl = document.getElementById('htProjectDesc');
+      if (descEl && dataCase) descEl.textContent = dataCase.desc;
+
+      // Calcular Cifras Maestras de Control en tiempo real
+      const sums = (CURRENT_DATASET || []).reduce((acc, row) => {
+        acc.gross += (row._metricPrimary || 0);
+        acc.cost += (row._metricSecondary || 0);
+        acc.margin += (row._metricMargin || 0);
+        acc.real += (row._metricReal || 0);
+        if (row._cleanStatus === 'Cancelado' || row._cleanStatus === 'Anulado' || row._cleanStatus === 'Rechazada' || row._cleanStatus === 'Desvinculado') {
+          acc.failed++;
+        }
+        return acc;
+      }, { gross: 0, cost: 0, margin: 0, real: 0, failed: 0 });
+
+      const count = (CURRENT_DATASET && CURRENT_DATASET.length) ? CURRENT_DATASET.length : 1;
+      const marginPct = sums.gross > 0 ? (sums.margin / sums.gross) * 100 : 0;
+      const failPct = (sums.failed / count) * 100;
+
+      const controlBox = document.getElementById('htControlMetricsContainer');
+      if (controlBox) {
+        controlBox.innerHTML = 
+          '<div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">' +
+            '<div class="text-[10px] text-slate-500 font-bold uppercase">Total Facturado Bruto</div>' +
+            '<div class="font-black text-slate-900 font-mono text-xs">RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + '</div>' +
+          '</div>' +
+          '<div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200">' +
+            '<div class="text-[10px] text-emerald-800 font-bold uppercase">Ingreso Real Efectivo</div>' +
+            '<div class="font-black text-emerald-950 font-mono text-xs">RD$ ' + Math.round(sums.real).toLocaleString('es-DO') + '</div>' +
+          '</div>' +
+          '<div class="p-2.5 rounded-xl bg-teal-50 border border-teal-200">' +
+            '<div class="text-[10px] text-teal-800 font-bold uppercase">Margen Comercial RD$</div>' +
+            '<div class="font-black text-teal-950 font-mono text-xs">RD$ ' + Math.round(sums.margin).toLocaleString('es-DO') + ' (' + marginPct.toFixed(1) + '%)</div>' +
+          '</div>' +
+          '<div class="p-2.5 rounded-xl bg-rose-50 border border-rose-200">' +
+            '<div class="text-[10px] text-rose-800 font-bold uppercase">Tasa Incidencias / Bajas</div>' +
+            '<div class="font-black text-rose-950 font-mono text-xs">' + failPct.toFixed(1) + '% (' + sums.failed + ' reg.)</div>' +
+          '</div>';
+      }
+
+      // Actualizar Lista de Campos EDA
+      const fieldCountBadge = document.getElementById('htFieldCountBadge');
+      if (fieldCountBadge && config && config.rawColumns) {
+        fieldCountBadge.textContent = config.rawColumns.length + ' Campos';
+      }
+
+      const fieldsList = document.getElementById('htFieldsList');
+      if (fieldsList && config && config.rawColumns) {
+        fieldsList.innerHTML = config.rawColumns.map((col, idx) => 
+          '<div class="flex items-center justify-between py-1 px-1.5 bg-white rounded-lg border border-slate-200 text-[11px]">' +
+            '<div class="flex items-center gap-1.5 font-bold text-slate-800">' +
+              '<span class="w-4 h-4 rounded bg-slate-100 text-slate-600 font-mono flex items-center justify-center text-[9px]">' + (idx + 1) + '</span>' +
+              '<span>' + col.key + '</span>' +
+            '</div>' +
+            '<div class="flex items-center gap-1 font-mono text-[10px] text-slate-500">' +
+              '<span>' + col.format + '</span>' +
+              (col.isMainId ? '<span class="text-amber-600 font-black" title="Llave Primaria">[PK]</span>' : '') +
+            '</div>' +
+          '</div>'
+        ).join('');
+      }
+
+      // Renderizar el banco de 25 preguntas
+      renderHojaTrabajoQuestions();
+    }
+
+    /* Sub-Tabs de la Hoja de Trabajo */
+    function switchHojaTrabajoSubTab(industryKey) {
+      if (!industryKey || !HOJA_DE_TRABAJO_DATA[industryKey]) return;
+      ACTIVE_HOJA_INDUSTRY = industryKey;
+      ACTIVE_INDUSTRY = industryKey;
+
+      // 1. Sincronizar todos los selectores de la página
+      const globalSel = document.getElementById('globalIndustrySelector');
+      if (globalSel) globalSel.value = industryKey;
+      const genSel = document.getElementById('industrySelector');
+      if (genSel) genSel.value = industryKey;
+      const sideSel = document.getElementById('sidebarIndustrySelector');
+      if (sideSel) sideSel.value = industryKey;
+
+      // 2. Regenerar y sincronizar dataset completo para que Excel y Tablas coincidan con esta industria
+      syncIndustryChange(industryKey);
+
+      // 3. Renderizar la Hoja de Trabajo con el dataset y preguntas de la nueva industria
+      renderHojaTrabajo(industryKey);
+
+      showToast('Cargado Caso: ' + HOJA_DE_TRABAJO_DATA[industryKey].title + ' (25 Preguntas & Dataset Listo)', 'success');
+    }
+
+    /* =====================================================================
+       GENERADOR EJECUTIVO DEL DOCUMENTO PDF 'HOJA DE TRABAJO' (DISEÑO BLINDADO ANTI-CORTE)
+    ===================================================================== */
+    function downloadHojaTrabajoPDF() {
+      try {
+        showToast('Generando Hoja de Trabajo en PDF (Diseño Anti-Corte)...', 'info');
+
+        const industryKey = ACTIVE_HOJA_INDUSTRY || ACTIVE_INDUSTRY || 'retail';
+        const dataCase = HOJA_DE_TRABAJO_DATA[industryKey] || HOJA_DE_TRABAJO_DATA.retail;
+        const config = INDUSTRY_CONFIGS[industryKey] || INDUSTRY_CONFIGS.retail;
+
+        // Calcular Cifras de Control Reales para el PDF
+        const sums = (CURRENT_DATASET || []).reduce((acc, row) => {
+          acc.gross += (row._metricPrimary || 0);
+          acc.cost += (row._metricSecondary || 0);
+          acc.margin += (row._metricMargin || 0);
+          acc.real += (row._metricReal || 0);
+          if (row._cleanStatus === 'Cancelado' || row._cleanStatus === 'Anulado' || row._cleanStatus === 'Rechazada' || row._cleanStatus === 'Desvinculado') {
+            acc.failed++;
+          }
+          return acc;
+        }, { gross: 0, cost: 0, margin: 0, real: 0, failed: 0 });
+
+        const count = (CURRENT_DATASET && CURRENT_DATASET.length) ? CURRENT_DATASET.length : 1;
+        const marginPct = sums.gross > 0 ? (sums.margin / sums.gross) * 100 : 0;
+        const failPct = (sums.failed / count) * 100;
+
+        // Contenedor calibrado exactamente para página A4 con margen de 15mm en cada lado
+        // En A4 (210mm), con 15mm por lado (30mm total), ancho útil = 180mm (~680px)
+        const pdfContainer = document.createElement('div');
+        pdfContainer.id = 'pdfExportWrapper';
+        pdfContainer.style.position = 'absolute';
+        pdfContainer.style.left = '0';
+        pdfContainer.style.top = '0';
+        pdfContainer.style.zIndex = '-9999';
+        pdfContainer.style.width = '680px';
+        pdfContainer.style.maxWidth = '680px';
+        pdfContainer.style.boxSizing = 'border-box';
+        pdfContainer.style.padding = '0';
+        pdfContainer.style.margin = '0';
+        pdfContainer.style.background = '#ffffff';
+        pdfContainer.style.color = '#0f172a';
+        pdfContainer.style.fontFamily = "'Inter', 'Segoe UI', Arial, sans-serif";
+        pdfContainer.style.fontSize = '9.5px';
+        pdfContainer.style.lineHeight = '1.4';
+
+        // 1. Encabezado Oficial Membretado
+        const headerHtml = 
+          '<div style="border-bottom: 2.5px solid #107c41; padding-bottom: 10px; margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
+            '<table style="width: 100%; border-collapse: collapse;">' +
+              '<tr>' +
+                '<td style="vertical-align: middle;">' +
+                  '<span style="font-size: 8.5px; font-weight: 800; color: #107c41; text-transform: uppercase; letter-spacing: 0.8px;">Documento Oficial de Evaluación & Auditoría EDA</span>' +
+                  '<h1 style="font-size: 16px; font-weight: 900; color: #0f172a; margin: 2px 0 2px 0; letter-spacing: -0.3px;">HOJA DE TRABAJO: MANUAL PEDAGÓGICO ETL & EXCEL 365</h1>' +
+                  '<div style="font-size: 9px; color: #475569; font-weight: 600;">DataForge Suite v6.0 PRO &middot; Autor: <strong>Ing. Juancito Peña Vizcaíno</strong></div>' +
+                '</td>' +
+                '<td style="width: 220px; text-align: right; vertical-align: middle;">' +
+                  '<div style="background: #e8f5e9; border: 1px solid #a5d6a7; padding: 5px 9px; border-radius: 6px; display: inline-block; text-align: right;">' +
+                    '<div style="font-size: 8px; font-weight: 800; color: #1b5e20; text-transform: uppercase;">Proyecto / Caso de Estudio</div>' +
+                    '<div style="font-size: 11px; font-weight: 900; color: #0f172a;">' + dataCase.title + '</div>' +
+                  '</div>' +
+                '</td>' +
+              '</tr>' +
+            '</table>' +
+          '</div>';
+
+        // 2. Datos del Estudiante / Evaluador
+        const studentBoxHtml = 
+          '<div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 7px 10px; margin-bottom: 12px; font-size: 9px; page-break-inside: avoid; break-inside: avoid;">' +
+            '<table style="width: 100%; border-collapse: collapse;">' +
+              '<tr>' +
+                '<td style="width: 48%; padding: 2px 0;"><strong>Analista / Evaluador:</strong> ___________________________________</td>' +
+                '<td style="width: 28%; padding: 2px 0;"><strong>Fecha:</strong> ____/____/2026</td>' +
+                '<td style="width: 24%; padding: 2px 0; text-align: right;"><strong>Calificación:</strong> _____ / 100</td>' +
+              '</tr>' +
+            '</table>' +
+          '</div>';
+
+        // 3. Ficha Técnica, EDA y Cifras Maestras de Control
+        const edaSectionHtml = 
+          '<div style="margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid;">' +
+            '<h2 style="font-size: 10.5px; font-weight: 800; color: #008272; text-transform: uppercase; margin: 0 0 4px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">' +
+              '1. Ficha Técnica, Análisis Exploratorio (EDA) & Cifras Maestras de Control' +
+            '</h2>' +
+            '<p style="font-size: 9px; color: #334155; margin: 0 0 5px 0;">' + dataCase.desc + '</p>' +
+            
+            '<table style="width: 100%; font-size: 8.5px; border-collapse: collapse; margin-bottom: 7px; table-layout: fixed;">' +
+              '<tr style="background: #f1f5f9;">' +
+                '<th style="border: 1px solid #cbd5e1; padding: 3px 5px; text-align: left; width: 28%;">Dimensión / Atributo</th>' +
+                '<th style="border: 1px solid #cbd5e1; padding: 3px 5px; text-align: left; width: 72%;">Detalle de Calidad y Gobernanza</th>' +
+              '</tr>' +
+              '<tr>' +
+                '<td style="border: 1px solid #cbd5e1; padding: 3px 5px; font-weight: bold;">Llave Primaria & Registros</td>' +
+                '<td style="border: 1px solid #cbd5e1; padding: 3px 5px;">' + dataCase.eda.llavePrimaria + ' | ' + (CURRENT_DATASET ? CURRENT_DATASET.length.toLocaleString() : '1,500') + ' transacciones activas</td>' +
+              '</tr>' +
+              '<tr>' +
+                '<td style="border: 1px solid #cbd5e1; padding: 3px 5px; font-weight: bold;">Impurezas Detectadas</td>' +
+                '<td style="border: 1px solid #cbd5e1; padding: 3px 5px;">' + dataCase.eda.tipoProblemas + '</td>' +
+              '</tr>' +
+              '<tr>' +
+                '<td style="border: 1px solid #cbd5e1; padding: 3px 5px; font-weight: bold;">Funciones M en Power Query</td>' +
+                '<td style="border: 1px solid #cbd5e1; padding: 3px 5px; font-family: monospace; color: #008272;">' + dataCase.eda.limpiezaM + '</td>' +
+              '</tr>' +
+              '<tr>' +
+                '<td style="border: 1px solid #cbd5e1; padding: 3px 5px; font-weight: bold;">Actualización Carpeta (M)</td>' +
+                '<td style="border: 1px solid #cbd5e1; padding: 3px 5px;">Folder.Files("C:\\Carpeta") &rarr; Combinar y Transformar &rarr; Cargar a Modelo VertiPaq (Ctrl+Alt+F5).</td>' +
+              '</tr>' +
+            '</table>' +
+
+            '<div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 5px 8px; margin-bottom: 7px;">' +
+              '<div style="font-size: 8.5px; font-weight: 800; color: #166534; text-transform: uppercase; margin-bottom: 3px;">' +
+                'Cifras Maestras de Control Oficial (Para Validación de Respuestas del Estudiante)' +
+              '</div>' +
+              '<table style="width: 100%; font-size: 8.5px; border-collapse: collapse; text-align: center;">' +
+                '<tr>' +
+                  '<td style="padding: 2px 4px; border-right: 1px solid #bbf7d0;">' +
+                    '<div style="color: #64748b; font-size: 7.5px;">Total Facturado Bruto</div>' +
+                    '<div style="font-weight: 900; color: #0f172a; font-family: monospace;">RD$ ' + Math.round(sums.gross).toLocaleString('es-DO') + '</div>' +
+                  '</td>' +
+                  '<td style="padding: 2px 4px; border-right: 1px solid #bbf7d0;">' +
+                    '<div style="color: #64748b; font-size: 7.5px;">Ingreso Real Efectivo</div>' +
+                    '<div style="font-weight: 900; color: #15803d; font-family: monospace;">RD$ ' + Math.round(sums.real).toLocaleString('es-DO') + '</div>' +
+                  '</td>' +
+                  '<td style="padding: 2px 4px; border-right: 1px solid #bbf7d0;">' +
+                    '<div style="color: #64748b; font-size: 7.5px;">Margen RD$ (% Margen)</div>' +
+                    '<div style="font-weight: 900; color: #0f766e; font-family: monospace;">RD$ ' + Math.round(sums.margin).toLocaleString('es-DO') + ' (' + marginPct.toFixed(1) + '%)</div>' +
+                  '</td>' +
+                  '<td style="padding: 2px 4px;">' +
+                    '<div style="color: #64748b; font-size: 7.5px;">Tasa Bajas / Incidencias</div>' +
+                    '<div style="font-weight: 900; color: #b91c1c; font-family: monospace;">' + failPct.toFixed(1) + '% (' + sums.failed + ' reg.)</div>' +
+                  '</td>' +
+                '</tr>' +
+              '</table>' +
+            '</div>' +
+          '</div>';
+
+        // 4. Las 25 Preguntas Analíticas de Negocio
+        let questionsHtml = 
+          '<div>' +
+            '<h2 style="font-size: 10.5px; font-weight: 800; color: #107c41; text-transform: uppercase; margin: 0 0 5px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 2px; page-break-inside: avoid; break-inside: avoid;">' +
+              '2. Cuestionario de 25 Preguntas Analíticas de Negocio (Tablas Dinámicas, Dashboards & ETL)' +
+            '</h2>' +
+            '<div style="font-size: 8px; color: #64748b; margin-bottom: 7px; font-style: italic; page-break-inside: avoid; break-inside: avoid;">' +
+              '* Resuelve cada interrogante configurando los cuadrantes de Tablas Dinámicas o el Dashboard interactivo. Anota el valor numérico obtenido y valida tu respuesta.' +
+            '</div>';
+
+        dataCase.preguntas.forEach((q) => {
+          questionsHtml += 
+            '<div style="margin-bottom: 6px; padding: 5px 8px; background: #fafafa; border: 1px solid #cbd5e1; border-radius: 5px; page-break-inside: avoid !important; break-inside: avoid !important; box-sizing: border-box;">' +
+              '<table style="width: 100%; border-collapse: collapse; margin-bottom: 2px;">' +
+                '<tr>' +
+                  '<td style="font-weight: 800; font-size: 9px; color: #0f172a; text-align: left; vertical-align: top;">' +
+                    '[' + q.id + '] Pregunta ' + q.num + ': ' + q.pregunta +
+                  '</td>' +
+                  '<td style="width: 120px; text-align: right; vertical-align: top; white-space: nowrap;">' +
+                    '<span style="font-size: 7.5px; font-weight: bold; color: #107c41; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 1px 5px; border-radius: 3px;">' +
+                      q.badge +
+                    '</span>' +
+                  '</td>' +
+                '</tr>' +
+              '</table>' +
+              '<div style="font-size: 8px; color: #475569; margin-bottom: 3px; line-height: 1.3;">' +
+                '<strong style="color: #334155;">Guía de Respuesta:</strong> ' + q.guia +
+              '</div>' +
+              '<table style="width: 100%; border-collapse: collapse; border-top: 1px dashed #cbd5e1; padding-top: 2px; font-size: 8px;">' +
+                '<tr>' +
+                  '<td style="color: #0f172a; padding-top: 2px;">' +
+                    '<strong>Resultado RD$ / % / Conclusión:</strong> ____________________________________________________' +
+                  '</td>' +
+                  '<td style="width: 120px; text-align: right; color: #64748b; font-size: 7.5px; padding-top: 2px;">' +
+                    '[  ] Validado en Modelo' +
+                  '</td>' +
+                '</tr>' +
+              '</table>' +
+            '</div>';
+        });
+
+        questionsHtml += '</div>';
+
+        // 5. Pie de Página Institucional
+        const footerHtml = 
+          '<div style="margin-top: 12px; border-top: 1.5px solid #cbd5e1; padding-top: 6px; text-align: center; font-size: 7.5px; color: #64748b; page-break-inside: avoid; break-inside: avoid;">' +
+            '&copy; 2026 DataForge Enterprise &middot; Manual Pedagógico ETL, Power Query & Microsoft Excel &middot; Autor: <strong>Ing. Juancito Peña Vizcaíno</strong> &middot; Documento Oficial de Trabajo' +
+          '</div>';
+
+        pdfContainer.innerHTML = headerHtml + studentBoxHtml + edaSectionHtml + questionsHtml + footerHtml;
+        document.body.appendChild(pdfContainer);
+
+        // Opciones calibradas de html2pdf: 15mm de margen a los lados, 12mm arriba y abajo
+        const opt = {
+          margin: [12, 15, 12, 15],
+          filename: 'HOJA_DE_TRABAJO_' + dataCase.badge.toUpperCase() + '_JUANCITO_PENA.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            scrollY: 0,
+            scrollX: 0,
+            windowWidth: 700
+          },
+          jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
+          },
+          pagebreak: {
+            mode: ['avoid-all', 'css', 'legacy']
+          }
+        };
+
+        if (typeof html2pdf !== 'undefined') {
+          html2pdf().set(opt).from(pdfContainer).save().then(() => {
+            if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
+            showToast('Documento PDF generado y descargado exitosamente.', 'success');
+          }).catch(err => {
+            console.error('Error al generar PDF con html2pdf:', err);
+            if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
+            showToast('Abriendo diálogo de impresión para guardar como PDF...', 'info');
+            window.print();
+          });
+        } else {
+          if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
+          showToast('Abriendo diálogo de impresión...', 'info');
+          window.print();
+        }
+
+      } catch (err) {
+        console.error('Error general en downloadHojaTrabajoPDF:', err);
+        showToast('Error al generar la Hoja de Trabajo en PDF.', 'error');
+      }
+    }
+
 
     window.onload = function() {
       initSeniorityCharts();
