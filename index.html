@@ -73,7 +73,7 @@
           greedy: true
         },
         'type-token': /\b(?:Currency\.Type|Percentage\.Type|Int64\.Type|Number\.Type|Date\.Type|Text\.Type|Logical\.Type|DateTime\.Type|type\s+(?:text|date|number|logical|any|table|record|list))\b/,
-        'function': /\b(?:Excel\.CurrentWorkbook|Excel\.Workbook|File\.Contents|Folder\.Files|Csv\.Document|Json\.Document|Table\.[A-Za-z0-9_]+|Text\.[A-Za-z0-9_]+|Date\.[A-Za-z0-9_]+|Number\.[A-Za-z0-9_]+|List\.[A-Za-z0-9_]+|Replacer\.[A-Za-z0-9_]+|Splitter\.[A-Za-z0-9_]+)\b/,
+        'function': /\b(?:Excel\.CurrentWorkbook|Excel\.Workbook|File\.Contents|Folder\.Files|Folder\.Contents|Csv\.Document|Json\.Document|Table\.[A-Za-z0-9_]+|Text\.[A-Za-z0-9_]+|Date\.[A-Za-z0-9_]+|Number\.[A-Za-z0-9_]+|List\.[A-Za-z0-9_]+|Replacer\.[A-Za-z0-9_]+|Splitter\.[A-Za-z0-9_]+)\b/,
         'keyword': /\b(?:let|in|each|if|then|else|and|or|not|try|otherwise|type|as|is|meta|section|shared|error|true|false|null)\b/,
         'number': /\b\d+(?:\.\d+)?\b/,
         'operator': /<>|<=|>=|=>|[=+\-*/><]/,
@@ -4667,7 +4667,7 @@
               Fase_o_Paso: 'Paso 1 (ETL)',
               Titulo_Operacion: 'Conexión a Carpeta Local y Consolidación',
               Columnas_Implicadas: 'Archivo Fuente / Carpeta Mensual',
-              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Examinar ruta -> Combinar y Transformar datos.',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En tu Escritorio (o en C:\\) crea la carpeta "ANALISIS ETL" y dentro la subcarpeta "BD" (ANALISIS ETL\\BD). Guarda allí los archivos descargados (.xlsx, .csv, .json). En tu libro consolidador ve a: Datos -> Obtener datos -> De un archivo -> De una carpeta -> elige ANALISIS ETL\\BD -> Combinar y Transformar datos. Al agregar nuevos archivos, solo pulsa Datos -> Actualizar todo (Ctrl+Alt+F5).',
               Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_Supermercado_Retail")'
             },
             {
@@ -4747,7 +4747,7 @@
               Fase_o_Paso: 'Paso 1 (ETL)',
               Titulo_Operacion: 'Conexión a Carpeta de Manifiestos de Carga',
               Columnas_Implicadas: 'Carpeta Mensual de Guías de Despacho',
-              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Combinar y Transformar datos de báscula y despacho.',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En tu Escritorio (o en C:\\) crea la carpeta "ANALISIS ETL" y dentro la subcarpeta "BD" (ANALISIS ETL\\BD). Guarda allí los archivos descargados (.xlsx, .csv, .json). En tu libro consolidador ve a: Datos -> Obtener datos -> De un archivo -> De una carpeta -> elige ANALISIS ETL\\BD -> Combinar y Transformar datos. Al agregar nuevos archivos, solo pulsa Datos -> Actualizar todo (Ctrl+Alt+F5).',
               Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_Logistica_Fletes")'
             },
             {
@@ -4827,7 +4827,7 @@
               Fase_o_Paso: 'Paso 1 (ETL)',
               Titulo_Operacion: 'Conexión a Carpeta de Cortes de Cartera y Pagarés',
               Columnas_Implicadas: 'Carpeta Mensual de Cuentas por Cobrar (CxC)',
-              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Combinar y Transformar reportes de cartera.',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En tu Escritorio (o en C:\\) crea la carpeta "ANALISIS ETL" y dentro la subcarpeta "BD" (ANALISIS ETL\\BD). Guarda allí los archivos descargados (.xlsx, .csv, .json). En tu libro consolidador ve a: Datos -> Obtener datos -> De un archivo -> De una carpeta -> elige ANALISIS ETL\\BD -> Combinar y Transformar datos. Al agregar nuevos archivos, solo pulsa Datos -> Actualizar todo (Ctrl+Alt+F5).',
               Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_Finanzas_CarteraCxC")'
             },
             {
@@ -4907,7 +4907,7 @@
               Fase_o_Paso: 'Paso 1 (ETL)',
               Titulo_Operacion: 'Conexión a Carpeta de Archivos de Nómina Mensual',
               Columnas_Implicadas: 'Carpeta de Novedades de Nómina y TSS',
-              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Combinar y Transformar archivos de nómina.',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En tu Escritorio (o en C:\\) crea la carpeta "ANALISIS ETL" y dentro la subcarpeta "BD" (ANALISIS ETL\\BD). Guarda allí los archivos descargados (.xlsx, .csv, .json). En tu libro consolidador ve a: Datos -> Obtener datos -> De un archivo -> De una carpeta -> elige ANALISIS ETL\\BD -> Combinar y Transformar datos. Al agregar nuevos archivos, solo pulsa Datos -> Actualizar todo (Ctrl+Alt+F5).',
               Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_RRHH_Nomina_TSS")'
             },
             {
@@ -4987,7 +4987,7 @@
               Fase_o_Paso: 'Paso 1 (ETL)',
               Titulo_Operacion: 'Conexión a Carpeta de Reclamaciones y Lotes ARS',
               Columnas_Implicadas: 'Carpeta Mensual de Autorizaciones Clínicas',
-              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Excel: Datos -> Obtener datos -> De un archivo -> De una carpeta -> Combinar y Transformar lotes de facturación médica.',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En tu Escritorio (o en C:\\) crea la carpeta "ANALISIS ETL" y dentro la subcarpeta "BD" (ANALISIS ETL\\BD). Guarda allí los archivos descargados (.xlsx, .csv, .json). En tu libro consolidador ve a: Datos -> Obtener datos -> De un archivo -> De una carpeta -> elige ANALISIS ETL\\BD -> Combinar y Transformar datos. Al agregar nuevos archivos, solo pulsa Datos -> Actualizar todo (Ctrl+Alt+F5).',
               Formula_M_O_Configuracion_Exacta: '= Folder.Files("C:\\Datos_Salud_Clinicas_ARS")'
             },
             {
@@ -6574,7 +6574,7 @@
     const MANUAL_ETL_DATA = {
       retail: {
         title: "1. Supermercado & Retail Masivo",
-        folderPath: "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+        folderPath: "Escritorio\\ANALISIS ETL\\BD (o C:\\ANALISIS ETL\\BD)",
         filePattern: "Ventas_POS_2026_01.xlsx ... Ventas_POS_2026_12.xlsx",
         primaryKey: "NUM_FACTURA (FAC-RET-XXXXX)",
         dirtyTextCols: ["REGION", "CLIENTE", "VENDEDOR", "CATEGORIA", "PRODUCTO"],
@@ -6662,14 +6662,32 @@
           values: "Suma de TOTAL_FACTURA, Suma de INGRESO_REAL, Suma de COSTO_TOTAL, Suma de MARGEN_BRUTO, Promedio de PORC_MARGEN"
         },
         fullMCode: `// =========================================================================
-// SCRIPT M MAESTRO DE CONSOLIDACIÓN AUTOMÁTICA: 1. SUPERMERCADO & RETAIL MASIVO (POS & INVENTARIO)
-// Consolida TODOS los archivos (.xlsx, .csv, .json) de C:\Users\User\Desktop\ANALISIS ETL\BD
-// Al agregar nuevos archivos (ej. 2000 o 2500 filas), solo pulsa Datos -> Actualizar todo
+// SCRIPT M UNIVERSAL AUTO-DETECTABLE: 1. SUPERMERCADO & RETAIL MASIVO (POS & INVENTARIO)
+// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
+// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Consolidación Multi-Archivo desde Carpeta (Excel .xlsx, .csv y .json) + Fallback Tabla Local
-    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    ArchivosCarpeta = try Folder.Files(RutaCarpeta) otherwise #table({"Content", "Name", "Extension"}, {}),
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
+        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
+    )[Name] otherwise {},
+    RutasCandidatas = List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
+    }),
+    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
+        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    ),
+    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
+    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
+                      then CarpetasConArchivos{0}
+                      else #table({"Content", "Name", "Extension"}, {}),
+
+    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
     ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
         not Text.StartsWith([Name], "~$") and
         List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
@@ -6703,7 +6721,7 @@ let
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
-    // Si no se usa la carpeta, busca una tabla válida en el libro actual (ignorando la tabla de salida)
+    // Respaldo: Si el usuario trabaja dentro de un único libro sin carpeta, usa la tabla del libro actual
     LibroActual = Excel.CurrentWorkbook(),
     TablasPreparadas = Table.TransformColumns(LibroActual, {
         {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
@@ -6714,16 +6732,8 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
-             else if not Table.IsEmpty(TablasOrigenValidas) then
-                 TablasOrigenValidas{0}[Content]
              else
-                 let
-                     ArchivoDescarga = Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Supermercado_&_Retail_Masivo_ETL_1000_Filas.xlsx"), null, true),
-                     HojaDescarga = ArchivoDescarga{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                 in
-                     if List.Contains(Table.ColumnNames(HojaDescarga), "Column1")
-                     then Table.PromoteHeaders(HojaDescarga, [PromoteAllScalars=true])
-                     else HojaDescarga,
+                 TablasOrigenValidas{0}[Content],
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
@@ -6769,7 +6779,7 @@ in
 
       logistica: {
         title: "2. Logística, Transporte & Fletes",
-        folderPath: "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+        folderPath: "Escritorio\\ANALISIS ETL\\BD (o C:\\ANALISIS ETL\\BD)",
         filePattern: "Manifiestos_Ruta_2026_01.xlsx ... Manifiestos_Ruta_2026_12.xlsx",
         primaryKey: "NUM_MANIFIESTO (MAN-LOG-XXXXX)",
         dirtyTextCols: ["RUTA_ORIGEN_DESTINO", "EMPRESA_CLIENTE", "CHOFER_FLOTA", "VEHICULO_PLACA", "TIPO_CARGA"],
@@ -6857,14 +6867,32 @@ in
           values: "Suma de TOTAL_FLETE_RD, Suma de FLETE_EFECTIVO_REAL, Suma de COSTO_OPERATIVO, Suma de MARGEN_FLETE, Suma de TONELADAS_CARGA"
         },
         fullMCode: `// =========================================================================
-// SCRIPT M MAESTRO DE CONSOLIDACIÓN AUTOMÁTICA: 2. LOGÍSTICA, TRANSPORTE & FLETES TERRESTRES
-// Consolida TODOS los archivos (.xlsx, .csv, .json) de C:\Users\User\Desktop\ANALISIS ETL\BD
-// Al agregar nuevos archivos (ej. 2000 o 2500 filas), solo pulsa Datos -> Actualizar todo
+// SCRIPT M UNIVERSAL AUTO-DETECTABLE: 2. LOGÍSTICA, TRANSPORTE & FLETES TERRESTRES
+// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
+// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Consolidación Multi-Archivo desde Carpeta (Excel .xlsx, .csv y .json) + Fallback Tabla Local
-    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    ArchivosCarpeta = try Folder.Files(RutaCarpeta) otherwise #table({"Content", "Name", "Extension"}, {}),
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
+        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
+    )[Name] otherwise {},
+    RutasCandidatas = List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
+    }),
+    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
+        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    ),
+    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
+    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
+                      then CarpetasConArchivos{0}
+                      else #table({"Content", "Name", "Extension"}, {}),
+
+    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
     ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
         not Text.StartsWith([Name], "~$") and
         List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
@@ -6898,7 +6926,7 @@ let
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
-    // Si no se usa la carpeta, busca una tabla válida en el libro actual (ignorando la tabla de salida)
+    // Respaldo: Si el usuario trabaja dentro de un único libro sin carpeta, usa la tabla del libro actual
     LibroActual = Excel.CurrentWorkbook(),
     TablasPreparadas = Table.TransformColumns(LibroActual, {
         {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
@@ -6909,16 +6937,8 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
-             else if not Table.IsEmpty(TablasOrigenValidas) then
-                 TablasOrigenValidas{0}[Content]
              else
-                 let
-                     ArchivoDescarga = Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Logística,_Fletes_&_Cadena_de_Suministro_ETL_1000_Filas.xlsx"), null, true),
-                     HojaDescarga = ArchivoDescarga{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                 in
-                     if List.Contains(Table.ColumnNames(HojaDescarga), "Column1")
-                     then Table.PromoteHeaders(HojaDescarga, [PromoteAllScalars=true])
-                     else HojaDescarga,
+                 TablasOrigenValidas{0}[Content],
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
@@ -6963,7 +6983,7 @@ in
 
       finanzas: {
         title: "3. Finanzas Corporativas & Cartera CxC",
-        folderPath: "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+        folderPath: "Escritorio\\ANALISIS ETL\\BD (o C:\\ANALISIS ETL\\BD)",
         filePattern: "Cartera_Pagares_2026_01.xlsx ... Cartera_Pagares_2026_12.xlsx",
         primaryKey: "NUM_PAGARE (PAG-FIN-XXXXX)",
         dirtyTextCols: ["SUCURSAL_CARTERA", "RNC_DEUDOR", "NOMBRE_DEUDOR", "OFICIAL_CREDITO", "LINEA_CREDITO"],
@@ -7052,14 +7072,32 @@ in
           values: "Suma de SALDO_TOTAL_EXIGIBLE, Suma de ABONO_RECUPERADO, Suma de SALDO_PENDIENTE, Promedio de DIAS_MORA"
         },
         fullMCode: `// =========================================================================
-// SCRIPT M MAESTRO DE CONSOLIDACIÓN AUTOMÁTICA: 3. FINANZAS CORPORATIVAS, TESORERÍA & CARTERA CxC
-// Consolida TODOS los archivos (.xlsx, .csv, .json) de C:\Users\User\Desktop\ANALISIS ETL\BD
-// Al agregar nuevos archivos (ej. 2000 o 2500 filas), solo pulsa Datos -> Actualizar todo
+// SCRIPT M UNIVERSAL AUTO-DETECTABLE: 3. FINANZAS CORPORATIVAS, TESORERÍA & CARTERA CxC
+// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
+// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Consolidación Multi-Archivo desde Carpeta (Excel .xlsx, .csv y .json) + Fallback Tabla Local
-    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    ArchivosCarpeta = try Folder.Files(RutaCarpeta) otherwise #table({"Content", "Name", "Extension"}, {}),
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
+        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
+    )[Name] otherwise {},
+    RutasCandidatas = List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
+    }),
+    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
+        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    ),
+    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
+    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
+                      then CarpetasConArchivos{0}
+                      else #table({"Content", "Name", "Extension"}, {}),
+
+    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
     ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
         not Text.StartsWith([Name], "~$") and
         List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
@@ -7093,7 +7131,7 @@ let
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
-    // Si no se usa la carpeta, busca una tabla válida en el libro actual (ignorando la tabla de salida)
+    // Respaldo: Si el usuario trabaja dentro de un único libro sin carpeta, usa la tabla del libro actual
     LibroActual = Excel.CurrentWorkbook(),
     TablasPreparadas = Table.TransformColumns(LibroActual, {
         {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
@@ -7104,16 +7142,8 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
-             else if not Table.IsEmpty(TablasOrigenValidas) then
-                 TablasOrigenValidas{0}[Content]
              else
-                 let
-                     ArchivoDescarga = Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Finanzas_Corporativas_&_Cuentas_por_Cobrar_(CxC)_ETL_1000_Filas.xlsx"), null, true),
-                     HojaDescarga = ArchivoDescarga{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                 in
-                     if List.Contains(Table.ColumnNames(HojaDescarga), "Column1")
-                     then Table.PromoteHeaders(HojaDescarga, [PromoteAllScalars=true])
-                     else HojaDescarga,
+                 TablasOrigenValidas{0}[Content],
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
@@ -7160,7 +7190,7 @@ in
 
       rrhh: {
         title: "4. Recursos Humanos, Nómina & TSS",
-        folderPath: "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+        folderPath: "Escritorio\\ANALISIS ETL\\BD (o C:\\ANALISIS ETL\\BD)",
         filePattern: "Nomina_General_2026_01.xlsx ... Nomina_General_2026_12.xlsx",
         primaryKey: "COD_EMPLEADO (EMP-RH-XXXXX)",
         dirtyTextCols: ["SEDE_PLANTA", "NOMBRE_COLABORADOR", "SUPERVISOR_TURNO", "DEPARTAMENTO", "CARGO_PUESTO"],
@@ -7249,14 +7279,32 @@ in
           values: "Suma de SUELDO_BRUTO, Suma de TOTAL_DESCUENTOS, Suma de SUELDO_NETO_PAGADO, Suma de APORTE_PATRONAL_TSS, Cuenta de COD_EMPLEADO"
         },
         fullMCode: `// =========================================================================
-// SCRIPT M MAESTRO DE CONSOLIDACIÓN AUTOMÁTICA: 4. RECURSOS HUMANOS, NÓMINA & SEGURIDAD SOCIAL (TSS)
-// Consolida TODOS los archivos (.xlsx, .csv, .json) de C:\Users\User\Desktop\ANALISIS ETL\BD
-// Al agregar nuevos archivos (ej. 2000 o 2500 filas), solo pulsa Datos -> Actualizar todo
+// SCRIPT M UNIVERSAL AUTO-DETECTABLE: 4. RECURSOS HUMANOS, NÓMINA & SEGURIDAD SOCIAL (TSS)
+// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
+// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Consolidación Multi-Archivo desde Carpeta (Excel .xlsx, .csv y .json) + Fallback Tabla Local
-    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    ArchivosCarpeta = try Folder.Files(RutaCarpeta) otherwise #table({"Content", "Name", "Extension"}, {}),
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
+        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
+    )[Name] otherwise {},
+    RutasCandidatas = List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
+    }),
+    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
+        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    ),
+    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
+    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
+                      then CarpetasConArchivos{0}
+                      else #table({"Content", "Name", "Extension"}, {}),
+
+    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
     ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
         not Text.StartsWith([Name], "~$") and
         List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
@@ -7290,7 +7338,7 @@ let
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
-    // Si no se usa la carpeta, busca una tabla válida en el libro actual (ignorando la tabla de salida)
+    // Respaldo: Si el usuario trabaja dentro de un único libro sin carpeta, usa la tabla del libro actual
     LibroActual = Excel.CurrentWorkbook(),
     TablasPreparadas = Table.TransformColumns(LibroActual, {
         {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
@@ -7301,16 +7349,8 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
-             else if not Table.IsEmpty(TablasOrigenValidas) then
-                 TablasOrigenValidas{0}[Content]
              else
-                 let
-                     ArchivoDescarga = Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Recursos_Humanos_&_Planilla_Multisucursal_ETL_1000_Filas.xlsx"), null, true),
-                     HojaDescarga = ArchivoDescarga{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                 in
-                     if List.Contains(Table.ColumnNames(HojaDescarga), "Column1")
-                     then Table.PromoteHeaders(HojaDescarga, [PromoteAllScalars=true])
-                     else HojaDescarga,
+                 TablasOrigenValidas{0}[Content],
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
@@ -7356,7 +7396,7 @@ in
 
       salud: {
         title: "5. Salud, Clínicas & Coberturas ARS",
-        folderPath: "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+        folderPath: "Escritorio\\ANALISIS ETL\\BD (o C:\\ANALISIS ETL\\BD)",
         filePattern: "Reclamaciones_ARS_2026_01.xlsx ... Reclamaciones_ARS_2026_12.xlsx",
         primaryKey: "NUM_AUTORIZACION (AUT-SAL-XXXXX)",
         dirtyTextCols: ["SEDE_CLINICA", "EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE", "ESPECIALIDAD_MEDICA", "SERVICIO_PROCEDIMIENTO"],
@@ -7443,14 +7483,32 @@ in
           values: "Suma de MONTO_TOTAL_FACTURADO, Suma de COBERTURA_ARS, Suma de COPAGO_PACIENTE, Suma de COSTO_INSUMOS, Suma de MARGEN_CLINICA"
         },
         fullMCode: `// =========================================================================
-// SCRIPT M MAESTRO DE CONSOLIDACIÓN AUTOMÁTICA: 5. SALUD, CLÍNICAS PRIVADAS & COBERTURAS ARS
-// Consolida TODOS los archivos (.xlsx, .csv, .json) de C:\Users\User\Desktop\ANALISIS ETL\BD
-// Al agregar nuevos archivos (ej. 2000 o 2500 filas), solo pulsa Datos -> Actualizar todo
+// SCRIPT M UNIVERSAL AUTO-DETECTABLE: 5. SALUD, CLÍNICAS PRIVADAS & COBERTURAS ARS
+// Funciona en CUALQUIER PC Windows creando la carpeta "ANALISIS ETL\BD" en el Escritorio (o C:\)
+// Consolida automáticamente todos los archivos (.xlsx, .csv, .json) al pulsar "Actualizar todo"
 // =========================================================================
 let
-    // PASO 1: Consolidación Multi-Archivo desde Carpeta (Excel .xlsx, .csv y .json) + Fallback Tabla Local
-    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    ArchivosCarpeta = try Folder.Files(RutaCarpeta) otherwise #table({"Content", "Name", "Extension"}, {}),
+    // PASO 1: Autodetección Universal de la Carpeta "ANALISIS ETL\BD" en cualquier Usuario/PC Windows
+    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    PerfilesWindows = try Table.SelectRows(Folder.Contents("C:\\Users"), each
+        not List.Contains({"Public", "Default", "Default User", "All Users"}, [Name])
+    )[Name] otherwise {},
+    RutasCandidatas = List.Combine({
+        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD"},
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
+    }),
+    TablasDeCarpetas = List.Transform(List.Distinct(RutasCandidatas), each
+        try Folder.Files(_) otherwise #table({"Content", "Name", "Extension"}, {})
+    ),
+    CarpetasConArchivos = List.Select(TablasDeCarpetas, each not Table.IsEmpty(_)),
+    ArchivosCarpeta = if List.Count(CarpetasConArchivos) > 0
+                      then CarpetasConArchivos{0}
+                      else #table({"Content", "Name", "Extension"}, {}),
+
+    // Filtrar archivos válidos (.xlsx, .xls, .csv, .json) ignorando temporales (~$)
     ArchivosValidos = Table.SelectRows(ArchivosCarpeta, each
         not Text.StartsWith([Name], "~$") and
         List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
@@ -7484,7 +7542,7 @@ let
     ),
     ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
 
-    // Si no se usa la carpeta, busca una tabla válida en el libro actual (ignorando la tabla de salida)
+    // Respaldo: Si el usuario trabaja dentro de un único libro sin carpeta, usa la tabla del libro actual
     LibroActual = Excel.CurrentWorkbook(),
     TablasPreparadas = Table.TransformColumns(LibroActual, {
         {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
@@ -7495,16 +7553,8 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
-             else if not Table.IsEmpty(TablasOrigenValidas) then
-                 TablasOrigenValidas{0}[Content]
              else
-                 let
-                     ArchivoDescarga = Excel.Workbook(File.Contents("C:\\Users\\User\\Downloads\\Salud,_Clínicas_&_Coberturas_ARS_ETL_1000_Filas.xlsx"), null, true),
-                     HojaDescarga = ArchivoDescarga{[Item="Datos_Crudos_ETL", Kind="Sheet"]}[Data]
-                 in
-                     if List.Contains(Table.ColumnNames(HojaDescarga), "Column1")
-                     then Table.PromoteHeaders(HojaDescarga, [PromoteAllScalars=true])
-                     else HojaDescarga,
+                 TablasOrigenValidas{0}[Content],
 
     // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
     SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
@@ -7573,7 +7623,7 @@ in
       ]);
 
       const functionsSet = new Set([
-        'Excel.CurrentWorkbook', 'Folder.Files', 'Csv.Document', 'Json.Document',
+        'Excel.CurrentWorkbook', 'Folder.Files', 'Folder.Contents', 'List.Combine', 'List.Transform', 'List.Distinct', 'Csv.Document', 'Json.Document',
         'Table.TransformColumns', 'Table.ReplaceValue', 'Table.AddColumn',
         'Table.TransformColumnTypes', 'Table.SelectRows', 'Table.SplitColumn',
         'Table.RenameColumns', 'Table.RemoveColumns', 'Table.PromoteHeaders',
@@ -7641,7 +7691,7 @@ in
               result += '<span class="token type-token">' + escapeHtml(word) + '</span>';
             } else if (functionsSet.has(word)) {
               result += '<span class="token function">' + escapeHtml(word) + '</span>';
-            } else if (/^(RutaCarpeta|ArchivosCarpeta|ArchivosValidos|ExtraerTablas|TablasDelSector|ConsolidadoCarpeta|LibroActual|TablasPreparadas|TablasOrigenValidas|TablaDetectada|ArchivoExcel|ArchivoDescarga|HojaDescarga|HojaDatos|PromoverEncabezados|Origen|LimpiarTexto|SanarHash|SanarArroba|SanarCuatro|SanarTres|SanarCero|SanarUno|Rellenar[A-Za-z]+|ExtraerFecha|Tipar[A-Za-z]+|Col[0-9A-Za-z_]+|PasoAnterior|_)$/.test(word)) {
+            } else if (/^(RutaDirecta|PerfilesWindows|RutasCandidatas|TablasDeCarpetas|CarpetasConArchivos|RutaCarpeta|ArchivosCarpeta|ArchivosValidos|ExtraerTablas|TablasDelSector|ConsolidadoCarpeta|LibroActual|TablasPreparadas|TablasOrigenValidas|TablaDetectada|ArchivoExcel|ArchivoDescarga|HojaDescarga|HojaDatos|PromoverEncabezados|Origen|LimpiarTexto|SanarHash|SanarArroba|SanarCuatro|SanarTres|SanarCero|SanarUno|Rellenar[A-Za-z]+|ExtraerFecha|Tipar[A-Za-z]+|Col[0-9A-Za-z_]+|PasoAnterior|_)$/.test(word)) {
               result += '<span class="token step-var">' + escapeHtml(word) + '</span>';
             } else {
               result += escapeHtml(word);
@@ -7679,6 +7729,29 @@ in
           '</div>'
         );
       }).join('');
+    }
+
+
+    let CUSTOM_USER_FOLDER_PATH = 'C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD';
+
+    function updateCustomEtlFolderPath(newPath) {
+      const cleaned = String(newPath || '').trim().replace(/^"+|"+$/g, '');
+      CUSTOM_USER_FOLDER_PATH = cleaned || 'C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD';
+      ['retail', 'logistica', 'finanzas', 'rrhh', 'salud'].forEach(k => {
+        if (MANUAL_ETL_DATA[k] && MANUAL_ETL_DATA[k].fullMCode) {
+          MANUAL_ETL_DATA[k].fullMCode = MANUAL_ETL_DATA[k].fullMCode.replace(
+            /RutaDirecta = "[^"]*"/,
+            'RutaDirecta = "' + CUSTOM_USER_FOLDER_PATH.replace(/\\/g, '\\') + '"'
+          );
+        }
+      });
+      const codeEl = document.getElementById('etlStep6HighlightedCode');
+      const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
+      const etl = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
+      if (codeEl && etl) {
+        codeEl.innerHTML = highlightPowerQueryM(etl.fullMCode, true);
+      }
+      showToast('Ruta de carpeta actualizada en los Scripts M: ' + CUSTOM_USER_FOLDER_PATH, 'success');
     }
 
     function copyTextToClipboardWithFeedback(textToCopy, btnEl, successMsg) {
@@ -7866,18 +7939,29 @@ in
               '<span class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-sm shadow-xs">1</span>' +
               '<div>' +
                 '<h3 class="text-xl font-bold text-slate-900">Paso 1: Consolidación Automática de Carpeta (Excel, CSV y JSON) en ' + config.badge + ' 🌐</h3>' +
-                '<p class="text-xs text-slate-500 font-semibold">Conecta una sola vez a <code class="font-mono text-emerald-700">C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD</code> &rarr; Cuando agregues más archivos solo pulsa <strong>Actualizar todo</strong></p>' +
+                '<p class="text-xs text-slate-500 font-semibold">Crea en tu <strong>Escritorio</strong> la carpeta <code class="font-mono text-emerald-700 font-bold">ANALISIS ETL\BD</code> (se detecta sola en cualquier PC) &rarr; Cuando metas más archivos solo pulsa <strong>Actualizar todo</strong></p>' +
               '</div>' +
             '</div>' +
             '<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Fase 1 &middot; Consolidación & Autorefresco</span>' +
           '</div>' +
 
-          // REGLA DE ORO PARA CONSOLIDAR NUEVOS LOTES (1000 + 2000 + 2500 REGISTROS)
-          '<div class="bg-emerald-50/90 border-l-4 border-emerald-600 p-4 rounded-r-2xl text-xs text-slate-800 space-y-1.5">' +
-            '<div class="font-black text-emerald-950 flex items-center gap-2 text-sm"><i class="fa-solid fa-rotate text-emerald-600"></i> ¿Cómo lograr que al generar 1,000, luego 2,000 o 2,500 registros se consoliden solos al dar "Actualizar todo"?</div>' +
-            '<p class="leading-relaxed">1. Guarda todos los archivos descargados de <strong>' + config.badge + '</strong> (con distintas fechas o cantidades de filas) dentro de la carpeta <code class="font-mono bg-white px-2 py-0.5 rounded border border-emerald-300 font-bold text-emerald-900">' + etl.folderPath + '</code>.</p>' +
-            '<p class="leading-relaxed">2. Crea tu libro maestro (ej. <code class="font-mono bg-white px-1.5 py-0.5 rounded border font-bold">DB_CONSOLIDADA.xlsx</code>) <strong>FUERA</strong> de la subcarpeta <code class="font-mono font-bold">BD</code> (por ejemplo en <code class="font-mono">C:\\Users\\User\\Desktop\\ANALISIS ETL\\DB_CONSOLIDADA.xlsx</code>) para que no se intente consolidar a sí mismo.</p>' +
-            '<p class="leading-relaxed">3. Al aplicar todos los pasos sobre la consulta consolidada (o pegar el <strong>Script M del Paso 6</strong>), cada vez que guardes un archivo nuevo en <code class="font-mono font-bold">BD</code> y pulses <strong>Datos &rarr; Actualizar todo (<kbd class="px-1.5 py-0.5 bg-white border rounded font-mono">Ctrl + Alt + F5</kbd>)</strong>, Power Query unirá todos los archivos y les aplicará automáticamente los pasos de limpieza y las 5 columnas calculadas.</p>' +
+          // REGLA DE ORO UNIVERSAL PARA CUALQUIER USUARIO Y CUALQUIER PC (ESTRUCTURA ANALISIS ETL\BD)
+          '<div class="bg-emerald-50/90 border-l-4 border-emerald-600 p-4 sm:p-5 rounded-r-2xl text-xs text-slate-800 space-y-3">' +
+            '<div class="font-black text-emerald-950 flex items-center gap-2 text-sm"><i class="fa-solid fa-folder-tree text-emerald-600"></i> Instrucción Universal para Cualquier Usuario y PC: Cómo preparar tu Carpeta de Consolidación Automática</div>' +
+            '<div class="grid grid-cols-1 md:grid-cols-3 gap-3">' +
+              '<div class="bg-white p-3 rounded-xl border border-emerald-200 space-y-1">' +
+                '<div class="font-black text-emerald-900">1. Crea la Carpeta en tu Escritorio</div>' +
+                '<p class="text-slate-600">En tu <strong>Escritorio</strong> (o en el disco <code class="font-mono font-bold">C:\</code>), crea una carpeta llamada exactamente <strong class="font-mono text-emerald-800">ANALISIS ETL</strong> y dentro de ella crea una subcarpeta llamada <strong class="font-mono text-emerald-800">BD</strong>.</p>' +
+              '</div>' +
+              '<div class="bg-white p-3 rounded-xl border border-emerald-200 space-y-1">' +
+                '<div class="font-black text-emerald-900">2. ¿Dónde guardar cada archivo?</div>' +
+                '<p class="text-slate-600">Mete <strong>TODOS los datasets descargados</strong> (<code class="font-mono">.xlsx</code>, <code class="font-mono">.csv</code>, <code class="font-mono">.json</code> de 1,000, 2,000 o 2,500 filas) <strong>DENTRO de <code class="font-mono">BD</code></strong>. Guarda tu libro consolidador (<code class="font-mono">DB_CONSOLIDADA.xlsx</code>) <strong>AFUERA</strong>, en <code class="font-mono">ANALISIS ETL</code>.</p>' +
+              '</div>' +
+              '<div class="bg-white p-3 rounded-xl border border-emerald-200 space-y-1">' +
+                '<div class="font-black text-emerald-900">3. Autodetección sin tocar código</div>' +
+                '<p class="text-slate-600">El <strong>Script M del Paso 6</strong> escanea automáticamente <code class="font-mono">C:\Users\*\Desktop\ANALISIS ETL\BD</code> (y <code class="font-mono">Escritorio</code> / <code class="font-mono">OneDrive</code> / <code class="font-mono">C:\</code>), por lo que <strong>funciona en cualquier PC sin cambiar el nombre de usuario</strong>.</p>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
 
           '<div class="grid grid-cols-1 md:grid-cols-3 gap-5">' +
@@ -8128,10 +8212,18 @@ in
             '</div>' +
           '</div>' +
 
-          // NOTA DE SOLUCIÓN AL ERROR Expression.Error: We couldn't find an Excel table named 'Datos_Crudos_ETL'
-          '<div class="bg-amber-400/15 border-l-4 border-amber-400 rounded-r-2xl p-4 text-xs text-amber-100 space-y-1">' +
-            '<div class="font-black text-amber-300 flex items-center gap-2 text-sm"><i class="fa-solid fa-shield-halved"></i> Blindaje Anti-Error Activado (Solución a Expression.Error: "Datos_Crudos_ETL")</div>' +
-            '<p class="leading-relaxed">Cuando abres el archivo Excel descargado y pulsas <strong>Datos &rarr; De una tabla o rango</strong>, la pestaña se llama <code class="font-mono text-white">Datos_Crudos_ETL</code>, pero Excel bautiza automáticamente el objeto de tabla como <code class="font-mono text-emerald-300 font-bold">Tabla1</code> (o <code class="font-mono text-emerald-300 font-bold">Table1</code> en inglés). Este script incluye un bloque <code class="font-mono text-purple-300 font-bold">try ... otherwise LibroActual{0}[Content]</code> en el <strong>PASO 1</strong> que detecta automáticamente <code class="font-mono text-emerald-300">Tabla1</code>, <code class="font-mono text-emerald-300">Table1</code> o <code class="font-mono text-emerald-300">Datos_Crudos_ETL</code> sin dar error.</p>' +
+          // AUTODETECCIÓN MULTI-PC + CAJA OPCIONAL SI EL USUARIO USA OTRA RUTA DISTINTA
+          '<div class="bg-slate-950/65 border border-emerald-400/35 rounded-2xl p-4 text-xs text-emerald-50 space-y-3">' +
+            '<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">' +
+              '<div class="space-y-1">' +
+                '<div class="font-black text-emerald-300 flex items-center gap-2 text-sm"><i class="fa-solid fa-wand-magic-sparkles"></i> Autodetección Multi-PC Activada (Funciona en cualquier computadora sin editar código)</div>' +
+                '<p class="text-slate-300 leading-relaxed">Si creaste la carpeta <code class="font-mono text-amber-300 font-bold">ANALISIS ETL\BD</code> en tu <strong>Escritorio</strong> (o en <code class="font-mono text-amber-300 font-bold">C:\ANALISIS ETL\BD</code>), el script detecta automáticamente el usuario de Windows de tu PC. <em>¿Usaste una carpeta con otro nombre o en otro disco? Pega tu ruta aquí abajo y el código se actualizará al instante:</em></p>' +
+              '</div>' +
+              '<div class="flex items-center gap-2 shrink-0">' +
+                '<input id="customEtlFolderPathInput" type="text" value="' + CUSTOM_USER_FOLDER_PATH + '" onchange="updateCustomEtlFolderPath(this.value)" placeholder="Ej: D:\MisDatos\BD" class="w-64 sm:w-80 px-3 py-2 rounded-xl bg-slate-900 border border-emerald-400/40 text-emerald-200 font-mono text-xs focus:outline-none focus:border-emerald-400" />' +
+                '<button onclick="updateCustomEtlFolderPath(document.getElementById(\'customEtlFolderPathInput\').value)" class="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs cursor-pointer transition-all">Aplicar Ruta</button>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
 
           // VENTANA IDE DEL EDITOR AVANZADO POWER QUERY CON SINTAXIS COLOREADA (PRISM / LENGUAJE M) Y BOTÓN COPIAR INTEGRADO
@@ -8158,7 +8250,7 @@ in
               '</div>' +
             '</div>' +
 
-            '<pre class="language-powerquery m-0 p-3 sm:p-4 overflow-x-auto"><code class="language-powerquery">' + highlightPowerQueryM(etl.fullMCode, true) + '</code></pre>' +
+            '<pre class="language-powerquery m-0 p-3 sm:p-4 overflow-x-auto"><code id="etlStep6HighlightedCode" class="language-powerquery">' + highlightPowerQueryM(etl.fullMCode, true) + '</code></pre>' +
 
             '<div class="pq-ide-footer">' +
               '<div class="flex items-center gap-2 text-emerald-300 font-bold">' +
