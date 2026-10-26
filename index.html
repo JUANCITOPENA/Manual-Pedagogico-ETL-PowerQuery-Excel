@@ -3366,16 +3366,11 @@
 
       const hourStart = getRandomInt(8, 16);
       const minStart = getRandomItem(["00", "15", "30", "45"]);
-      const periodStart = hourStart >= 12 ? "PM" : "AM";
-      const displayHourStart = hourStart > 12 ? hourStart - 12 : hourStart;
-
       const durationHours = getRandomInt(1, 3);
       const hourEnd = hourStart + durationHours;
       const minEnd = getRandomItem(["00", "15", "30", "45"]);
-      const periodEnd = hourEnd >= 12 ? "PM" : "AM";
-      const displayHourEnd = hourEnd > 12 ? hourEnd - 12 : hourEnd;
 
-      const timeWindow = `${String(displayHourStart).padStart(2, '0')}:${minStart}${periodStart}-${String(displayHourEnd).padStart(2, '0')}:${minEnd}${periodEnd}`;
+      const timeWindow = `(${String(hourStart).padStart(2, '0')}:${minStart}-${String(hourEnd).padStart(2, '0')}:${minEnd})`;
       return `${dateStr} ${timeWindow}`;
     }
 
@@ -4679,17 +4674,17 @@
             },
             {
               Fase_o_Paso: 'Paso 3 (ETL)',
-              Titulo_Operacion: 'Desinfección de Caracteres Corruptos (Leetspeak POS)',
-              Columnas_Implicadas: 'CLIENTE, VENDEDOR',
-              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Reemplazar los valores corruptos inyectados en cajas POS: @ -> a, 4 -> a, 3 -> e, 0 -> o, 1 -> i, # -> vacío, $$ -> vacío.',
-              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, "@", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"})'
+              Titulo_Operacion: 'Separación de ID y Desinfección Leetspeak POS',
+              Columnas_Implicadas: 'CLIENTE, CODIGO_CLIENTE, VENDEDOR',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Dividir CLIENTE por guion ("-") en el delimitador más a la izquierda para blindar CODIGO_CLIENTE intacto. Luego en CLIENTE y VENDEDOR reemplazar caracteres corruptos: @ -> a, 4 -> a, 3 -> e, 0 -> o, 1 -> i, # -> vacío.',
+              Formula_M_O_Configuracion_Exacta: '= Table.SplitColumn(PasoAnterior, "CLIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"CLIENTE", "CODIGO_CLIENTE"})'
             },
             {
               Fase_o_Paso: 'Paso 4 (ETL)',
-              Titulo_Operacion: 'Extracción de Fecha Pura y Relleno de Nulos',
-              Columnas_Implicadas: 'FECHA_VENTA, CANAL_VENTA',
-              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En FECHA_VENTA: Transformar -> Dividir columna -> Por delimitador espacio o "(" para aislar YYYY-MM-DD y tipar como Fecha. En CANAL_VENTA: Reemplazar null o vacío por "Sucursal Física".',
-              Formula_M_O_Configuracion_Exacta: '= Table.ReplaceValue(PasoAnterior, null, "Sucursal Física", Replacer.ReplaceValue, {"CANAL_VENTA"})'
+              Titulo_Operacion: 'Descomposición de Fecha Pura y Horarios (HORA_INICIAL y HORA_FINAL)',
+              Columnas_Implicadas: 'FECHA_VENTA, HORA_INICIAL, HORA_FINAL, CANAL_VENTA',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En FECHA_VENTA: Transformar -> Dividir columna -> Por delimitador -> Espacio en la primera aparición para aislar la fecha contable (type date). Luego limpiar paréntesis "()" y dividir por "-" para obtener HORA_INICIAL y HORA_FINAL. En CANAL_VENTA: Reemplazar null por "Sucursal Física".',
+              Formula_M_O_Configuracion_Exacta: '= Table.SplitColumn(PasoAnterior, "FECHA_VENTA", Splitter.SplitTextByEachDelimiter({" "}, QuoteStyle.Csv, false), {"FECHA_VENTA", "VENTANA_HORA"})'
             },
             {
               Fase_o_Paso: 'Paso 5 (Cálculo M)',
@@ -6587,14 +6582,15 @@
         },
         dateCol: "FECHA_VENTA",
         dateRawExample: "2026-03-15 (08:00-12:00)",
-        dateCleanExample: "2026-03-15 (type date) | Ventana: 08:00-12:00",
+        dateCleanExample: "FECHA_VENTA: 2026-03-15 (type date) | HORA_INICIAL: 08:00 | HORA_FINAL: 12:00 (type time)",
         nullCol: "CANAL_VENTA",
         nullReplacement: "Sucursal Física",
         nullReason: "El 12% de los tickets de caja rápida omiten el canal de venta; por regla de negocio corresponden a compras presenciales en Sucursal Física.",
         typeMapping: [
           { col: "NUM_FACTURA", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria única del ticket POS" },
-          { col: "FECHA_VENTA", type: "Fecha (type date)", icon: "📅", role: "Fecha contable tras separar el turno horario" },
-          { col: "REGION, CLIENTE, VENDEDOR, CATEGORIA, PRODUCTO", type: "Texto (type text)", icon: "🏷️", role: "Dimensiones maestras de análisis comercial" },
+          { col: "FECHA_VENTA", type: "Fecha (type date)", icon: "📅", role: "Fecha contable pura aislada de la ventana horaria" },
+          { col: "HORA_INICIAL, HORA_FINAL", type: "Hora / Texto (type time)", icon: "⏰", role: "Apertura y cierre de ventana horaria del turno" },
+          { col: "REGION, CLIENTE, CODIGO_CLIENTE, VENDEDOR, CATEGORIA, PRODUCTO", type: "Texto (type text)", icon: "🏷️", role: "Dimensiones maestras de análisis comercial y código ID blindado" },
           { col: "CANAL_VENTA, CONDICION_PAGO, ESTATUS_FACTURA", type: "Texto (type text)", icon: "🛒", role: "Segmentadores (Slicers) y control de cancelaciones" },
           { col: "CANTIDAD", type: "Número Entero (Int64.Type)", icon: "📦", role: "Unidades físicas despachadas por línea" },
           { col: "PRECIO_VENTA, SUBTOTAL, ITBIS_18, TOTAL_FACTURA, COSTO_TOTAL, MARGEN_BRUTO", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💰", role: "Importes financieros en RD$ para sumatorias" }
@@ -6750,29 +6746,41 @@ let
              else
                  TablasOrigenValidas{0}[Content],
 
-    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
-    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    // PASO 2: Separación de Código ID en CLIENTE antes de desinfectar (Blindaje Numérico de ID)
+    DividirCliente = Table.SplitColumn(Origen, "CLIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"CLIENTE", "CODIGO_CLIENTE"}),
+
+    // PASO 3: Desinfección de Símbolos Corruptos (#, $) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i) sobre Nombres
+    SanarHash   = Table.ReplaceValue(DividirCliente, "#", "", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    SanarDolar  = Table.ReplaceValue(SanarHash, "$", "", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
+    SanarArroba = Table.ReplaceValue(SanarDolar, "@", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"CLIENTE", "VENDEDOR"}),
 
-    // PASO 3: Limpieza de Espacios Fantasmas (Trim), Caracteres Ocultos (Clean) y Relleno de Nulos en CANAL_VENTA
+    // PASO 4: Limpieza de Espacios Fantasmas (Trim), Caracteres Ocultos (Clean) y Relleno de Nulos en CANAL_VENTA
     LimpiarTexto = Table.TransformColumns(SanarUno, {
         {"REGION", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"CODIGO_CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"VENDEDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"CATEGORIA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"PRODUCTO", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"FECHA_VENTA", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"CANAL_VENTA", each if _ = null or Text.Trim(Text.From(_)) = "" then "Sucursal Física" else Text.Trim(Text.From(_)), type text}
     }),
 
-    // PASO 4: Aislar Fecha Contable en FECHA_VENTA y Tipar Columnas Numéricas Oficiales
-    ExtraerFecha = Table.TransformColumns(LimpiarTexto, {
-        {"FECHA_VENTA", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+    // PASO 4: Descomposición Blindada de Fecha Contable Pura y Ventana Horaria (HORA_INICIAL y HORA_FINAL)
+    DividirFecha   = Table.SplitColumn(LimpiarTexto, "FECHA_VENTA", Splitter.SplitTextByEachDelimiter({" "}, QuoteStyle.Csv, false), {"FECHA_VENTA", "VENTANA_HORA"}),
+    SanarVentana   = Table.ReplaceValue(Table.ReplaceValue(DividirFecha, "(", "", Replacer.ReplaceText, {"VENTANA_HORA"}), ")", "", Replacer.ReplaceText, {"VENTANA_HORA"}),
+    DividirHoras   = Table.SplitColumn(SanarVentana, "VENTANA_HORA", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"HORA_INICIAL", "HORA_FINAL"}),
+    ExtraerFecha   = Table.TransformColumns(DividirHoras, {
+        {"FECHA_VENTA", each try Date.FromText(Text.Trim(Text.From(_)), "en-US") otherwise try Date.From(_) otherwise null, type date},
+        {"HORA_INICIAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "08:00" else Text.Trim(Text.From(_)), type text},
+        {"HORA_FINAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "12:00" else Text.Trim(Text.From(_)), type text}
     }),
-    TiparNumeros = Table.TransformColumnTypes(ExtraerFecha, {
+    TiparNumeros   = Table.TransformColumnTypes(ExtraerFecha, {
+        {"CODIGO_CLIENTE", type text},
         {"CANTIDAD", Int64.Type},
         {"PRECIO_VENTA", Currency.Type},
         {"SUBTOTAL", Currency.Type},
@@ -6807,14 +6815,15 @@ in
         },
         dateCol: "FECHA_DESPACHO",
         dateRawExample: "2026-04-10 (14:00-18:00)",
-        dateCleanExample: "2026-04-10 (type date) | Turno Salida: 14:00-18:00",
+        dateCleanExample: "FECHA_DESPACHO: 2026-04-10 (type date) | HORA_INICIAL: 14:00 | HORA_FINAL: 18:00 (type time)",
         nullCol: "TIPO_CARGA",
         nullReplacement: "Carga Estándar",
         nullReason: "En báscula de camiones, cuando no se marca contenedor refrigerado ni materiales peligrosos, el campo TIPO_CARGA queda nulo y corresponde a 'Carga Estándar'.",
         typeMapping: [
           { col: "NUM_MANIFIESTO", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria única del manifiesto de despacho" },
-          { col: "FECHA_DESPACHO", type: "Fecha (type date)", icon: "📅", role: "Fecha de salida del camión tras separar ventana horaria" },
-          { col: "RUTA_ORIGEN_DESTINO, EMPRESA_CLIENTE, CHOFER_FLOTA, VEHICULO_PLACA", type: "Texto (type text)", icon: "🚚", role: "Dimensiones de ruta geográfica, cliente y unidad de flota" },
+          { col: "FECHA_DESPACHO", type: "Fecha (type date)", icon: "📅", role: "Fecha de salida pura aislada de la ventana horaria" },
+          { col: "HORA_INICIAL, HORA_FINAL", type: "Hora / Texto (type time)", icon: "⏰", role: "Horario de salida y llegada estimada de la ruta" },
+          { col: "RUTA_ORIGEN_DESTINO, EMPRESA_CLIENTE, CODIGO_CLIENTE, CHOFER_FLOTA, VEHICULO_PLACA", type: "Texto (type text)", icon: "🚚", role: "Dimensiones de ruta geográfica, cliente, código ID blindado y unidad de flota" },
           { col: "TIPO_CARGA, MODALIDAD_FLETE, CONDICION_FLETE, ESTATUS_DESPACHO", type: "Texto (type text)", icon: "📦", role: "Segmentadores operativos y control de viajes anulados" },
           { col: "TONELADAS_CARGA", type: "Número Decimal / Entero (Number.Type)", icon: "⚖️", role: "Peso métrico transportado en toneladas" },
           { col: "TARIFA_POR_TON, SUBTOTAL_FLETE, PEAJES_COMBUSTIBLE, TOTAL_FLETE_RD, COSTO_OPERATIVO, MARGEN_FLETE", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💰", role: "Tarifas, fletes, costos de ruta y margen neto en RD$" }
@@ -6970,28 +6979,40 @@ let
              else
                  TablasOrigenValidas{0}[Content],
 
-    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
-    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    // PASO 2: Separación de Código ID en EMPRESA_CLIENTE antes de desinfectar (Blindaje Numérico de ID)
+    DividirEmpresa = Table.SplitColumn(Origen, "EMPRESA_CLIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"EMPRESA_CLIENTE", "CODIGO_CLIENTE"}),
+
+    // PASO 3: Desinfección de Símbolos Corruptos (#, $) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i) sobre Nombres
+    SanarHash   = Table.ReplaceValue(DividirEmpresa, "#", "", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    SanarDolar  = Table.ReplaceValue(SanarHash, "$", "", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
+    SanarArroba = Table.ReplaceValue(SanarDolar, "@", "a", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"EMPRESA_CLIENTE", "CHOFER_FLOTA"}),
 
-    // PASO 3: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en TIPO_CARGA -> "Carga Estándar"
+    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en TIPO_CARGA -> "Carga Estándar"
     LimpiarTexto = Table.TransformColumns(SanarUno, {
         {"RUTA_ORIGEN_DESTINO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"EMPRESA_CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"CODIGO_CLIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"CHOFER_FLOTA", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"VEHICULO_PLACA", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"FECHA_DESPACHO", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"TIPO_CARGA", each if _ = null or Text.Trim(Text.From(_)) = "" then "Carga Estándar" else Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
     }),
 
-    // PASO 4: Aislar Fecha de Salida en FECHA_DESPACHO y Tipar Columnas Numéricas
-    ExtraerFecha = Table.TransformColumns(LimpiarTexto, {
-        {"FECHA_DESPACHO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+    // PASO 4: Descomposición Blindada de Fecha de Salida y Ventana Horaria (HORA_INICIAL y HORA_FINAL)
+    DividirFecha   = Table.SplitColumn(LimpiarTexto, "FECHA_DESPACHO", Splitter.SplitTextByEachDelimiter({" "}, QuoteStyle.Csv, false), {"FECHA_DESPACHO", "VENTANA_HORA"}),
+    SanarVentana   = Table.ReplaceValue(Table.ReplaceValue(DividirFecha, "(", "", Replacer.ReplaceText, {"VENTANA_HORA"}), ")", "", Replacer.ReplaceText, {"VENTANA_HORA"}),
+    DividirHoras   = Table.SplitColumn(SanarVentana, "VENTANA_HORA", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"HORA_INICIAL", "HORA_FINAL"}),
+    ExtraerFecha   = Table.TransformColumns(DividirHoras, {
+        {"FECHA_DESPACHO", each try Date.FromText(Text.Trim(Text.From(_)), "en-US") otherwise try Date.From(_) otherwise null, type date},
+        {"HORA_INICIAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "14:00" else Text.Trim(Text.From(_)), type text},
+        {"HORA_FINAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "18:00" else Text.Trim(Text.From(_)), type text}
     }),
-    TiparNumeros = Table.TransformColumnTypes(ExtraerFecha, {
+    TiparNumeros   = Table.TransformColumnTypes(ExtraerFecha, {
+        {"CODIGO_CLIENTE", type text},
         {"TONELADAS_CARGA", Number.Type},
         {"TARIFA_POR_TON", Currency.Type},
         {"SUBTOTAL_FLETE", Currency.Type},
@@ -7033,7 +7054,7 @@ in
         typeMapping: [
           { col: "NUM_PAGARE, RNC_DEUDOR", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria del pagaré e identificación tributaria RNC" },
           { col: "FECHA_EMISION, FECHA_VENCIMIENTO", type: "Fecha (type date)", icon: "📅", role: "Fechas contractuales de desembolso y vencimiento" },
-          { col: "SUCURSAL_CARTERA, NOMBRE_DEUDOR, OFICIAL_CREDITO, LINEA_CREDITO", type: "Texto (type text)", icon: "🏦", role: "Dimensiones de banca corporativa y oficial de cuentas" },
+          { col: "SUCURSAL_CARTERA, NOMBRE_DEUDOR, CODIGO_DEUDOR, OFICIAL_CREDITO, LINEA_CREDITO", type: "Texto (type text)", icon: "🏦", role: "Dimensiones de banca corporativa, deudor, código ID blindado y oficial de cuentas" },
           { col: "CANAL_PAGO, TRAMO_MORA, ESTATUS_CARTERA", type: "Texto (type text)", icon: "📊", role: "Clasificación de riesgo crediticio (Aging 0-30, 31-60, 61-90, +90d)" },
           { col: "DIAS_MORA", type: "Número Entero (Int64.Type)", icon: "⏱️", role: "Días de atraso transcurridos tras el vencimiento" },
           { col: "TASA_INTERES_ANUAL", type: "Número Decimal / Porcentaje", icon: "📈", role: "Tasa activa anualizada pactada en el pagaré" },
@@ -7190,30 +7211,36 @@ let
              else
                  TablasOrigenValidas{0}[Content],
 
-    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
-    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    // PASO 2: Separación de Código ID en NOMBRE_DEUDOR antes de desinfectar (Blindaje Numérico de ID)
+    DividirDeudor = Table.SplitColumn(Origen, "NOMBRE_DEUDOR", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"NOMBRE_DEUDOR", "CODIGO_DEUDOR"}),
+
+    // PASO 3: Desinfección de Símbolos Corruptos (#, $) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i) sobre Nombres
+    SanarHash   = Table.ReplaceValue(DividirDeudor, "#", "", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    SanarDolar  = Table.ReplaceValue(SanarHash, "$", "", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
+    SanarArroba = Table.ReplaceValue(SanarDolar, "@", "a", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
 
-    // PASO 3: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en CANAL_PAGO -> "Banca en Línea"
+    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en CANAL_PAGO -> "Banca en Línea"
     LimpiarTexto = Table.TransformColumns(SanarUno, {
         {"SUCURSAL_CARTERA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"RNC_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"NOMBRE_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"CODIGO_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"OFICIAL_CREDITO", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"LINEA_CREDITO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"CANAL_PAGO", each if _ = null or Text.Trim(Text.From(_)) = "" then "Banca en Línea" else Text.Trim(Text.From(_)), type text}
     }),
 
-    // PASO 4: Tipado Estricto de Fechas Contractuales y Columnas Numéricas de Cartera
+    // PASO 5: Tipado Estricto de Fechas Contractuales y Columnas Oficiales de Cartera
     TiparFechas = Table.TransformColumns(LimpiarTexto, {
         {"FECHA_EMISION", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date},
         {"FECHA_VENCIMIENTO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
     }),
     TiparNumeros = Table.TransformColumnTypes(TiparFechas, {
+        {"CODIGO_DEUDOR", type text},
         {"MONTO_PRINCIPAL", Currency.Type},
         {"TASA_INTERES_ANUAL", Number.Type},
         {"INTERES_MORA", Currency.Type},
@@ -7255,7 +7282,7 @@ in
         typeMapping: [
           { col: "COD_EMPLEADO", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria única del legajo del colaborador" },
           { col: "FECHA_INGRESO", type: "Fecha (type date)", icon: "📅", role: "Fecha de alta laboral en la empresa" },
-          { col: "SEDE_PLANTA, NOMBRE_COLABORADOR, SUPERVISOR_TURNO, DEPARTAMENTO, CARGO_PUESTO", type: "Texto (type text)", icon: "👥", role: "Estructura organizacional, localidad y puesto" },
+          { col: "SEDE_PLANTA, NOMBRE_COLABORADOR, LEGAJO_EMPLEADO, SUPERVISOR_TURNO, DEPARTAMENTO, CARGO_PUESTO", type: "Texto (type text)", icon: "👥", role: "Estructura organizacional, colaborador, legajo ID blindado y puesto" },
           { col: "TIPO_CONTRATO, MODALIDAD_PAGO, ESTATUS_LABORAL", type: "Texto (type text)", icon: "📋", role: "Segmentadores de estatus (Activo, Vacaciones, Licencia, Desvinculado)" },
           { col: "SUELDO_BRUTO, HORAS_EXTRAS_VALOR", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💵", role: "Remuneración bruta mensual y recargos por horas extras" },
           { col: "RETENCION_AFP_287, RETENCION_SFS_304, RETENCION_ISR, TOTAL_DESCUENTOS", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "🏛️", role: "Retenciones laborales de ley TSS (AFP 2.87%, SFS 3.04%) y DGII (ISR)" },
@@ -7412,28 +7439,34 @@ let
              else
                  TablasOrigenValidas{0}[Content],
 
-    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
-    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    // PASO 2: Separación de Legajo/ID en NOMBRE_COLABORADOR antes de desinfectar (Blindaje Numérico de ID)
+    DividirColaborador = Table.SplitColumn(Origen, "NOMBRE_COLABORADOR", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"NOMBRE_COLABORADOR", "LEGAJO_EMPLEADO"}),
+
+    // PASO 3: Desinfección de Símbolos Corruptos (#, $) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i) sobre Nombres
+    SanarHash   = Table.ReplaceValue(DividirColaborador, "#", "", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    SanarDolar  = Table.ReplaceValue(SanarHash, "$", "", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
+    SanarArroba = Table.ReplaceValue(SanarDolar, "@", "a", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
 
-    // PASO 3: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en DEPARTAMENTO -> "Operaciones Planta"
+    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en DEPARTAMENTO -> "Operaciones Planta"
     LimpiarTexto = Table.TransformColumns(SanarUno, {
         {"SEDE_PLANTA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"NOMBRE_COLABORADOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"LEGAJO_EMPLEADO", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"SUPERVISOR_TURNO", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"DEPARTAMENTO", each if _ = null or Text.Trim(Text.From(_)) = "" then "Operaciones Planta" else Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"CARGO_PUESTO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
     }),
 
-    // PASO 4: Tipado de FECHA_INGRESO y Columnas Monetarias de Nómina y TSS
+    // PASO 5: Tipado de FECHA_INGRESO y Columnas Oficiales de Nómina
     TiparFechaIngreso = Table.TransformColumns(LimpiarTexto, {
         {"FECHA_INGRESO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
     }),
     TiparNumeros = Table.TransformColumnTypes(TiparFechaIngreso, {
+        {"LEGAJO_EMPLEADO", type text},
         {"SUELDO_BRUTO", Currency.Type},
         {"HORAS_EXTRAS_VALOR", Currency.Type},
         {"RETENCION_AFP_287", Currency.Type},
@@ -7469,14 +7502,15 @@ in
         },
         dateCol: "FECHA_ATENCION",
         dateRawExample: "2026-05-20 (18:00-23:00)",
-        dateCleanExample: "2026-05-20 (type date) | Guardia Médica: 18:00-23:00",
+        dateCleanExample: "FECHA_ATENCION: 2026-05-20 (type date) | HORA_INICIAL: 18:00 | HORA_FINAL: 23:00 (type time)",
         nullCol: "ASEGURADORA_ARS",
         nullReplacement: "Particular Privado",
         nullReason: "Los pacientes atendidos por emergencia sin póliza de seguro médico registran ASEGURADORA_ARS nulo; deben clasificarse como 'Particular Privado'.",
         typeMapping: [
           { col: "NUM_AUTORIZACION", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria única de la autorización médica" },
-          { col: "FECHA_ATENCION", type: "Fecha (type date)", icon: "📅", role: "Fecha de atención clínica tras separar el turno de guardia" },
-          { col: "SEDE_CLINICA, EXPEDIENTE_PACIENTE, MEDICO_TRATANTE", type: "Texto (type text)", icon: "🏥", role: "Centro hospitalario, paciente y especialista tratante" },
+          { col: "FECHA_ATENCION", type: "Fecha (type date)", icon: "📅", role: "Fecha contable clínica aislada de la guardia" },
+          { col: "HORA_INICIAL, HORA_FINAL", type: "Hora / Texto (type time)", icon: "⏰", role: "Horario de ingreso y alta médica del turno de guardia" },
+          { col: "SEDE_CLINICA, EXPEDIENTE_PACIENTE, CODIGO_PACIENTE, MEDICO_TRATANTE", type: "Texto (type text)", icon: "🏥", role: "Centro hospitalario, paciente, código ID blindado y especialista tratante" },
           { col: "ESPECIALIDAD_MEDICA, SERVICIO_PROCEDIMIENTO, ASEGURADORA_ARS, PLAN_SEGURO, ESTATUS_RECLAMACION", type: "Texto (type text)", icon: "🩺", role: "Catálogo médico, aseguradora ARS y estatus de glosa" },
           { col: "MONTO_TOTAL_FACTURADO, COBERTURA_ARS, COPAGO_PACIENTE, COSTO_INSUMOS, MARGEN_CLINICA", type: "Moneda / Decimal Fijo (Currency.Type)", icon: "💰", role: "Facturación clínica, cobertura ARS, copago, insumos y margen en RD$" }
         ],
@@ -7631,29 +7665,41 @@ let
              else
                  TablasOrigenValidas{0}[Content],
 
-    // PASO 2: Desinfección de Símbolos Corruptos (#) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i)
-    SanarHash   = Table.ReplaceValue(Origen, "#", "", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
-    SanarArroba = Table.ReplaceValue(SanarHash, "@", "a", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    // PASO 2: Separación de Código de Expediente en EXPEDIENTE_PACIENTE antes de desinfectar (Blindaje Numérico de ID)
+    DividirPaciente = Table.SplitColumn(Origen, "EXPEDIENTE_PACIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"EXPEDIENTE_PACIENTE", "CODIGO_PACIENTE"}),
+
+    // PASO 3: Desinfección de Símbolos Corruptos (#, $) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i) sobre Nombres
+    SanarHash   = Table.ReplaceValue(DividirPaciente, "#", "", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    SanarDolar  = Table.ReplaceValue(SanarHash, "$", "", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
+    SanarArroba = Table.ReplaceValue(SanarDolar, "@", "a", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
     SanarCuatro = Table.ReplaceValue(SanarArroba, "4", "a", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
     SanarTres   = Table.ReplaceValue(SanarCuatro, "3", "e", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
 
-    // PASO 3: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en ASEGURADORA_ARS -> "Particular Privado"
+    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en ASEGURADORA_ARS -> "Particular Privado"
     LimpiarTexto = Table.TransformColumns(SanarUno, {
         {"SEDE_CLINICA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"EXPEDIENTE_PACIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"CODIGO_PACIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"MEDICO_TRATANTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"ESPECIALIDAD_MEDICA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"SERVICIO_PROCEDIMIENTO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"FECHA_ATENCION", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"ASEGURADORA_ARS", each if _ = null or Text.Trim(Text.From(_)) = "" then "Particular Privado" else Text.Trim(Text.From(_)), type text}
     }),
 
-    // PASO 4: Aislar Fecha Clínica en FECHA_ATENCION y Tipar Columnas Monetarias Hospitalarias
-    ExtraerFecha = Table.TransformColumns(LimpiarTexto, {
-        {"FECHA_ATENCION", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+    // PASO 4: Descomposición Blindada de Fecha Clínica y Guardia Médica (HORA_INICIAL y HORA_FINAL)
+    DividirFecha   = Table.SplitColumn(LimpiarTexto, "FECHA_ATENCION", Splitter.SplitTextByEachDelimiter({" "}, QuoteStyle.Csv, false), {"FECHA_ATENCION", "VENTANA_HORA"}),
+    SanarVentana   = Table.ReplaceValue(Table.ReplaceValue(DividirFecha, "(", "", Replacer.ReplaceText, {"VENTANA_HORA"}), ")", "", Replacer.ReplaceText, {"VENTANA_HORA"}),
+    DividirHoras   = Table.SplitColumn(SanarVentana, "VENTANA_HORA", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"HORA_INICIAL", "HORA_FINAL"}),
+    ExtraerFecha   = Table.TransformColumns(DividirHoras, {
+        {"FECHA_ATENCION", each try Date.FromText(Text.Trim(Text.From(_)), "en-US") otherwise try Date.From(_) otherwise null, type date},
+        {"HORA_INICIAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "18:00" else Text.Trim(Text.From(_)), type text},
+        {"HORA_FINAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "23:00" else Text.Trim(Text.From(_)), type text}
     }),
-    TiparNumeros = Table.TransformColumnTypes(ExtraerFecha, {
+    TiparNumeros   = Table.TransformColumnTypes(ExtraerFecha, {
+        {"CODIGO_PACIENTE", type text},
         {"MONTO_TOTAL_FACTURADO", Currency.Type},
         {"COBERTURA_ARS", Currency.Type},
         {"COPAGO_PACIENTE", Currency.Type},
@@ -7899,6 +7945,17 @@ in
       }
     }
 
+    function copyStep3SplitMCode(btnEl) {
+      const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
+      const etl = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
+      if (etl && etl.leetspeakCols && etl.leetspeakCols.length > 0) {
+        const baseCol = etl.leetspeakCols[0];
+        const idCol = 'CODIGO_' + (baseCol === 'CLIENTE' ? 'CLIENTE' : baseCol);
+        const expr = '= Table.SplitColumn(PasoAnterior, "' + baseCol + '", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"' + baseCol + '", "' + idCol + '"})';
+        copyTextToClipboardWithFeedback(expr, btnEl, 'Instrucción M de Separar Código ID (' + idCol + ') copiada.');
+      }
+    }
+
     function copyStep3LeetMCode(btnEl) {
       const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
       const etl = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
@@ -7915,6 +7972,15 @@ in
       if (etl) {
         const expr = '= Table.ReplaceValue(PasoAnterior, null, "' + etl.nullReplacement + '", Replacer.ReplaceValue, {"' + etl.nullCol + '"})';
         copyTextToClipboardWithFeedback(expr, btnEl, 'Instrucción M de Paso 3B (Relleno de Nulos en ' + etl.nullCol + ') copiada.');
+      }
+    }
+
+    function copyStep4DateMCode(btnEl) {
+      const ind = ACTIVE_INDUSTRY || ACTIVE_HOJA_INDUSTRY || 'retail';
+      const etl = MANUAL_ETL_DATA[ind] || MANUAL_ETL_DATA.retail;
+      if (etl && etl.dateCol) {
+        const expr = '= Table.SplitColumn(PasoAnterior, "' + etl.dateCol + '", Splitter.SplitTextByEachDelimiter({" "}, QuoteStyle.Csv, false), {"' + etl.dateCol + '", "VENTANA_HORA"})';
+        copyTextToClipboardWithFeedback(expr, btnEl, 'Instrucción M de División de Fecha y Ventana Horaria copiada.');
       }
     }
 
@@ -7982,10 +8048,34 @@ in
         purple:  { bg: 'bg-purple-100',  text: 'text-purple-800',  badgeBg: 'bg-purple-50',  border: 'border-purple-200' }
       };
 
+      const getFunctionAnalysis = (formula) => {
+        const parts = [];
+        if (formula.includes('if') && formula.includes('then') && formula.includes('else')) {
+          parts.push('<span class="font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200"><i class="fa-solid fa-code-branch mr-1"></i>Condicional if-then-else</span> (Lógica de contingencia y control de excepciones)');
+        }
+        if (formula.includes('Number.Round')) {
+          parts.push('<span class="font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200"><i class="fa-solid fa-calculator mr-1"></i>Función Number.Round</span> (Redondeo financiero de precisión a decimales fijos)');
+        }
+        if (formula.includes('*')) {
+          parts.push('<span class="font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200"><i class="fa-solid fa-xmark mr-1"></i>Multiplicación Escalar (*)</span> (Cálculo de volumen o base imponible)');
+        }
+        if (formula.includes('-')) {
+          parts.push('<span class="font-bold text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><i class="fa-solid fa-minus mr-1"></i>Sustracción (-)</span> (Determinación de margen neto, utilidad o saldo)');
+        }
+        if (formula.includes('+')) {
+          parts.push('<span class="font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded border border-teal-200"><i class="fa-solid fa-plus mr-1"></i>Adición (+)</span> (Acumulación de impuestos o cargos operativos)');
+        }
+        if (formula.includes('/')) {
+          parts.push('<span class="font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded border border-purple-200"><i class="fa-solid fa-divide mr-1"></i>División (/)</span> (Razón porcentual de rendimiento protegida contra cero y nulos)');
+        }
+        return parts.length > 0 ? parts.join(' &bull; ') : '<span class="font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border">Operación Aritmética de Fila</span>';
+      };
+
       const calcCardsHtml = etl.calculations.map((calc, calcIdx) => {
         const cm = colorMap[calc.color] || colorMap.emerald;
+        const funcAnalysis = getFunctionAnalysis(calc.pqFormula);
         return (
-          '<div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-2.5 hover:border-emerald-500 transition-all">' +
+          '<div class="bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs space-y-3.5 hover:border-emerald-500 transition-all">' +
             '<div class="flex flex-wrap items-center justify-between border-b border-slate-100 pb-2.5 gap-2">' +
               '<div class="flex items-center gap-2.5">' +
                 '<span class="w-7 h-7 rounded-lg ' + cm.bg + ' ' + cm.text + ' font-black flex items-center justify-center text-xs">' + calc.num + '</span>' +
@@ -7993,12 +8083,55 @@ in
               '</div>' +
               '<span class="text-[11px] font-bold ' + cm.text + ' ' + cm.badgeBg + ' px-2.5 py-0.5 rounded-full border ' + cm.border + '">' + calc.badge + '</span>' +
             '</div>' +
-            '<p class="text-xs text-slate-600 leading-relaxed font-medium"><strong>Qué hace este cálculo:</strong> ' + calc.explanation + '</p>' +
-            '<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-1.5">' +
+
+            // DEFINICIÓN DE LA MÉTRICA Y RELEVANCIA EMPRESARIAL
+            '<div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1 text-xs">' +
+              '<div class="font-bold text-slate-900 flex items-center gap-1.5">' +
+                '<i class="fa-solid fa-chart-line text-emerald-600"></i> Definición de la Métrica & Relevancia para el Negocio:' +
+              '</div>' +
+              '<p class="text-slate-600 leading-relaxed font-medium">' + calc.explanation + '</p>' +
+            '</div>' +
+
+            // FUNCIÓN Y OPERADORES UTILIZADOS EN LENGUAJE M
+            '<div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200/70 space-y-1 text-xs">' +
+              '<div class="font-bold text-blue-950 flex items-center gap-1.5">' +
+                '<i class="fa-solid fa-square-root-variable text-blue-600"></i> Función & Operadores Utilizados en Lenguaje M:' +
+              '</div>' +
+              '<div class="text-slate-700 leading-relaxed text-[11px] font-medium">' + funcAnalysis + '</div>' +
+            '</div>' +
+
+            // CAJA DE CÓDIGO Y LLAMADA A TABLE.ADDCOLUMN
+            '<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 font-mono text-xs text-slate-800 space-y-2.5">' +
               '<div><span class="text-slate-500 font-sans text-[11px] font-bold">1. Nombre exacto en Columna Personalizada:</span> <strong class="text-blue-700 bg-white px-2 py-0.5 rounded border border-blue-200">' + calc.colName + '</strong></div>' +
-              '<div class="flex flex-wrap items-center justify-between gap-2"><span class="text-slate-500 font-sans text-[11px] font-bold">2. Fórmula en el cuadro de Power Query:</span> <div class="flex items-center gap-2"><code class="language-powerquery bg-slate-900 text-slate-100 px-2.5 py-1 rounded-lg border border-slate-700 inline-block">' + highlightPowerQueryM(calc.pqFormula, false) + '</code><button onclick="copyCalcMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all"><i class="fa-solid fa-copy mr-1"></i>Copiar Fórmula</button></div></div>' +
-              '<div><span class="text-slate-500 font-sans text-[11px] font-bold">3. Instrucción generada en Lenguaje M:</span> <pre class="pq-inline-snippet language-powerquery mt-1 flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= ' + calc.mCode, false) + '</code><button onclick="copyCalcTableAddColumnMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button></pre></div>' +
-              '<div class="text-[11px] font-sans text-slate-500 pt-1">📌 <em>Tipo de dato obligatorio al finalizar: <strong class="text-slate-800">' + calc.dataType + '</strong>.</em></div>' +
+              '<div class="flex flex-wrap items-center justify-between gap-2"><span class="text-slate-500 font-sans text-[11px] font-bold">2. Expresión de Fila (Fórmula en Power Query):</span> <div class="flex items-center gap-2"><code class="language-powerquery bg-slate-900 text-slate-100 px-2.5 py-1 rounded-lg border border-slate-700 inline-block">' + highlightPowerQueryM(calc.pqFormula, false) + '</code><button onclick="copyCalcMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all"><i class="fa-solid fa-copy mr-1"></i>Copiar Fórmula</button></div></div>' +
+              '<div><span class="text-slate-500 font-sans text-[11px] font-bold">3. Instrucción generada en Lenguaje M:</span> <pre class="pq-inline-snippet language-powerquery mt-1 flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= ' + calc.mCode, false) + '</code><button onclick="copyCalcTableAddColumnMCode(' + calcIdx + ', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar Table.AddColumn</button></pre></div>' +
+
+              // DESGLOSE ANATÓMICO DE TABLE.ADDCOLUMN PARA ESTA COLUMNA ESPECÍFICA
+              '<div class="pt-2 border-t border-slate-200 font-sans text-[11px] text-slate-700 space-y-1.5">' +
+                '<div class="font-bold text-slate-900 flex items-center gap-1.5"><i class="fa-solid fa-circle-info text-teal-600"></i> ¿Qué hace y qué significa cada argumento de esta llamada a Table.AddColumn?:</div>' +
+                '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1 font-mono text-[10.5px]">' +
+                  '<div class="p-2 bg-white rounded-lg border border-slate-200">' +
+                    '<span class="text-slate-400 font-sans block text-[9.5px] uppercase font-bold">1. table as table</span>' +
+                    '<span class="text-emerald-700 font-bold">PasoAnterior</span>' +
+                    '<span class="text-slate-500 font-sans block text-[9.5px]">Tabla de entrada que recibe la nueva columna</span>' +
+                  '</div>' +
+                  '<div class="p-2 bg-white rounded-lg border border-slate-200">' +
+                    '<span class="text-slate-400 font-sans block text-[9.5px] uppercase font-bold">2. newColumnName</span>' +
+                    '<span class="text-blue-700 font-bold">"' + calc.colName + '"</span>' +
+                    '<span class="text-slate-500 font-sans block text-[9.5px]">Nombre formal que identifica al nuevo campo</span>' +
+                  '</div>' +
+                  '<div class="p-2 bg-white rounded-lg border border-slate-200">' +
+                    '<span class="text-slate-400 font-sans block text-[9.5px] uppercase font-bold">3. columnGenerator</span>' +
+                    '<span class="text-amber-700 font-bold truncate block">each ' + (calc.pqFormula.length > 20 ? calc.pqFormula.substring(0, 20) + '...' : calc.pqFormula) + '</span>' +
+                    '<span class="text-slate-500 font-sans block text-[9.5px]">Función de contexto evaluada fila por fila</span>' +
+                  '</div>' +
+                  '<div class="p-2 bg-white rounded-lg border border-slate-200">' +
+                    '<span class="text-slate-400 font-sans block text-[9.5px] uppercase font-bold">4. columnType</span>' +
+                    '<span class="text-purple-700 font-bold">' + calc.dataType + '</span>' +
+                    '<span class="text-slate-500 font-sans block text-[9.5px]">Tipo estricto para compresión VertiPaq</span>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
             '</div>' +
           '</div>'
         );
@@ -8168,34 +8301,64 @@ in
           '</div>' +
         '</div>' +
 
-        // PASO 3: DESINFECCIÓN LEETSPEAK Y RELLENO DE NULOS
-        '<div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-5">' +
+        // PASO 3: DIVISIÓN PREVIA DE CÓDIGO ID, DESINFECCIÓN LEETSPEAK Y RELLENO DE NULOS
+        '<div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-6">' +
           '<div class="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-3">' +
             '<div class="flex items-center gap-3">' +
               '<span class="w-9 h-9 rounded-xl bg-amber-600 text-white font-black flex items-center justify-center text-sm shadow-xs">3</span>' +
               '<div>' +
-                '<h3 class="text-xl font-bold text-slate-900">Paso 3: Desinfección Leetspeak & Relleno de Nulos en ' + config.badge + ' 🛠️</h3>' +
-                '<p class="text-xs text-slate-500 font-semibold">Clic Derecho en Cabecera &rarr; Reemplazar los Valores (Table.ReplaceValue)</p>' +
+                '<h3 class="text-xl font-bold text-slate-900">Paso 3: Separación de ID, Desinfección Leetspeak & Relleno de Nulos en ' + config.badge + ' 🛠️</h3>' +
+                '<p class="text-xs text-slate-500 font-semibold">Dividir por Delimitador Guion ("-") ANTES de Reemplazos &rarr; Reemplazar Valores (Table.ReplaceValue)</p>' +
               '</div>' +
             '</div>' +
-            '<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">Calidad de Datos</span>' +
+            '<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">Gobernanza & Calidad</span>' +
           '</div>' +
 
-          '<p class="text-xs text-slate-700 leading-relaxed font-medium">' +
-            '<strong>A. Reparar textos corruptos:</strong> Selecciona con <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded font-mono font-bold">Ctrl</kbd> las columnas ' + leetColsChips + ' (donde se observa <code class="font-mono text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">' + etl.beforeAfterTrim.dirty2 + '</code>). Haz clic derecho sobre el encabezado y elige <strong>Reemplazar los valores...</strong> aplicando esta tabla:' +
-          '</p>' +
-
-          '<div class="grid grid-cols-2 sm:grid-cols-6 gap-2 font-mono text-xs">' +
-            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: @</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span></div>' +
-            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 4</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span></div>' +
-            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 3</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: e</span></div>' +
-            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 0</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: o</span></div>' +
-            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 1</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: i</span></div>' +
-            '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: # o $$</span><br>&darr;<br><span class="text-slate-500 font-bold">(Dejar vacío)</span></div>' +
+          // SUBPASO 3.A: BLINDAJE NUMÉRICO DEL CÓDIGO ID ANTES DE REEMPLAZOS
+          '<div class="p-4 bg-emerald-50/80 border-2 border-emerald-400/80 rounded-2xl space-y-3 text-xs">' +
+            '<div class="flex flex-wrap items-center justify-between gap-2">' +
+              '<div class="font-black text-emerald-950 flex items-center gap-2 text-sm">' +
+                '<i class="fa-solid fa-shield-halved text-emerald-600"></i> A. Separar Código ID y Nombre en <code class="font-mono bg-white px-2 py-0.5 rounded border border-emerald-300 text-emerald-900">' + etl.leetspeakCols[0] + '</code> ANTES de los Reemplazos (Blindaje Numérico):' +
+              '</div>' +
+              '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-200 text-emerald-900">Regla Crítica de Datos</span>' +
+            '</div>' +
+            '<div class="bg-white p-3.5 rounded-xl border border-emerald-200 space-y-2 text-slate-700 leading-relaxed font-medium">' +
+              '<p><strong>⚠️ ¿Por qué es obligatorio dividir ANTES de hacer los reemplazos?:</strong> El código ID del cliente/entidad contiene números (ej: <code>CLI-401</code>, <code>RET-101</code>, <code>LOG-501</code>). Si ejecutaras primero los reemplazos de desinfección (<code class="font-mono text-rose-600">4 &rarr; a</code>, <code class="font-mono text-rose-600">0 &rarr; o</code>, <code class="font-mono text-rose-600">1 &rarr; i</code>), los dígitos de los códigos se corromperían irreversiblemente a <code class="font-mono text-rose-600">CLI-aoi</code> o <code class="font-mono text-rose-600">RET-ioi</code>, destruyendo la integridad del identificador. Por tanto, <strong>primero dividimos la columna por el guion</strong> para blindar el ID intacto en una columna propia.</p>' +
+              '<div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-xs">' +
+                '<div class="space-y-1">' +
+                  '<div class="font-bold text-slate-900">1. Secuencia en Power Query:</div>' +
+                  '<p>Selecciona <strong class="font-mono">' + etl.leetspeakCols[0] + '</strong> &rarr; Clic derecho (o pestaña <strong>Transformar</strong>) &rarr; <strong>Dividir columna &rarr; Por delimitador</strong> &rarr; elige <strong>Guion (<code class="font-mono">"-"</code>)</strong> en el <em>delimitador situado más a la izquierda</em>.</p>' +
+                  '<p>Renombra la primera columna como <strong class="font-mono text-emerald-800">' + etl.leetspeakCols[0] + '</strong> (Nombre) y la segunda como <strong class="font-mono text-blue-700">CODIGO_' + (etl.leetspeakCols[0] === 'CLIENTE' ? 'CLIENTE' : etl.leetspeakCols[0]) + '</strong> (ID Blindado).</p>' +
+                '</div>' +
+                '<div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] space-y-1">' +
+                  '<div><span class="text-rose-600 font-bold">ANTES (Crudo):</span> ' + etl.beforeAfterTrim.dirty2 + '</div>' +
+                  '<div><span class="text-emerald-700 font-bold">DESPUÉS (Separado):</span> ' + etl.leetspeakCols[0] + ': "Nombre sucio" | <span class="text-blue-700 font-bold">CODIGO_' + (etl.leetspeakCols[0] === 'CLIENTE' ? 'CLIENTE' : etl.leetspeakCols[0]) + ': "' + (etl.beforeAfterTrim.clean2.split('|')[1] || 'ID intacto').trim() + '" (100% Protegido)</span></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<pre class="pq-inline-snippet language-powerquery flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= Table.SplitColumn(PasoAnterior, "' + etl.leetspeakCols[0] + '", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"' + etl.leetspeakCols[0] + '", "CODIGO_' + (etl.leetspeakCols[0] === 'CLIENTE' ? 'CLIENTE' : etl.leetspeakCols[0]) + '"})', false) + '</code><button onclick="copyStep3SplitMCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar División M</button></pre>' +
           '</div>' +
 
+          // SUBPASO 3.B: DESINFECCIÓN LEETSPEAK SOBRE NOMBRES SEPARADOS
+          '<div class="space-y-3">' +
+            '<p class="text-xs text-slate-700 leading-relaxed font-medium">' +
+              '<strong>B. Reparar textos corruptos (Desinfección Leetspeak sobre Nombres):</strong> Ahora que el código ID está blindado en su propia columna, selecciona con <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded font-mono font-bold">Ctrl</kbd> las columnas de nombres ' + leetColsChips + '. Haz clic derecho sobre el encabezado y elige <strong>Reemplazar los valores...</strong> aplicando esta tabla de equivalencias:' +
+            '</p>' +
+
+            '<div class="grid grid-cols-2 sm:grid-cols-6 gap-2 font-mono text-xs">' +
+              '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: @</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span></div>' +
+              '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 4</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: a</span></div>' +
+              '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 3</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: e</span></div>' +
+              '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 0</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: o</span></div>' +
+              '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: 1</span><br>&darr;<br><span class="text-emerald-700 font-bold">Reemplazar: i</span></div>' +
+              '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><span class="text-rose-600 font-bold">Buscar: # o $$</span><br>&darr;<br><span class="text-slate-500 font-bold">(Dejar vacío)</span></div>' +
+            '</div>' +
+            '<pre class="pq-inline-snippet language-powerquery flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= Table.ReplaceValue(PasoAnterior, "@", "a", Replacer.ReplaceText, {' + etl.leetspeakCols.map(c => '"' + c + '"').join(', ') + '})', false) + '</code><button onclick="copyStep3LeetMCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar Leetspeak M</button></pre>' +
+          '</div>' +
+
+          // SUBPASO 3.C: IMPUTACIÓN DE VALORES NULOS
           '<div class="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl space-y-2 text-xs">' +
-            '<div class="font-black text-blue-950 flex items-center gap-2"><i class="fa-solid fa-fill-drip text-blue-600"></i> B. Imputación de Valores Nulos (<code class="font-mono">null</code>) en la columna <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-300">' + etl.nullCol + '</code>:</div>' +
+            '<div class="font-black text-blue-950 flex items-center gap-2"><i class="fa-solid fa-fill-drip text-blue-600"></i> C. Imputación de Valores Nulos (<code class="font-mono">null</code>) en la columna <code class="font-mono bg-white px-1.5 py-0.5 rounded border border-blue-300">' + etl.nullCol + '</code>:</div>' +
             '<p class="text-slate-700 font-medium">' + etl.nullReason + '</p>' +
             '<div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">' +
               '<div class="bg-white p-3 rounded-xl border border-blue-200 font-medium text-slate-700">' +
@@ -8203,37 +8366,57 @@ in
                 '2. En <em>Valor que buscar</em> escribe: <code class="font-mono font-bold text-rose-600">null</code> (y repite para vacío).<br>' +
                 '3. En <em>Reemplazar con</em> escribe: <strong class="font-mono text-emerald-700">' + etl.nullReplacement + '</strong>.' +
               '</div>' +
-              '<pre class="pq-inline-snippet language-powerquery flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= Table.ReplaceValue(PasoAnterior, null, "' + etl.nullReplacement + '", Replacer.ReplaceValue, {"' + etl.nullCol + '"})', false) + '</code><button onclick="copyStep3NullMCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar</button></pre>' +
+              '<pre class="pq-inline-snippet language-powerquery flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= Table.ReplaceValue(PasoAnterior, null, "' + etl.nullReplacement + '", Replacer.ReplaceValue, {"' + etl.nullCol + '"})', false) + '</code><button onclick="copyStep3NullMCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar Nulos M</button></pre>' +
             '</div>' +
           '</div>' +
         '</div>' +
 
-        // PASO 4: SEPARACIÓN DE FECHAS/ID Y TABLA DE TIPOS DE DATOS EXACTOS
+        // PASO 4: AISLAMIENTO DE FECHAS Y TABLA DE TIPOS DE DATOS EXACTOS
         '<div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-excel-card space-y-5">' +
           '<div class="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-3">' +
             '<div class="flex items-center gap-3">' +
               '<span class="w-9 h-9 rounded-xl bg-purple-600 text-white font-black flex items-center justify-center text-sm shadow-xs">4</span>' +
               '<div>' +
-                '<h3 class="text-xl font-bold text-slate-900">Paso 4: División de Columnas & Tipado Estricto en ' + config.badge + ' 🎯</h3>' +
-                '<p class="text-xs text-slate-500 font-semibold">Dividir Columna por Delimitador &rarr; Asignación de Tipos de Datos Oficiales</p>' +
+                '<h3 class="text-xl font-bold text-slate-900">Paso 4: Aislamiento de Fecha & Tipado Estricto en ' + config.badge + ' 🎯</h3>' +
+                '<p class="text-xs text-slate-500 font-semibold">Aislar Fecha Contable &rarr; Confirmación de Tipos de Datos Oficiales para el Modelo</p>' +
               '</div>' +
             '</div>' +
             '<span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">Tipado de Modelo</span>' +
           '</div>' +
 
-          '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">' +
-            '<div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">' +
-              '<div class="font-bold text-slate-900 flex items-center gap-1.5 text-sm"><i class="fa-solid fa-calendar-check text-purple-600"></i> 1. Aislar Fecha Contable en <code class="font-mono">' + etl.dateCol + '</code></div>' +
-              '<p class="text-slate-600 font-medium">Valor en bruto: <code class="font-mono bg-white px-1.5 py-0.5 border rounded text-rose-600">' + etl.dateRawExample + '</code></p>' +
-              '<p class="text-slate-700">Selecciona <strong class="font-mono">' + etl.dateCol + '</strong> &rarr; <strong>Transformar &rarr; Dividir columna &rarr; Por delimitador</strong> &rarr; elige <strong>Espacio</strong> (o paréntesis de apertura <code class="font-mono">"("</code>) en la primera aparición.</p>' +
-              '<p class="text-emerald-800 font-bold">Resultado limpio: ' + etl.dateCleanExample + '</p>' +
+          // SECCIÓN EXPANDIDA AL 100%: DESCOMPOSICIÓN DE FECHA CONTABLE Y VENTANA HORARIA (HORA_INICIAL Y HORA_FINAL)
+          '<div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3.5 text-xs">' +
+            '<div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 pb-3">' +
+              '<div class="font-black text-slate-900 flex items-center gap-2 text-sm">' +
+                '<i class="fa-solid fa-calendar-check text-purple-600"></i> Descomposición de Fecha Contable Pura y Segmentación Horaria (<code class="font-mono text-purple-700 bg-white px-2 py-0.5 rounded border border-purple-200">HORA_INICIAL</code> y <code class="font-mono text-purple-700 bg-white px-2 py-0.5 rounded border border-purple-200">HORA_FINAL</code>) en <code class="font-mono bg-white px-2 py-0.5 rounded border border-slate-300 text-slate-900">' + etl.dateCol + '</code>:' +
+              '</div>' +
+              '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-900 border border-purple-200">Tipado Temporal Estricto</span>' +
             '</div>' +
-            '<div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">' +
-              '<div class="font-bold text-slate-900 flex items-center gap-1.5 text-sm"><i class="fa-solid fa-id-card text-blue-600"></i> 2. Separar Nombre Limpio y Código ID en <code class="font-mono">' + etl.leetspeakCols[0] + '</code></div>' +
-              '<p class="text-slate-600 font-medium">Si deseas analizar el código de cliente/entidad por separado:</p>' +
-              '<p class="text-slate-700">Selecciona <strong class="font-mono">' + etl.leetspeakCols[0] + '</strong> &rarr; <strong>Dividir columna &rarr; Por delimitador</strong> &rarr; Guion (<code class="font-mono">"-"</code>) en el delimitador situado más a la izquierda.</p>' +
-              '<p class="text-emerald-800 font-bold">Resultado: ' + etl.beforeAfterTrim.clean2 + '</p>' +
+
+            '<div class="grid grid-cols-1 lg:grid-cols-3 gap-3.5 pt-1">' +
+              '<div class="p-3.5 bg-white rounded-xl border border-slate-200 space-y-1.5">' +
+                '<div class="font-bold text-slate-900 flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] font-black">1</span> Aislar Fecha Contable Pura:</div>' +
+                '<p class="text-slate-600 leading-relaxed font-medium">Selecciona <strong class="font-mono text-slate-900">' + etl.dateCol + '</strong> &rarr; pestaña <strong>Transformar &rarr; Dividir columna &rarr; Por delimitador</strong> &rarr; elige delimitador <strong>Espacio</strong> (<code class="font-mono font-bold text-purple-700">" "</code>) en el delimitador situado más a la izquierda.</p>' +
+                '<p class="text-slate-700 font-semibold">Renombra la primera columna como <strong class="font-mono text-purple-800">' + etl.dateCol + '</strong> y asígnale tipo <strong class="text-emerald-700">Fecha (type date)</strong>.</p>' +
+              '</div>' +
+
+              '<div class="p-3.5 bg-white rounded-xl border border-slate-200 space-y-1.5">' +
+                '<div class="font-bold text-slate-900 flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black">2</span> Separar HORA_INICIAL y HORA_FINAL:</div>' +
+                '<p class="text-slate-600 leading-relaxed font-medium">En la columna de turno restante, quita los paréntesis <code class="font-mono">"("</code> y <code class="font-mono">")"</code> con <em>Reemplazar los valores</em> y luego haz clic en <strong>Dividir columna &rarr; Por delimitador Guion (<code class="font-mono">"-"</code>)</strong>.</p>' +
+                '<p class="text-slate-700 font-semibold">Nombra las dos columnas resultantes como <strong class="font-mono text-blue-700">HORA_INICIAL</strong> y <strong class="font-mono text-blue-700">HORA_FINAL</strong> con tipo oficial <strong class="text-emerald-700">Hora (type time)</strong>.</p>' +
+              '</div>' +
+
+              '<div class="p-3.5 bg-white rounded-xl border border-slate-200 space-y-1.5">' +
+                '<div class="font-bold text-slate-900 flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">3</span> Resultado Antes vs Después:</div>' +
+                '<div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] space-y-1 leading-relaxed">' +
+                  '<div><span class="text-rose-600 font-bold">ANTES:</span> ' + etl.dateRawExample + '</div>' +
+                  '<div><span class="text-purple-700 font-bold">' + etl.dateCol + ':</span> "2026-03-15" <span class="text-slate-500 font-sans font-normal">(type date)</span></div>' +
+                  '<div><span class="text-blue-700 font-bold">HORA_INICIAL:</span> "08:00" | <span class="text-blue-700 font-bold">HORA_FINAL:</span> "12:00" <span class="text-slate-500 font-sans font-normal">(type time)</span></div>' +
+                '</div>' +
+              '</div>' +
             '</div>' +
+
+            '<pre class="pq-inline-snippet language-powerquery flex items-center justify-between gap-2"><code>' + highlightPowerQueryM('= Table.SplitColumn(PasoAnterior, "' + etl.dateCol + '", Splitter.SplitTextByEachDelimiter({" "}, QuoteStyle.Csv, false), {"' + etl.dateCol + '", "VENTANA_HORA"})', false) + '</code><button onclick="copyStep4DateMCode(this)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-[10px] cursor-pointer transition-all shrink-0"><i class="fa-solid fa-copy mr-1"></i>Copiar División Fecha M</button></pre>' +
           '</div>' +
 
           '<div class="overflow-x-auto rounded-2xl border border-slate-200">' +
@@ -8261,6 +8444,31 @@ in
               '</div>' +
             '</div>' +
             '<span class="px-3.5 py-1.5 rounded-full text-xs font-black bg-emerald-600 text-white shadow-xs self-start sm:self-auto">5 Columnas Calculadas M</span>' +
+          '</div>' +
+
+          // BANNER PEDAGÓGICO MAESTRO: ¿QUÉ HACE TABLE.ADDCOLUMN, POR QUÉ SE USA Y QUÉ SIGNIFICA CADA ARGUMENTO?
+          '<div class="bg-slate-900 text-white rounded-2xl p-5 border border-emerald-500/40 space-y-3.5 shadow-md">' +
+            '<div class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-500/30 pb-3">' +
+              '<div class="font-black text-emerald-300 flex items-center gap-2 text-sm sm:text-base">' +
+                '<i class="fa-solid fa-graduation-cap text-emerald-400"></i> ¿Qué hace y por qué usamos Table.AddColumn en Power Query? (Fundamento de Arquitectura ETL)' +
+              '</div>' +
+              '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-900/80 text-emerald-200 border border-emerald-400/40">Motor Mashup & VertiPaq</span>' +
+            '</div>' +
+            '<div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs leading-relaxed text-slate-200 font-medium">' +
+              '<div class="space-y-1.5 bg-slate-950/70 p-3.5 rounded-xl border border-white/10">' +
+                '<div class="font-bold text-emerald-300 flex items-center gap-1.5"><i class="fa-solid fa-bolt text-amber-400"></i> ¿Por qué está aquí y qué problema resuelve?</div>' +
+                '<p>En Excel tradicional, escribir fórmulas en celdas de una hoja sobrecarga la memoria RAM y se rompe al recibir nuevos archivos. En Power Query, <strong class="text-white">Table.AddColumn crea columnas calculadas nativas a nivel de modelo</strong>. Cada vez que descargues nuevos archivos a tu carpeta <code class="font-mono text-amber-300">ANALISIS ETL\\BD</code> y pulses <strong class="text-emerald-300">Actualizar todo (Ctrl+Alt+F5)</strong>, estas 5 métricas se autocalcularán en millones de filas en milisegundos sin requerir fórmulas de celda.</p>' +
+              '</div>' +
+              '<div class="space-y-1.5 bg-slate-950/70 p-3.5 rounded-xl border border-white/10">' +
+                '<div class="font-bold text-emerald-300 flex items-center gap-1.5"><i class="fa-solid fa-sitemap text-teal-300"></i> Anatomía Universal de los 4 Argumentos de Table.AddColumn:</div>' +
+                '<ul class="space-y-1 text-slate-300 text-[11px] font-sans">' +
+                  '<li><strong class="text-white font-mono">1. table as table:</strong> La tabla base del paso previo (<code class="font-mono text-emerald-300">PasoAnterior</code>) que recibe la columna.</li>' +
+                  '<li><strong class="text-white font-mono">2. newColumnName as text:</strong> Nombre textual que bautiza la nueva columna (<code class="font-mono text-emerald-300">"NOMBRE_METRICA"</code>).</li>' +
+                  '<li><strong class="text-white font-mono">3. columnGenerator as function:</strong> La función evaluada fila por fila con la palabra reservada <code class="font-mono text-amber-300">each</code>.</li>' +
+                  '<li><strong class="text-white font-mono">4. columnType as nullable type:</strong> El tipado estricto (<code class="font-mono text-sky-300">Currency.Type</code>, <code class="font-mono text-sky-300">Percentage.Type</code>) para compresión VertiPaq.</li>' +
+                '</ul>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
 
           '<div class="space-y-4">' + calcCardsHtml + '</div>' +
@@ -8309,12 +8517,12 @@ in
 
               '<div class="p-3.5 rounded-xl bg-slate-950/55 border border-white/15 space-y-1.5">' +
                 '<div class="font-black text-sky-300 flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-sky-400 text-slate-950 flex items-center justify-center text-[11px] font-black">4</span> 4. ¿Qué limpia este código en ' + config.badge + '?</div>' +
-                '<p class="text-slate-200">Ejecuta automáticamente <code class="font-mono text-sky-300">Text.Trim</code> y <code class="font-mono text-sky-300">Text.Clean</code> sobre <span class="font-mono text-amber-300">' + etl.dirtyTextCols.join(', ') + '</span>, corrige el Leetspeak en <span class="font-mono text-amber-300">' + etl.leetspeakCols.join(' y ') + '</span>, y rellena nulos de <span class="font-mono text-amber-300">' + etl.nullCol + '</span> con <strong class="text-emerald-300">"' + etl.nullReplacement + '"</strong>.</p>' +
+                '<p class="text-slate-200">Separa previamente el código ID en <span class="font-mono text-emerald-300">' + etl.leetspeakCols[0] + '</span> para blindar sus dígitos numéricos, ejecuta automáticamente <code class="font-mono text-sky-300">Text.Trim</code> y <code class="font-mono text-sky-300">Text.Clean</code> sobre <span class="font-mono text-amber-300">' + etl.dirtyTextCols.join(', ') + '</span>, corrige el Leetspeak en <span class="font-mono text-amber-300">' + etl.leetspeakCols.join(' y ') + '</span>, y rellena nulos de <span class="font-mono text-amber-300">' + etl.nullCol + '</span> con <strong class="text-emerald-300">"' + etl.nullReplacement + '"</strong>.</p>' +
               '</div>' +
 
               '<div class="p-3.5 rounded-xl bg-slate-950/55 border border-white/15 space-y-1.5">' +
                 '<div class="font-black text-purple-300 flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-purple-400 text-slate-950 flex items-center justify-center text-[11px] font-black">5</span> 5. ¿Qué columnas nuevas construye?</div>' +
-                '<p class="text-slate-200">Separa la fecha en <span class="font-mono text-amber-300">' + etl.dateCol + '</span> y agrega las 5 columnas del Paso 5: <span class="font-mono text-emerald-300">' + etl.calculations.map(c => c.colName).join(', ') + '</span> listas para arrastrar y soltar en tu Tabla Dinámica.</p>' +
+                '<p class="text-slate-200">Genera la columna de código blindada (<span class="font-mono text-emerald-300">CODIGO_' + (etl.leetspeakCols[0] === 'CLIENTE' ? 'CLIENTE' : etl.leetspeakCols[0]) + '</span>), separa la fecha en <span class="font-mono text-amber-300">' + etl.dateCol + '</span> y agrega las 5 columnas del Paso 5: <span class="font-mono text-emerald-300">' + etl.calculations.map(c => c.colName).join(', ') + '</span> listas para arrastrar y soltar en tu Tabla Dinámica.</p>' +
               '</div>' +
 
               '<div class="p-3.5 rounded-xl bg-slate-950/55 border border-white/15 space-y-1.5">' +
