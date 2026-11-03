@@ -6661,6 +6661,9 @@
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 1. SUPERMERCADO & RETAIL MASIVO (POS & INVENTARIO)
 // Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
 // Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
+// NOTA PRIVACIDAD FIREWALL: Si Excel muestra "Se requiere informacion sobre los niveles de privacidad",
+// ve a: Archivo -> Opciones y configuracion -> Opciones de consulta -> Global -> Privacidad -> Marca "Omitir siempre los niveles de privacidad".
+// FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
     // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
@@ -6894,6 +6897,9 @@ in
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 2. LOGÍSTICA, TRANSPORTE & FLETES TERRESTRES
 // Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
 // Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
+// NOTA PRIVACIDAD FIREWALL: Si Excel muestra "Se requiere informacion sobre los niveles de privacidad",
+// ve a: Archivo -> Opciones y configuracion -> Opciones de consulta -> Global -> Privacidad -> Marca "Omitir siempre los niveles de privacidad".
+// FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
     // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
@@ -7126,6 +7132,9 @@ in
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 3. FINANZAS CORPORATIVAS, TESORERÍA & CARTERA CxC
 // Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
 // Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
+// NOTA PRIVACIDAD FIREWALL: Si Excel muestra "Se requiere informacion sobre los niveles de privacidad",
+// ve a: Archivo -> Opciones y configuracion -> Opciones de consulta -> Global -> Privacidad -> Marca "Omitir siempre los niveles de privacidad".
+// FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
     // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
@@ -7354,6 +7363,9 @@ in
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 4. RECURSOS HUMANOS, NÓMINA & SEGURIDAD SOCIAL (TSS)
 // Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
 // Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
+// NOTA PRIVACIDAD FIREWALL: Si Excel muestra "Se requiere informacion sobre los niveles de privacidad",
+// ve a: Archivo -> Opciones y configuracion -> Opciones de consulta -> Global -> Privacidad -> Marca "Omitir siempre los niveles de privacidad".
+// FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
     // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
@@ -7580,6 +7592,9 @@ in
 // SCRIPT M UNIVERSAL AUTO-DETECTABLE: 5. SALUD, CLÍNICAS PRIVADAS & COBERTURAS ARS
 // Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
 // Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
+// NOTA PRIVACIDAD FIREWALL: Si Excel muestra "Se requiere informacion sobre los niveles de privacidad",
+// ve a: Archivo -> Opciones y configuracion -> Opciones de consulta -> Global -> Privacidad -> Marca "Omitir siempre los niveles de privacidad".
+// FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
     // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
@@ -8209,6 +8224,34 @@ in
             '</div>' +
           '</div>' +
 
+          // NOTA CRÍTICA UNIVERSAL: NIVELES DE PRIVACIDAD & FIREWALL DE POWER QUERY PARA TODOS LOS SETS DE DATOS
+          '<div class="bg-amber-50/95 border-2 border-amber-400 p-4 sm:p-5 rounded-2xl text-xs text-amber-950 space-y-3 shadow-xs">' +
+            '<div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-300 pb-2.5">' +
+              '<div class="font-black text-amber-950 flex items-center gap-2 text-sm sm:text-base">' +
+                '<i class="fa-solid fa-shield-halved text-amber-600 text-lg"></i> NOTA CRÍTICA UNIVERSAL: Niveles de Privacidad & Compatibilidad de Fuentes (Aplica a Todos los Datasets)' +
+              '</div>' +
+              '<span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-amber-200 text-amber-900 border border-amber-300">Configuración Única en Excel</span>' +
+            '</div>' +
+            '<div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 leading-relaxed">' +
+              '<div class="space-y-1.5 bg-white/90 p-3.5 rounded-xl border border-amber-200">' +
+                '<div class="font-bold text-amber-900 flex items-center gap-1.5 text-xs"><i class="fa-solid fa-triangle-exclamation text-amber-500"></i> ¿Por qué sale "Se requiere información sobre los niveles de privacidad"?</div>' +
+                '<p class="text-slate-700">Ocurre porque el script combina de forma inteligente fuentes externas (carpeta del disco con archivos <code class="font-mono">.xlsx</code>, <code class="font-mono">.csv</code>, <code class="font-mono">.json</code>) con la tabla del libro actual. Por seguridad, el firewall de Power Query pide confirmar los niveles de privacidad.</p>' +
+                '<div class="p-2.5 bg-amber-100/70 rounded-lg border border-amber-300 font-semibold text-amber-950">' +
+                  '<span>👉 <strong>Solución en 10 segundos:</strong> En Excel ve a <strong>Archivo &rarr; Opciones y configuración &rarr; Opciones de consulta &rarr; Global &rarr; Privacidad</strong> &rarr; Marca <strong>"Omitir siempre los niveles de privacidad (puede mejorar el rendimiento)"</strong> y pulsa Aceptar. Si te aparece la ventana emergente, selecciona <strong>"Público"</strong> u <strong>"Organizativo"</strong> en todos los orígenes y pulsa Guardar.</span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="space-y-1.5 bg-white/90 p-3.5 rounded-xl border border-amber-200">' +
+                '<div class="font-bold text-emerald-900 flex items-center gap-1.5 text-xs"><i class="fa-solid fa-folder-open text-emerald-600"></i> Flexibilidad Total de Fuentes: Carpeta Propia, Ruta Personalizada o Libro por Defecto</div>' +
+                '<p class="text-slate-700">Todos los 5 sets de datos del manual son <strong>100% resilientes y multi-entorno</strong>. Funcionan en 3 escenarios sin romper nada:</p>' +
+                '<ul class="space-y-1 text-slate-700 text-[11px] list-disc list-inside">' +
+                  '<li><strong>Escenario A (Recomendado):</strong> Tu carpeta <code class="font-mono text-emerald-800 font-bold">ANALISIS ETL\\BD</code> en el Escritorio o Disco C:/D: (se detecta sola).</li>' +
+                  '<li><strong>Escenario B (Ruta Propia):</strong> Escribe tu ruta en la caja interactiva del Paso 6 y el código se adapta al instante.</li>' +
+                  '<li><strong>Escenario C (Por Defecto):</strong> Si no tienes carpeta externa, el script carga automáticamente los datos de muestra que el documento trae por defecto mediante <code class="font-mono text-slate-800">Excel.CurrentWorkbook()</code>.</li>' +
+                '</ul>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
           '<div class="grid grid-cols-1 md:grid-cols-3 gap-5">' +
             // CARD A: EXCEL (.XLSX) EN CARPETA
             '<div class="p-5 rounded-2xl bg-slate-50 border-2 border-emerald-400 space-y-3 shadow-xs">' +
@@ -8528,6 +8571,11 @@ in
               '<div class="p-3.5 rounded-xl bg-slate-950/55 border border-white/15 space-y-1.5">' +
                 '<div class="font-black text-amber-300 flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-[11px] font-black">6</span> 6. ¿Cómo actualizar cuando metas más archivos?</div>' +
                 '<p class="text-slate-200">Pulsa <strong>Listo</strong> y luego <strong>Inicio &rarr; Cerrar y cargar</strong>. Cada vez que generes nuevos archivos (ej. 2,000 o 2,500 filas) y los guardes en <code class="font-mono text-amber-300">ANALISIS ETL\\BD</code>, solo pulsa <strong class="text-emerald-300">Datos &rarr; Actualizar todo (Ctrl+Alt+F5)</strong> y se consolidarán solos.</p>' +
+              '</div>' +
+
+              '<div class="p-3.5 rounded-xl bg-amber-950/60 border border-amber-400/40 space-y-1.5 md:col-span-2 lg:col-span-3">' +
+                '<div class="font-black text-amber-300 flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-[11px] font-black">7</span> 7. 🛡️ ¿Te sale aviso de "Niveles de Privacidad"? (Solución Rápida de Firewall)</div>' +
+                '<p class="text-slate-200 text-xs leading-relaxed">Si al pegar el código o actualizar te aparece <em>"Se requiere información sobre los niveles de privacidad de los datos"</em>, ve a <strong>Archivo &rarr; Opciones y configuración &rarr; Opciones de consulta &rarr; Global &rarr; Privacidad</strong> y marca <strong class="text-amber-300">"Omitir siempre los niveles de privacidad"</strong>. O en la ventana emergente selecciona <strong>"Público"</strong> para todos los orígenes y pulsa <strong>Guardar</strong>. El script procesará de inmediato tanto archivos externos de tu PC como tablas internas por defecto.</p>' +
               '</div>' +
             '</div>' +
           '</div>' +
