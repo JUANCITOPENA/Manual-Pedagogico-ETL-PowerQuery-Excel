@@ -6746,8 +6746,12 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
+             else if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else if (try not Table.IsEmpty(TablasPreparadas) otherwise false) then
+                 TablasPreparadas{0}[Content]
              else
-                 TablasOrigenValidas{0}[Content],
+                 #table({}, {}),
 
     // PASO 2: Separación de Código ID en CLIENTE antes de desinfectar (Blindaje Numérico de ID)
     DividirCliente = Table.SplitColumn(Origen, "CLIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"CLIENTE", "CODIGO_CLIENTE"}),
@@ -6903,7 +6907,7 @@ in
 // =========================================================================
 let
     // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
-    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\LOGISTICA",
     PerfilesWindows = List.Select(
         {"User"} & (try
             let
@@ -6914,11 +6918,15 @@ let
         each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
     ),
     RutasCandidatas = List.Distinct(List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
+        {RutaDirecta, "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD", "C:\\Users\\User\\Desktop\\ANALISIS ETL"},
+        {"C:\\ANALISIS ETL\\LOGISTICA", "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS ETL", "D:\\ANALISIS ETL\\LOGISTICA", "D:\\ANALISIS ETL\\BD"},
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\LOGISTICA"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\LOGISTICA"),
         List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\LOGISTICA"),
+        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD")
     })),
     EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
         let
@@ -6982,8 +6990,12 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
+             else if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else if (try not Table.IsEmpty(TablasPreparadas) otherwise false) then
+                 TablasPreparadas{0}[Content]
              else
-                 TablasOrigenValidas{0}[Content],
+                 #table({}, {}),
 
     // PASO 2: Separación de Código ID en EMPRESA_CLIENTE antes de desinfectar (Blindaje Numérico de ID)
     DividirEmpresa = Table.SplitColumn(Origen, "EMPRESA_CLIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"EMPRESA_CLIENTE", "CODIGO_CLIENTE"}),
@@ -7217,8 +7229,12 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
+             else if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else if (try not Table.IsEmpty(TablasPreparadas) otherwise false) then
+                 TablasPreparadas{0}[Content]
              else
-                 TablasOrigenValidas{0}[Content],
+                 #table({}, {}),
 
     // PASO 2: Separación de Código ID en NOMBRE_DEUDOR antes de desinfectar (Blindaje Numérico de ID)
     DividirDeudor = Table.SplitColumn(Origen, "NOMBRE_DEUDOR", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"NOMBRE_DEUDOR", "CODIGO_DEUDOR"}),
@@ -7448,8 +7464,12 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
+             else if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else if (try not Table.IsEmpty(TablasPreparadas) otherwise false) then
+                 TablasPreparadas{0}[Content]
              else
-                 TablasOrigenValidas{0}[Content],
+                 #table({}, {}),
 
     // PASO 2: Separación de Legajo/ID en NOMBRE_COLABORADOR antes de desinfectar (Blindaje Numérico de ID)
     DividirColaborador = Table.SplitColumn(Origen, "NOMBRE_COLABORADOR", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"NOMBRE_COLABORADOR", "LEGAJO_EMPLEADO"}),
@@ -7677,8 +7697,12 @@ let
     ),
     Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
                  ConsolidadoCarpeta
+             else if not Table.IsEmpty(TablasOrigenValidas) then
+                 TablasOrigenValidas{0}[Content]
+             else if (try not Table.IsEmpty(TablasPreparadas) otherwise false) then
+                 TablasPreparadas{0}[Content]
              else
-                 TablasOrigenValidas{0}[Content],
+                 #table({}, {}),
 
     // PASO 2: Separación de Código de Expediente en EXPEDIENTE_PACIENTE antes de desinfectar (Blindaje Numérico de ID)
     DividirPaciente = Table.SplitColumn(Origen, "EXPEDIENTE_PACIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"EXPEDIENTE_PACIENTE", "CODIGO_PACIENTE"}),
