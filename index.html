@@ -6776,8 +6776,8 @@ let
     DividirHoras   = Table.SplitColumn(SanarVentana, "VENTANA_HORA", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"HORA_INICIAL", "HORA_FINAL"}),
     ExtraerFecha   = Table.TransformColumns(DividirHoras, {
         {"FECHA_VENTA", each try Date.FromText(Text.Trim(Text.From(_)), "en-US") otherwise try Date.From(_) otherwise null, type date},
-        {"HORA_INICIAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "08:00" else Text.Trim(Text.From(_)), type text},
-        {"HORA_FINAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "12:00" else Text.Trim(Text.From(_)), type text}
+        {"HORA_INICIAL", each try Time.FromText(Text.Trim(Text.From(_))) otherwise try Time.From(_) otherwise #time(8, 0, 0), type time},
+        {"HORA_FINAL", each try Time.FromText(Text.Trim(Text.From(_))) otherwise try Time.From(_) otherwise #time(12, 0, 0), type time}
     }),
     TiparNumeros   = Table.TransformColumnTypes(ExtraerFecha, {
         {"CODIGO_CLIENTE", type text},
@@ -7008,8 +7008,8 @@ let
     DividirHoras   = Table.SplitColumn(SanarVentana, "VENTANA_HORA", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"HORA_INICIAL", "HORA_FINAL"}),
     ExtraerFecha   = Table.TransformColumns(DividirHoras, {
         {"FECHA_DESPACHO", each try Date.FromText(Text.Trim(Text.From(_)), "en-US") otherwise try Date.From(_) otherwise null, type date},
-        {"HORA_INICIAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "14:00" else Text.Trim(Text.From(_)), type text},
-        {"HORA_FINAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "18:00" else Text.Trim(Text.From(_)), type text}
+        {"HORA_INICIAL", each try Time.FromText(Text.Trim(Text.From(_))) otherwise try Time.From(_) otherwise #time(14, 0, 0), type time},
+        {"HORA_FINAL", each try Time.FromText(Text.Trim(Text.From(_))) otherwise try Time.From(_) otherwise #time(18, 0, 0), type time}
     }),
     TiparNumeros   = Table.TransformColumnTypes(ExtraerFecha, {
         {"CODIGO_CLIENTE", type text},
@@ -7695,8 +7695,8 @@ let
     DividirHoras   = Table.SplitColumn(SanarVentana, "VENTANA_HORA", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"HORA_INICIAL", "HORA_FINAL"}),
     ExtraerFecha   = Table.TransformColumns(DividirHoras, {
         {"FECHA_ATENCION", each try Date.FromText(Text.Trim(Text.From(_)), "en-US") otherwise try Date.From(_) otherwise null, type date},
-        {"HORA_INICIAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "18:00" else Text.Trim(Text.From(_)), type text},
-        {"HORA_FINAL", each if _ = null or Text.Trim(Text.From(_)) = "" then "23:00" else Text.Trim(Text.From(_)), type text}
+        {"HORA_INICIAL", each try Time.FromText(Text.Trim(Text.From(_))) otherwise try Time.From(_) otherwise #time(18, 0, 0), type time},
+        {"HORA_FINAL", each try Time.FromText(Text.Trim(Text.From(_))) otherwise try Time.From(_) otherwise #time(23, 0, 0), type time}
     }),
     TiparNumeros   = Table.TransformColumnTypes(ExtraerFecha, {
         {"CODIGO_PACIENTE", type text},
