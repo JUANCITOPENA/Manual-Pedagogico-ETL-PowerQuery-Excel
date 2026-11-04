@@ -6666,43 +6666,14 @@
 // FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
-    // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
-    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    PerfilesWindows = List.Select(
-        {"User"} & (try
-            let
-                nombres = Table.Column(Folder.Contents("C:\\Users"), "Name")
-            in
-                if List.Count(nombres) >= 0 then nombres else {}
-        otherwise {}),
-        each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
+    // PASO 1: Carga Directa y Limpia de la Carpeta de Trabajo (Cero advertencias ni bloqueos)
+    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    OrigenCarpeta = Folder.Files(RutaCarpeta),
+    ArchivosValidos = Table.SelectRows(OrigenCarpeta, each 
+        not Text.StartsWith([Name], "~$") and 
+        not Text.Contains(Text.Upper([Name]), "CONSOLIDADA") and 
+        List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
     ),
-    RutasCandidatas = List.Distinct(List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
-    })),
-    EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
-        let
-            archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
-                not Text.StartsWith(f[Name], "~$") and
-                not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
-                List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
-            )
-        in
-            [
-                Ruta = ruta,
-                Archivos = archivos,
-                TieneDatos = (try Table.RowCount(archivos) > 0 otherwise false),
-                Cantidad = (try Table.RowCount(archivos) otherwise 0)
-            ]
-    ),
-    RutasConArchivos = List.Select(EvaluarRutas, each [TieneDatos] = true),
-    ArchivosValidos = if List.Count(RutasConArchivos) > 0
-                      then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
-                      else #table({"Content", "Name", "Extension"}, {}),
     ExtraerTablas = Table.AddColumn(ArchivosValidos, "TablaExtraida", each
         let
             ext = Text.Lower([Extension]),
@@ -6728,32 +6699,10 @@ let
         in
             tabla
     ),
-    TablasDelSector = List.Select(ExtraerTablas[TablaExtraida], each
-        (try (
-            List.Contains(Table.ColumnNames(_), "CLIENTE") and
-            not List.Contains(Table.ColumnNames(_), "SUBTOTAL_VALIDADO") and
-            not Table.IsEmpty(_)
-        ) otherwise false)
+    TablasValidas = List.Select(ExtraerTablas[TablaExtraida], each
+        (try (List.Contains(Table.ColumnNames(_), "CLIENTE") and not Table.IsEmpty(_)) otherwise false)
     ),
-    ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
-
-    // Respaldo: Si el usuario trabaja dentro de un único libro sin carpeta, usa la tabla del libro actual
-    LibroActual = Excel.CurrentWorkbook(),
-    TablasPreparadas = Table.TransformColumns(LibroActual, {
-        {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
-    }),
-    TablasOrigenValidas = Table.SelectRows(TablasPreparadas, each
-        List.Contains(Table.ColumnNames([Content]), "CLIENTE") and
-        not List.Contains(Table.ColumnNames([Content]), "SUBTOTAL_VALIDADO")
-    ),
-    Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
-                 ConsolidadoCarpeta
-             else if not Table.IsEmpty(TablasOrigenValidas) then
-                 TablasOrigenValidas{0}[Content]
-             else if (try not Table.IsEmpty(TablasPreparadas) otherwise false) then
-                 TablasPreparadas{0}[Content]
-             else
-                 #table({}, {}),
+    Origen = Table.Combine(TablasValidas),
 
     // PASO 2: Separación de Código ID en CLIENTE antes de desinfectar (Blindaje Numérico de ID)
     DividirCliente = Table.SplitColumn(Origen, "CLIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"CLIENTE", "CODIGO_CLIENTE"}),
@@ -6779,7 +6728,7 @@ let
         {"CANAL_VENTA", each if _ = null or Text.Trim(Text.From(_)) = "" then "Sucursal Física" else Text.Trim(Text.From(_)), type text}
     }),
 
-    // PASO 4: Descomposición Blindada de Fecha Contable Pura y Ventana Horaria (HORA_INICIAL y HORA_FINAL)
+    // PASO 5: Descomposición Blindada de Fecha (type date) y Horas con AM/PM (type time)
     DividirFecha   = Table.SplitColumn(LimpiarTexto, "FECHA_VENTA", Splitter.SplitTextByEachDelimiter({" "}, QuoteStyle.Csv, false), {"FECHA_VENTA", "VENTANA_HORA"}),
     SanarVentana   = Table.ReplaceValue(Table.ReplaceValue(DividirFecha, "(", "", Replacer.ReplaceText, {"VENTANA_HORA"}), ")", "", Replacer.ReplaceText, {"VENTANA_HORA"}),
     DividirHoras   = Table.SplitColumn(SanarVentana, "VENTANA_HORA", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"HORA_INICIAL", "HORA_FINAL"}),
@@ -6799,7 +6748,7 @@ let
         {"MARGEN_BRUTO", Currency.Type}
     }),
 
-    // PASO 5: Creación de las 5 Columnas Calculadas de Auditoría Retail (Se aplican a todos los archivos nuevos)
+    // PASO 6: Creación de las 5 Columnas Calculadas de Auditoría Retail (Se aplican a todos los archivos nuevos)
     Col1_Subtotal    = Table.AddColumn(TiparNumeros, "SUBTOTAL_VALIDADO", each [CANTIDAD] * [PRECIO_VENTA], Currency.Type),
     Col2_TotalItbis  = Table.AddColumn(Col1_Subtotal, "TOTAL_CON_ITBIS", each [SUBTOTAL] + [ITBIS_18], Currency.Type),
     Col3_MargenCalc  = Table.AddColumn(Col2_TotalItbis, "MARGEN_BRUTO_CALC", each [SUBTOTAL] - [COSTO_TOTAL], Currency.Type),
