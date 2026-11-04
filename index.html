@@ -490,9 +490,17 @@
           <i class="fa-solid fa-file-pdf text-sm text-red-100"></i>
           <span class="hidden sm:inline">PDF</span>
         </button>
+        <button onclick="downloadHojaTrabajoWord()" title="Descargar Hoja de Trabajo en Word (.doc/.docx)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#185abd] hover:bg-[#104a9e] active:scale-95 text-white text-xs font-bold shadow-xs transition-all whitespace-nowrap">
+          <i class="fa-solid fa-file-word text-sm text-blue-100"></i>
+          <span class="hidden sm:inline">Word</span>
+        </button>
+        <button onclick="downloadHojaTrabajoExcel()" title="Descargar Cuaderno de Preguntas en Excel para Llenar (.xlsx)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 active:scale-95 text-white text-xs font-bold shadow-xs transition-all whitespace-nowrap">
+          <i class="fa-solid fa-pen-to-square text-sm text-teal-100"></i>
+          <span class="hidden sm:inline">Taller Excel</span>
+        </button>
         <button onclick="downloadExcel()" title="Descargar Dataset en Excel (.xlsx)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold shadow-xs transition-all whitespace-nowrap">
           <i class="fa-regular fa-file-excel text-sm"></i>
-          <span class="hidden sm:inline">Excel</span>
+          <span class="hidden sm:inline">Dataset</span>
         </button>
       </div>
 
@@ -1432,7 +1440,15 @@
             </button>
             <button onclick="downloadHojaTrabajoPDF()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#008272] hover:bg-[#00695c] active:scale-95 text-white font-black text-xs shadow-md transition-all cursor-pointer">
               <i class="fa-solid fa-file-pdf text-sm"></i>
-              <span>Descargar Hoja de Trabajo (PDF)</span>
+              <span>Hoja de Trabajo (PDF)</span>
+            </button>
+            <button onclick="downloadHojaTrabajoWord()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#185abd] hover:bg-[#104a9e] active:scale-95 text-white font-black text-xs shadow-md transition-all cursor-pointer">
+              <i class="fa-solid fa-file-word text-sm"></i>
+              <span>Hoja de Trabajo (Word)</span>
+            </button>
+            <button onclick="downloadHojaTrabajoExcel()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 active:scale-95 text-white font-black text-xs shadow-md transition-all cursor-pointer">
+              <i class="fa-solid fa-pen-to-square text-sm"></i>
+              <span>Cuaderno Taller (Excel)</span>
             </button>
           </div>
         </div>
@@ -1653,20 +1669,30 @@
             <span id="currentStatusText">Dataset activo listo para modelar.</span>
           </div>
 
-          <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-            <button onclick="downloadExcel()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all active:scale-95">
+          <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+            <button onclick="downloadExcel()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all active:scale-95">
               <i class="fa-regular fa-file-excel text-sm"></i>
-              <span>Descargar Excel (.xlsx) con 2 Hojas</span>
+              <span>Excel (.xlsx)</span>
             </button>
-
-            <button onclick="downloadCSV()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all active:scale-95">
+            <button onclick="downloadCSV()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all active:scale-95">
               <i class="fa-solid fa-file-csv text-sm"></i>
-              <span>CSV (UTF-8 con BOM)</span>
+              <span>CSV</span>
             </button>
-
-            <button onclick="downloadJSON()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-300 text-xs shadow-md transition-all active:scale-95">
+            <button onclick="downloadJSON()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-300 text-xs shadow-md transition-all active:scale-95">
               <i class="fa-solid fa-code text-sm"></i>
-              <span>JSON Estructurado</span>
+              <span>JSON</span>
+            </button>
+            <button onclick="downloadHojaTrabajoPDF()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#008272] hover:bg-[#00695c] text-white font-bold text-xs shadow-md transition-all active:scale-95">
+              <i class="fa-solid fa-file-pdf text-sm"></i>
+              <span>Hoja (PDF)</span>
+            </button>
+            <button onclick="downloadHojaTrabajoWord()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#185abd] hover:bg-[#104a9e] text-white font-bold text-xs shadow-md transition-all active:scale-95">
+              <i class="fa-solid fa-file-word text-sm"></i>
+              <span>Hoja (Word)</span>
+            </button>
+            <button onclick="downloadHojaTrabajoExcel()" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-md transition-all active:scale-95">
+              <i class="fa-solid fa-pen-to-square text-sm"></i>
+              <span>Taller (Excel)</span>
             </button>
           </div>
         </div>
@@ -2391,11 +2417,19 @@
 
           <!-- Botones de Acción de la Hoja de Trabajo -->
           <div class="flex flex-col sm:flex-row lg:flex-col gap-2 shrink-0">
-            <button onclick="downloadHojaTrabajoPDF()" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#008272] to-[#107c41] hover:from-[#00695c] hover:to-[#0d6535] active:scale-95 text-white text-sm font-black shadow-lg shadow-emerald-700/20 transition-all cursor-pointer">
-              <i class="fa-solid fa-file-pdf text-lg"></i>
+            <button onclick="downloadHojaTrabajoPDF()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#008272] to-[#107c41] hover:from-[#00695c] hover:to-[#0d6535] active:scale-95 text-white text-xs font-black shadow-md transition-all cursor-pointer">
+              <i class="fa-solid fa-file-pdf text-base"></i>
               <span>Descargar Hoja de Trabajo (PDF)</span>
             </button>
-            <button onclick="downloadExcel()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 active:scale-95 text-emerald-800 text-xs font-bold border border-emerald-300 shadow-xs transition-all cursor-pointer">
+            <button onclick="downloadHojaTrabajoWord()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#185abd] hover:bg-[#104a9e] active:scale-95 text-white text-xs font-black shadow-md transition-all cursor-pointer">
+              <i class="fa-solid fa-file-word text-base"></i>
+              <span>Descargar en Word (.doc/.docx)</span>
+            </button>
+            <button onclick="downloadHojaTrabajoExcel()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 active:scale-95 text-white text-xs font-black shadow-md transition-all cursor-pointer">
+              <i class="fa-solid fa-pen-to-square text-base"></i>
+              <span>Cuaderno para Llenar (Excel .xlsx)</span>
+            </button>
+            <button onclick="downloadExcel()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 active:scale-95 text-emerald-800 text-xs font-bold border border-emerald-300 shadow-xs transition-all cursor-pointer">
               <i class="fa-regular fa-file-excel text-emerald-600 text-sm"></i>
               <span>Descargar Dataset en Excel (.xlsx)</span>
             </button>
@@ -2548,10 +2582,18 @@
           </div>
 
           <!-- Botón de Descarga Rápida en Card 1 -->
-          <div class="pt-2">
-            <button onclick="downloadHojaTrabajoPDF()" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 text-xs font-black border border-slate-300 shadow-xs transition-all cursor-pointer">
-              <i class="fa-solid fa-print text-emerald-700"></i>
-              <span>Imprimir / Exportar Documento PDF Completo</span>
+          <div class="pt-2 flex flex-col gap-2">
+            <button onclick="downloadHojaTrabajoPDF()" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#008272] hover:bg-[#00695c] active:scale-95 text-white text-xs font-black shadow-xs transition-all cursor-pointer">
+              <i class="fa-solid fa-file-pdf text-red-100"></i>
+              <span>Exportar Hoja en PDF Completa</span>
+            </button>
+            <button onclick="downloadHojaTrabajoWord()" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#185abd] hover:bg-[#104a9e] active:scale-95 text-white text-xs font-black shadow-xs transition-all cursor-pointer">
+              <i class="fa-solid fa-file-word text-blue-100"></i>
+              <span>Exportar Hoja a Word (.doc/.docx)</span>
+            </button>
+            <button onclick="downloadHojaTrabajoExcel()" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 active:scale-95 text-white text-xs font-black shadow-xs transition-all cursor-pointer">
+              <i class="fa-solid fa-pen-to-square text-teal-100"></i>
+              <span>Descargar Cuaderno Excel para Resolver</span>
             </button>
           </div>
 
@@ -7530,6 +7572,421 @@ in
     // Reconoce comentarios, strings, columnas [COL], funciones M, tipos,
     // palabras reservadas (let, in, each, if, then, else), variables y operadores
     // =====================================================================
+    
+    /* =====================================================================
+       EXPORTACIÓN PEDAGÓGICA A WORD (.DOC / .DOCX): 25 PREGUNTAS & EDA
+       Formato nativo Microsoft Word con cabeceras XML MSO, tablas y cajas
+    ===================================================================== */
+    function downloadHojaTrabajoWord() {
+      try {
+        const industryKey = ACTIVE_HOJA_INDUSTRY || ACTIVE_INDUSTRY || 'retail';
+        const dataCase = HOJA_DE_TRABAJO_DATA[industryKey] || HOJA_DE_TRABAJO_DATA.retail;
+        const config = INDUSTRY_CONFIGS[industryKey] || INDUSTRY_CONFIGS.retail;
+
+        if (!CURRENT_DATASET || !CURRENT_DATASET.length) {
+          CURRENT_DATASET = generateDataset();
+        }
+
+        showToast('Generando Hoja de Trabajo en Word (.doc) para ' + dataCase.badge + '...', 'info');
+
+        const sums = (CURRENT_DATASET || []).reduce((acc, row) => {
+          acc.gross += (row._metricPrimary || 0);
+          acc.cost += (row._metricSecondary || 0);
+          acc.margin += (row._metricMargin || 0);
+          acc.real += (row._metricReal || 0);
+          if (row._cleanStatus === 'Cancelado' || row._cleanStatus === 'Anulado' || row._cleanStatus === 'Rechazada' || row._cleanStatus === 'Desvinculado' || row._cleanStatus === 'Castigado / Incobrable') {
+            acc.failed++;
+          }
+          return acc;
+        }, { gross: 0, cost: 0, margin: 0, real: 0, failed: 0 });
+
+        const count = (CURRENT_DATASET && CURRENT_DATASET.length) ? CURRENT_DATASET.length : 1500;
+        const marginPct = sums.gross > 0 ? (sums.margin / sums.gross) * 100 : 0;
+        const failPct = (sums.failed / (count || 1)) * 100;
+
+        const cleanTxt = (str) => String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+
+        const fieldsListStr = (config.rawColumns || []).map(c => c.key + ' (' + c.label + ')').join(', ');
+
+        let questionsHtml = '';
+        (dataCase.preguntas || []).forEach(p => {
+          questionsHtml += `
+            <div style="border: 1px solid #cbd5e1; background-color: #ffffff; margin-bottom: 16px; page-break-inside: avoid; border-radius: 4px;">
+              <table style="width: 100%; border-collapse: collapse; background-color: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
+                <tr>
+                  <td style="padding: 6px 10px; font-weight: bold; font-size: 10pt; color: #0f172a;">
+                    Pregunta #${p.num} · [${cleanTxt(p.id)}]
+                  </td>
+                  <td style="padding: 6px 10px; text-align: right; font-weight: bold; font-size: 8.5pt; color: #008272;">
+                    Herramienta: ${cleanTxt(p.badge)} | KPI: ${cleanTxt(p.kpi)}
+                  </td>
+                </tr>
+              </table>
+              <div style="padding: 10px 12px;">
+                <p style="font-size: 10.5pt; font-weight: 600; color: #1e293b; margin: 0 0 6px 0;">
+                  ${cleanTxt(p.pregunta)}
+                </p>
+                <div style="background-color: #f8fafc; border-left: 3px solid #008272; padding: 6px 10px; margin-bottom: 8px; font-size: 8.5pt; color: #475569;">
+                  <strong>Guía Metodológica:</strong> ${cleanTxt(p.guia)}
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
+                  <tr>
+                    <td style="width: 60%; vertical-align: top; padding-right: 8px;">
+                      <div style="font-size: 8pt; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">
+                        Tu Respuesta Analítica (Escribe aquí tu análisis y hallazgo):
+                      </div>
+                      <div style="border: 1px dashed #94a3b8; background-color: #ffffff; min-height: 52px; padding: 8px; font-size: 9pt; color: #94a3b8;">
+                        [ Escribe aquí la respuesta numérica, interpretación de negocio y conclusiones ]
+                      </div>
+                    </td>
+                    <td style="width: 40%; vertical-align: top; padding-left: 8px;">
+                      <div style="font-size: 8pt; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">
+                        Fórmula M / DAX o Campo Usado:
+                      </div>
+                      <div style="border: 1px solid #cbd5e1; background-color: #f8fafc; min-height: 52px; padding: 8px; font-size: 8.5pt; font-family: 'Consolas', monospace; color: #334155;">
+                        // Escribe la fórmula de medida o configuración aquí...
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+
+                <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dotted #e2e8f0; font-size: 8pt; color: #64748b; text-align: right;">
+                  <strong>Puntuación:</strong> [ ___ / 4 pts ] &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Revisión:</strong> [ &nbsp; ] Aprobado &nbsp;&nbsp; [ &nbsp; ] Requiere Ajuste
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        const wordHtml = `
+          <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+          <head>
+            <meta charset='utf-8'>
+            <title>Hoja de Trabajo - ${cleanTxt(dataCase.title)}</title>
+            <!--[if gte mso 9]>
+            <xml>
+              <w:WordDocument>
+                <w:View>Print</w:View>
+                <w:Zoom>100</w:Zoom>
+                <w:DoNotOptimizeForBrowser/>
+              </w:WordDocument>
+            </xml>
+            <![endif]-->
+            <style>
+              @page {
+                size: 21.0cm 29.7cm;
+                margin: 1.5cm 1.5cm 1.5cm 1.5cm;
+                mso-page-orientation: portrait;
+              }
+              body {
+                font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+                font-size: 10pt;
+                color: #0f172a;
+                line-height: 1.35;
+              }
+              h1 { font-size: 15pt; color: #0f172a; margin: 0 0 4px 0; font-weight: bold; }
+              h2 { font-size: 12pt; color: #008272; border-bottom: 2px solid #107c41; padding-bottom: 4px; margin-top: 16px; margin-bottom: 8px; font-weight: bold; }
+              .header-bar {
+                background-color: #f0fdf4;
+                border: 1px solid #107c41;
+                padding: 6px 12px;
+                margin-bottom: 12px;
+                font-size: 8.5pt;
+                font-weight: bold;
+                color: #166534;
+              }
+              .analista-table {
+                width: 100%;
+                border-collapse: collapse;
+                background-color: #f8fafc;
+                border: 1px solid #cbd5e1;
+                margin-bottom: 14px;
+              }
+              .analista-table td {
+                padding: 8px 12px;
+                font-size: 9.5pt;
+                font-weight: bold;
+              }
+              .kpi-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 14px;
+              }
+              .kpi-table th {
+                background-color: #107c41;
+                color: #ffffff;
+                font-size: 9pt;
+                font-weight: bold;
+                padding: 6px 8px;
+                text-align: left;
+                border: 1px solid #0d6535;
+              }
+              .kpi-table td {
+                padding: 6px 8px;
+                font-size: 8.5pt;
+                border: 1px solid #e2e8f0;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="header-bar">
+              DOCUMENTO OFICIAL DE EVALUACIÓN & AUDITORÍA EDA · DATAFORGE SUITE v6.0 PRO · AUTOR: ING. JUANCITO PEÑA VIZCAÍNO
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+              <tr>
+                <td style="vertical-align: top;">
+                  <div style="font-size: 8pt; font-weight: bold; color: #107c41; text-transform: uppercase;">Guía Pedagógica Práctica de Aprendizaje</div>
+                  <h1>HOJA DE TRABAJO: MANUAL ETL & EXCEL 365</h1>
+                  <div style="font-size: 9pt; color: #475569;">Desafío Analítico: 25 Preguntas de Auditoría, Power Query (M), Tablas Dinámicas y Dashboards</div>
+                </td>
+                <td style="vertical-align: top; text-align: right; width: 220px;">
+                  <div style="background-color: #e8f5e9; border: 1px solid #a5d6a7; padding: 8px 12px; border-radius: 4px; text-align: right;">
+                    <div style="font-size: 7.5pt; font-weight: bold; color: #1b5e20; text-transform: uppercase;">Caso de Estudio Activo</div>
+                    <div style="font-size: 11pt; font-weight: bold; color: #0f172a;">${cleanTxt(dataCase.title)}</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <table class="analista-table">
+              <tr>
+                <td style="width: 50%;">Analista / Estudiante: _________________________________________</td>
+                <td style="width: 25%;">Fecha: ____ / ____ / 2026</td>
+                <td style="width: 25%; text-align: right;">Calificación: _____ / 100 pts</td>
+              </tr>
+            </table>
+
+            <h2>1. Ficha Técnica del Set de Datos & Cifras de Control (EDA)</h2>
+            <p style="font-size: 9pt; color: #334155; margin-bottom: 8px;">${cleanTxt(dataCase.desc)}</p>
+
+            <table class="kpi-table">
+              <thead>
+                <tr>
+                  <th style="width: 30%;">Dimensión / Métrica EDA</th>
+                  <th style="width: 70%;">Especificación Técnica y Valor en el Dataset Activo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Llave Primaria & Volumen</strong></td>
+                  <td>${cleanTxt(dataCase.eda.llavePrimaria)} · <strong>${count.toLocaleString('es-DO')} registros activos</strong> (${cleanTxt(dataCase.eda.registros)})</td>
+                </tr>
+                <tr style="background-color: #f8fafc;">
+                  <td><strong>Campos Oficiales (${config.rawColumns ? config.rawColumns.length : 18})</strong></td>
+                  <td>${cleanTxt(fieldsListStr)}</td>
+                </tr>
+                <tr>
+                  <td><strong>Impurezas Sintéticas Inyectadas</strong></td>
+                  <td>${cleanTxt(dataCase.eda.tipoProblemas)}</td>
+                </tr>
+                <tr style="background-color: #f8fafc;">
+                  <td><strong>Funciones M Clave</strong></td>
+                  <td><code style="color: #008272;">${cleanTxt(dataCase.eda.limpiezaM)}</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Cifras Control: Bruto vs Costo</strong></td>
+                  <td>Bruto Total: <strong>RD$ ${Math.round(sums.gross).toLocaleString('es-DO')}</strong> &nbsp;|&nbsp; Costo / Abonos: <strong>RD$ ${Math.round(sums.cost).toLocaleString('es-DO')}</strong></td>
+                </tr>
+                <tr style="background-color: #f8fafc;">
+                  <td><strong>Cifras Control: Margen & Efectivo</strong></td>
+                  <td>Margen / Saldo: <strong>RD$ ${Math.round(sums.margin).toLocaleString('es-DO')}</strong> (${marginPct.toFixed(1)}%) &nbsp;|&nbsp; Real Cobrado: <strong>RD$ ${Math.round(sums.real).toLocaleString('es-DO')}</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>Tasa Transacciones Críticas</strong></td>
+                  <td>${sums.failed} registros críticos / cancelados / mora alta (<strong>${failPct.toFixed(1)}% de tasa de afectación</strong>)</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h2>2. Banco Oficial de 25 Preguntas de Auditoría & Negocio</h2>
+            <p style="font-size: 9pt; color: #475569; margin-bottom: 12px;">
+              Resuelve cada una de las siguientes 25 preguntas utilizando el modelo de datos consolidado en Power Query y Excel. Llena tu respuesta cuantitativa y registra la fórmula o configuración utilizada.
+            </p>
+
+            ${questionsHtml}
+
+            <h2>3. Conclusiones Ejecutivas & Recomendaciones del Analista</h2>
+            <div style="border: 1px solid #cbd5e1; background-color: #f8fafc; padding: 12px; min-height: 90px; font-size: 9pt; color: #64748b; font-style: italic;">
+              [ Resume aquí los principales 3 hallazgos del análisis, focos de ineficiencia o riesgo detectados y las acciones estratégicas sugeridas para la gerencia ]
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 24px;">
+              <tr>
+                <td style="width: 50%; text-align: center; padding-top: 35px; border-top: 1px solid #94a3b8;">
+                  <div style="font-weight: bold; font-size: 9.5pt;">Firma del Analista / Estudiante</div>
+                  <div style="font-size: 8pt; color: #64748b;">Certifico la autoría de las respuestas</div>
+                </td>
+                <td style="width: 10%;"></td>
+                <td style="width: 40%; text-align: center; padding-top: 35px; border-top: 1px solid #94a3b8;">
+                  <div style="font-weight: bold; font-size: 9.5pt;">Firma del Evaluador / Instructor</div>
+                  <div style="font-size: 8pt; color: #64748b;">Ing. Juancito Peña Vizcaíno · DataForge PRO</div>
+                </td>
+              </tr>
+            </table>
+          </body>
+          </html>
+        `;
+
+        const blob = new Blob(['﻿', wordHtml], { type: 'application/msword;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Hoja_de_Trabajo_25_Preguntas_${industryKey.toUpperCase()}_365.doc`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast('Hoja de Trabajo en Word (.doc) descargada exitosamente.', 'success');
+      } catch (err) {
+        console.error('Error generando Hoja de Trabajo en Word:', err);
+        showToast('Error al generar Word: ' + err.message, 'error');
+      }
+    }
+
+
+    /* =====================================================================
+       EXPORTACIÓN PEDAGÓGICA A EXCEL (.XLSX): CUADERNO DE 25 PREGUNTAS
+       Libro de trabajo estructurado con 3 hojas para resolver y llenar
+    ===================================================================== */
+    function downloadHojaTrabajoExcel() {
+      try {
+        const industryKey = ACTIVE_HOJA_INDUSTRY || ACTIVE_INDUSTRY || 'retail';
+        const dataCase = HOJA_DE_TRABAJO_DATA[industryKey] || HOJA_DE_TRABAJO_DATA.retail;
+        const config = INDUSTRY_CONFIGS[industryKey] || INDUSTRY_CONFIGS.retail;
+        const manual = (typeof MANUAL_ETL_DATA !== 'undefined' && MANUAL_ETL_DATA[industryKey]) ? MANUAL_ETL_DATA[industryKey] : null;
+
+        if (!CURRENT_DATASET || !CURRENT_DATASET.length) {
+          CURRENT_DATASET = generateDataset();
+        }
+
+        showToast('Generando Cuaderno de Trabajo en Excel (.xlsx) para ' + dataCase.badge + '...', 'info');
+
+        if (typeof XLSX === 'undefined') {
+          showToast('Librería XLSX cargando, intente nuevamente...', 'error');
+          return;
+        }
+
+        const wb = XLSX.utils.book_new();
+
+        const sums = (CURRENT_DATASET || []).reduce((acc, row) => {
+          acc.gross += (row._metricPrimary || 0);
+          acc.cost += (row._metricSecondary || 0);
+          acc.margin += (row._metricMargin || 0);
+          acc.real += (row._metricReal || 0);
+          if (row._cleanStatus === 'Cancelado' || row._cleanStatus === 'Anulado' || row._cleanStatus === 'Rechazada' || row._cleanStatus === 'Desvinculado' || row._cleanStatus === 'Castigado / Incobrable') {
+            acc.failed++;
+          }
+          return acc;
+        }, { gross: 0, cost: 0, margin: 0, real: 0, failed: 0 });
+
+        const count = (CURRENT_DATASET && CURRENT_DATASET.length) ? CURRENT_DATASET.length : 1500;
+        const marginPct = sums.gross > 0 ? (sums.margin / sums.gross) * 100 : 0;
+        const failPct = (sums.failed / (count || 1)) * 100;
+
+        // -------------------------------------------------------------
+        // HOJA 1: FICHA TÉCNICA, EDA & CIFRAS DE CONTROL
+        // -------------------------------------------------------------
+        const fieldsListStr = (config.rawColumns || []).map(c => c.key + ' (' + c.label + ')').join(', ');
+        const wsEdaData = [
+          ['CUADERNO DE TRABAJO PEDAGÓGICO · EVALUACIÓN ANALÍTICA Y AUDITORÍA EDA'],
+          ['DataForge Suite v6.0 PRO · Autor: Ing. Juancito Peña Vizcaíno'],
+          ['Caso de Estudio: ' + dataCase.title + ' (' + dataCase.badge + ')'],
+          ['Fecha de Emisión: ' + new Date().toLocaleDateString('es-DO')],
+          [],
+          ['DATOS DEL ANALISTA / ESTUDIANTE'],
+          ['Nombre del Analista / Evaluador:', ''],
+          ['Fecha de Resolución:', ''],
+          ['Calificación Final Obtenida:', '_____ / 100 Puntos'],
+          [],
+          ['DIMENSIÓN EDA / FICHA TÉCNICA', 'ESPECIFICACIÓN Y VALOR REAL EN EL DATASET'],
+          ['Caso de Estudio & Problemática', dataCase.desc],
+          ['Llave Primaria Oficial', dataCase.eda.llavePrimaria],
+          ['Volumen de Datos Generado', count.toLocaleString('es-DO') + ' registros activos (' + dataCase.eda.registros + ')'],
+          ['Total de Columnas / Campos', (config.rawColumns ? config.rawColumns.length : 18) + ' campos estructurados'],
+          ['Lista Completa de Campos', fieldsListStr],
+          ['Impurezas y Ruido Inyectado', dataCase.eda.tipoProblemas],
+          ['Funciones Clave de Power Query M', dataCase.eda.limpiezaM],
+          [],
+          ['CIFRAS DE CONTROL AUDITADAS (BENCHMARK)', 'VALOR CUANTITATIVO REAL RD$'],
+          ['Total Bruto Facturado / Exigible', Math.round(sums.gross)],
+          ['Costo Total / Abonos Cobrados', Math.round(sums.cost)],
+          ['Margen Bruto / Saldo Pendiente', Math.round(sums.margin)],
+          ['Margen / Recuperación Porcentual', marginPct.toFixed(2) + '%'],
+          ['Ingreso Real Efectivo Cobrado', Math.round(sums.real)],
+          ['Transacciones Críticas / Canceladas / Mora', sums.failed + ' registros (' + failPct.toFixed(1) + '%)']
+        ];
+        const wsEda = XLSX.utils.aoa_to_sheet(wsEdaData);
+        wsEda['!cols'] = [{ wch: 36 }, { wch: 75 }];
+        XLSX.utils.book_append_sheet(wb, wsEda, '01_Ficha_Tecnica_EDA');
+
+        // -------------------------------------------------------------
+        // HOJA 2: CUADERNO DE 25 PREGUNTAS LISTO PARA LLENAR
+        // -------------------------------------------------------------
+        const questionsRows = (dataCase.preguntas || []).map(p => ({
+          'No': p.num,
+          'ID_Pregunta': p.id,
+          'Herramienta_Sugerida': p.badge,
+          'Pregunta_Reto_Analitico': p.pregunta,
+          'Guia_Metodologica_Solucion': p.guia,
+          'KPI_Esperado': p.kpi,
+          'TU_RESPUESTA_ANALITICA': '',
+          'FORMULA_M_DAX_O_CAMPOS_USADOS': '',
+          'ESTADO_REVISION': 'Por Resolver',
+          'PUNTUACION_MAX_4': ''
+        }));
+
+        const wsQuestions = XLSX.utils.json_to_sheet(questionsRows);
+        wsQuestions['!cols'] = [
+          { wch: 5 },   // No
+          { wch: 12 },  // ID
+          { wch: 18 },  // Herramienta
+          { wch: 58 },  // Pregunta
+          { wch: 48 },  // Guía
+          { wch: 20 },  // KPI
+          { wch: 42 },  // TU_RESPUESTA
+          { wch: 38 },  // FORMULA
+          { wch: 16 },  // ESTADO
+          { wch: 16 }   // PUNTUACION
+        ];
+        XLSX.utils.book_append_sheet(wb, wsQuestions, '02_Cuaderno_25_Preguntas');
+
+        // -------------------------------------------------------------
+        // HOJA 3: GUÍA PASO A PASO DEL FLUJO ETL EN POWER QUERY
+        // -------------------------------------------------------------
+        const etlStepsData = [
+          ['PASO A PASO METODOLÓGICO ETL DE ' + dataCase.title.toUpperCase()],
+          ['DataForge Suite PRO · Sigue esta secuencia en el Editor Avanzado de Power Query'],
+          [],
+          ['Fase / Paso', 'Título de la Operación', 'Columnas Implicadas', 'Instrucción Paso a Paso Power Query & Excel'],
+          ['Paso 1 (Extracción)', 'Conexión a Carpeta', 'Carpeta ANALISIS ETL\\BD', 'Obtener datos -> De una carpeta -> Elegir C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD -> Combinar y transformar.'],
+          ['Paso 2 (División)', 'Descomposición de Columnas Compuestas', 'Columnas compuestas del dataset', 'Dividir columna por delimitador guion o espacio para separar IDs, códigos o sucursales.'],
+          ['Paso 3 (Desinfección)', 'Eliminación de Leetspeak y Caracteres', 'Nombres de clientes, oficiales o productos', 'Table.ReplaceValue para sanar símbolos @, 4, 3, 0, 1, # y $ en los nombres.'],
+          ['Paso 4 (Limpieza)', 'Recortar y Limpiar Texto (Trim & Clean)', 'Todas las columnas de texto', 'Transformar -> Formato -> Recortar (Trim) y Limpiar (Clean) para eliminar espacios ocultos.'],
+          ['Paso 5 (Tipado)', 'Tipado Estricto de Datos', 'Fechas (date), Números (Currency/Int64)', 'Tipar fechas contractuales como Date, importes como Currency.Type y cantidades como Int64.Type.'],
+          ['Paso 6 (Cálculos M)', 'Cinco Columnas Calculadas de Auditoría', 'Métricas del caso de estudio', 'Agregar las 5 columnas personalizadas de auditoría y KPIs del proyecto.'],
+          ['Paso 7 (Carga & BI)', 'Cerrar y Cargar en Modelo VertiPaq', 'Tabla Final Consolidada', 'Cerrar y cargar en -> Crear únicamente conexión + Agregar estos datos al Modelo de datos.']
+        ];
+        const wsEtl = XLSX.utils.aoa_to_sheet(etlStepsData);
+        wsEtl['!cols'] = [{ wch: 18 }, { wch: 32 }, { wch: 30 }, { wch: 70 }];
+        XLSX.utils.book_append_sheet(wb, wsEtl, '03_Guia_Pasos_ETL');
+
+        const fileName = `Cuaderno_Taller_25_Preguntas_${industryKey.toUpperCase()}_Para_Llenar.xlsx`;
+        XLSX.writeFile(wb, fileName);
+
+        showToast('Cuaderno de Taller en Excel (.xlsx) descargado exitosamente.', 'success');
+      } catch (err) {
+        console.error('Error generando Cuaderno de Trabajo en Excel:', err);
+        showToast('Error al generar Excel: ' + err.message, 'error');
+      }
+    }
+
     function highlightPowerQueryM(rawCode, withLineNumbers = true) {
       if (!rawCode) return '';
       const escapeHtml = (str) => String(str)
