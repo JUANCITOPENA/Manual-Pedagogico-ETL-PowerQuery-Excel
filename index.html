@@ -7049,51 +7049,19 @@ in
           values: "Suma de SALDO_TOTAL_EXIGIBLE, Suma de ABONO_RECUPERADO, Suma de SALDO_PENDIENTE, Promedio de DIAS_MORA"
         },
         fullMCode: `// =========================================================================
-// SCRIPT M UNIVERSAL AUTO-DETECTABLE: 3. FINANZAS CORPORATIVAS, TESORERÍA & CARTERA CxC
-// Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
+// SCRIPT M LIMPIO Y DIRECTO: 3. FINANZAS CORPORATIVAS, TESORERÍA & CARTERA CxC
+// Misma Ruta del Set 1: C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD (Cero alertas ni ventanas)
 // Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
-// NOTA PRIVACIDAD FIREWALL: Si Excel muestra "Se requiere informacion sobre los niveles de privacidad",
-// ve a: Archivo -> Opciones y configuracion -> Opciones de consulta -> Global -> Privacidad -> Marca "Omitir siempre los niveles de privacidad".
-// FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
-    // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
-    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    PerfilesWindows = List.Select(
-        {"User"} & (try
-            let
-                nombres = Table.Column(Folder.Contents("C:\\Users"), "Name")
-            in
-                if List.Count(nombres) >= 0 then nombres else {}
-        otherwise {}),
-        each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
+    // PASO 1: Carga Directa (Misma ruta autorizada del Set 1: cero advertencias)
+    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    OrigenCarpeta = Folder.Files(RutaCarpeta),
+    ArchivosValidos = Table.SelectRows(OrigenCarpeta, each 
+        not Text.StartsWith([Name], "~$") and 
+        not Text.Contains(Text.Upper([Name]), "CONSOLIDADA") and 
+        List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
     ),
-    RutasCandidatas = List.Distinct(List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
-    })),
-    EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
-        let
-            archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
-                not Text.StartsWith(f[Name], "~$") and
-                not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
-                List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
-            )
-        in
-            [
-                Ruta = ruta,
-                Archivos = archivos,
-                TieneDatos = (try Table.RowCount(archivos) > 0 otherwise false),
-                Cantidad = (try Table.RowCount(archivos) otherwise 0)
-            ]
-    ),
-    RutasConArchivos = List.Select(EvaluarRutas, each [TieneDatos] = true),
-    ArchivosValidos = if List.Count(RutasConArchivos) > 0
-                      then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
-                      else #table({"Content", "Name", "Extension"}, {}),
     ExtraerTablas = Table.AddColumn(ArchivosValidos, "TablaExtraida", each
         let
             ext = Text.Lower([Extension]),
@@ -7119,32 +7087,11 @@ let
         in
             tabla
     ),
-    TablasDelSector = List.Select(ExtraerTablas[TablaExtraida], each
-        (try (
-            List.Contains(Table.ColumnNames(_), "NOMBRE_DEUDOR") and
-            not List.Contains(Table.ColumnNames(_), "INTERES_MORA_CALC") and
-            not Table.IsEmpty(_)
-        ) otherwise false)
+    // Filtro inteligente: Solo toma los archivos de Finanzas / Cartera
+    TablasValidas = List.Select(ExtraerTablas[TablaExtraida], each
+        (try (List.Contains(Table.ColumnNames(_), "NOMBRE_DEUDOR") and not Table.IsEmpty(_)) otherwise false)
     ),
-    ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
-
-    // Respaldo: Si el usuario trabaja dentro de un único libro sin carpeta, usa la tabla del libro actual
-    LibroActual = Excel.CurrentWorkbook(),
-    TablasPreparadas = Table.TransformColumns(LibroActual, {
-        {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
-    }),
-    TablasOrigenValidas = Table.SelectRows(TablasPreparadas, each
-        List.Contains(Table.ColumnNames([Content]), "NOMBRE_DEUDOR") and
-        not List.Contains(Table.ColumnNames([Content]), "INTERES_MORA_CALC")
-    ),
-    Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
-                 ConsolidadoCarpeta
-             else if not Table.IsEmpty(TablasOrigenValidas) then
-                 TablasOrigenValidas{0}[Content]
-             else if (try not Table.IsEmpty(TablasPreparadas) otherwise false) then
-                 TablasPreparadas{0}[Content]
-             else
-                 #table({}, {}),
+    Origen = Table.Combine(TablasValidas),
 
     // PASO 2: Separación de Código ID en NOMBRE_DEUDOR antes de desinfectar (Blindaje Numérico de ID)
     DividirDeudor = Table.SplitColumn(Origen, "NOMBRE_DEUDOR", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"NOMBRE_DEUDOR", "CODIGO_DEUDOR"}),
@@ -7158,21 +7105,21 @@ let
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
 
-    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en CANAL_PAGO -> "Banca en Línea"
+    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en CANAL_PAGO
     LimpiarTexto = Table.TransformColumns(SanarUno, {
         {"SUCURSAL_CARTERA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"RNC_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"NOMBRE_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"CODIGO_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"OFICIAL_CREDITO", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"LINEA_CREDITO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
-        {"CANAL_PAGO", each if _ = null or Text.Trim(Text.From(_)) = "" then "Banca en Línea" else Text.Trim(Text.From(_)), type text}
+        {"CANAL_PAGO", each if _ = null or Text.Trim(Text.From(_)) = "" then "Caja Sucursal" else Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"TRAMO_MORA", each Text.Trim(Text.Clean(Text.From(_))), type text}
     }),
 
-    // PASO 5: Tipado Estricto de Fechas Contractuales y Columnas Oficiales de Cartera
+    // PASO 5: Tipado Estricto de Fechas Contractuales (type date)
     TiparFechas = Table.TransformColumns(LimpiarTexto, {
-        {"FECHA_EMISION", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date},
-        {"FECHA_VENCIMIENTO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+        {"FECHA_EMISION", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise try Date.From(_) otherwise null, type date},
+        {"FECHA_VENCIMIENTO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise try Date.From(_) otherwise null, type date}
     }),
     TiparNumeros = Table.TransformColumnTypes(TiparFechas, {
         {"CODIGO_DEUDOR", type text},
@@ -7185,11 +7132,11 @@ let
         {"DIAS_MORA", Int64.Type}
     }),
 
-    // PASO 5: Creación de las 5 Columnas Calculadas de Auditoría de Cartera y Riesgo (Aging)
+    // PASO 6: Creación de las 5 Columnas Calculadas de Auditoría Financiera y Cartera CxC
     Col1_InteresMora     = Table.AddColumn(TiparNumeros, "INTERES_MORA_CALC", each Number.Round([MONTO_PRINCIPAL] * ([TASA_INTERES_ANUAL] / 100) * ([DIAS_MORA] / 365), 2), Currency.Type),
     Col2_SaldoExigible   = Table.AddColumn(Col1_InteresMora, "SALDO_EXIGIBLE_CALC", each [MONTO_PRINCIPAL] + [INTERES_MORA], Currency.Type),
     Col3_SaldoPendiente  = Table.AddColumn(Col2_SaldoExigible, "SALDO_PENDIENTE_CALC", each [SALDO_TOTAL_EXIGIBLE] - [ABONO_RECUPERADO], Currency.Type),
-    Col4_PorcRecuperado  = Table.AddColumn(Col3_SaldoPendiente, "PORC_RECUPERACION", each if [SALDO_TOTAL_EXIGIBLE] <> 0 then [ABONO_RECUPERADO] / [SALDO_TOTAL_EXIGIBLE] else 0, Percentage.Type),
+    Col4_PorcRecuperado  = Table.AddColumn(Col3_SaldoPendiente, "PORC_RECUPERACION", each if [SALDO_TOTAL_EXIGIBLE] <> 0 and [SALDO_TOTAL_EXIGIBLE] <> null then [ABONO_RECUPERADO] / [SALDO_TOTAL_EXIGIBLE] else 0, Percentage.Type),
     Col5_ProvisionMora90 = Table.AddColumn(Col4_PorcRecuperado, "PROVISION_INCOBRABLE", each if [DIAS_MORA] > 90 then [SALDO_PENDIENTE] else 0, Currency.Type)
 in
     Col5_ProvisionMora90`
@@ -7286,51 +7233,19 @@ in
           values: "Suma de SUELDO_BRUTO, Suma de TOTAL_DESCUENTOS, Suma de SUELDO_NETO_PAGADO, Suma de APORTE_PATRONAL_TSS, Cuenta de COD_EMPLEADO"
         },
         fullMCode: `// =========================================================================
-// SCRIPT M UNIVERSAL AUTO-DETECTABLE: 4. RECURSOS HUMANOS, NÓMINA & SEGURIDAD SOCIAL (TSS)
-// Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
+// SCRIPT M LIMPIO Y DIRECTO: 4. RECURSOS HUMANOS, NÓMINA & SEGURIDAD SOCIAL (TSS)
+// Misma Ruta del Set 1: C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD (Cero alertas ni ventanas)
 // Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
-// NOTA PRIVACIDAD FIREWALL: Si Excel muestra "Se requiere informacion sobre los niveles de privacidad",
-// ve a: Archivo -> Opciones y configuracion -> Opciones de consulta -> Global -> Privacidad -> Marca "Omitir siempre los niveles de privacidad".
-// FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
-    // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
-    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    PerfilesWindows = List.Select(
-        {"User"} & (try
-            let
-                nombres = Table.Column(Folder.Contents("C:\\Users"), "Name")
-            in
-                if List.Count(nombres) >= 0 then nombres else {}
-        otherwise {}),
-        each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
+    // PASO 1: Carga Directa (Misma ruta autorizada del Set 1: cero advertencias)
+    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    OrigenCarpeta = Folder.Files(RutaCarpeta),
+    ArchivosValidos = Table.SelectRows(OrigenCarpeta, each 
+        not Text.StartsWith([Name], "~$") and 
+        not Text.Contains(Text.Upper([Name]), "CONSOLIDADA") and 
+        List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
     ),
-    RutasCandidatas = List.Distinct(List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
-    })),
-    EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
-        let
-            archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
-                not Text.StartsWith(f[Name], "~$") and
-                not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
-                List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
-            )
-        in
-            [
-                Ruta = ruta,
-                Archivos = archivos,
-                TieneDatos = (try Table.RowCount(archivos) > 0 otherwise false),
-                Cantidad = (try Table.RowCount(archivos) otherwise 0)
-            ]
-    ),
-    RutasConArchivos = List.Select(EvaluarRutas, each [TieneDatos] = true),
-    ArchivosValidos = if List.Count(RutasConArchivos) > 0
-                      then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
-                      else #table({"Content", "Name", "Extension"}, {}),
     ExtraerTablas = Table.AddColumn(ArchivosValidos, "TablaExtraida", each
         let
             ext = Text.Lower([Extension]),
@@ -7356,34 +7271,13 @@ let
         in
             tabla
     ),
-    TablasDelSector = List.Select(ExtraerTablas[TablaExtraida], each
-        (try (
-            List.Contains(Table.ColumnNames(_), "NOMBRE_COLABORADOR") and
-            not List.Contains(Table.ColumnNames(_), "AFP_LEGAL_287") and
-            not Table.IsEmpty(_)
-        ) otherwise false)
+    // Filtro inteligente: Solo toma los archivos de Nómina / RRHH
+    TablasValidas = List.Select(ExtraerTablas[TablaExtraida], each
+        (try (List.Contains(Table.ColumnNames(_), "NOMBRE_COLABORADOR") and not Table.IsEmpty(_)) otherwise false)
     ),
-    ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
+    Origen = Table.Combine(TablasValidas),
 
-    // Respaldo: Si el usuario trabaja dentro de un único libro sin carpeta, usa la tabla del libro actual
-    LibroActual = Excel.CurrentWorkbook(),
-    TablasPreparadas = Table.TransformColumns(LibroActual, {
-        {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
-    }),
-    TablasOrigenValidas = Table.SelectRows(TablasPreparadas, each
-        List.Contains(Table.ColumnNames([Content]), "NOMBRE_COLABORADOR") and
-        not List.Contains(Table.ColumnNames([Content]), "AFP_LEGAL_287")
-    ),
-    Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
-                 ConsolidadoCarpeta
-             else if not Table.IsEmpty(TablasOrigenValidas) then
-                 TablasOrigenValidas{0}[Content]
-             else if (try not Table.IsEmpty(TablasPreparadas) otherwise false) then
-                 TablasPreparadas{0}[Content]
-             else
-                 #table({}, {}),
-
-    // PASO 2: Separación de Legajo/ID en NOMBRE_COLABORADOR antes de desinfectar (Blindaje Numérico de ID)
+    // PASO 2: Separación de Código ID en NOMBRE_COLABORADOR antes de desinfectar (Blindaje Numérico de ID)
     DividirColaborador = Table.SplitColumn(Origen, "NOMBRE_COLABORADOR", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"NOMBRE_COLABORADOR", "LEGAJO_EMPLEADO"}),
 
     // PASO 3: Desinfección de Símbolos Corruptos (#, $) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i) sobre Nombres
@@ -7395,7 +7289,7 @@ let
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"NOMBRE_COLABORADOR", "SUPERVISOR_TURNO"}),
 
-    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en DEPARTAMENTO -> "Operaciones Planta"
+    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en DEPARTAMENTO
     LimpiarTexto = Table.TransformColumns(SanarUno, {
         {"SEDE_PLANTA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"NOMBRE_COLABORADOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
@@ -7405,9 +7299,9 @@ let
         {"CARGO_PUESTO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
     }),
 
-    // PASO 5: Tipado de FECHA_INGRESO y Columnas Oficiales de Nómina
+    // PASO 5: Tipado de FECHA_INGRESO (type date)
     TiparFechaIngreso = Table.TransformColumns(LimpiarTexto, {
-        {"FECHA_INGRESO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise Date.From(_), type date}
+        {"FECHA_INGRESO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise try Date.From(_) otherwise null, type date}
     }),
     TiparNumeros = Table.TransformColumnTypes(TiparFechaIngreso, {
         {"LEGAJO_EMPLEADO", type text},
@@ -7421,12 +7315,12 @@ let
         {"APORTE_PATRONAL_TSS", Currency.Type}
     }),
 
-    // PASO 5: Creación de las 5 Columnas Calculadas de Nómina, TSS (Ley 87-01) e ISR
-    Col1_AfpLegal       = Table.AddColumn(TiparNumeros, "AFP_LEGAL_287", each Number.Round([SUELDO_BRUTO] * 0.0287, 2), Currency.Type),
-    Col2_SfsLegal       = Table.AddColumn(Col1_AfpLegal, "SFS_LEGAL_304", each Number.Round([SUELDO_BRUTO] * 0.0304, 2), Currency.Type),
+    // PASO 6: Creación de las 5 Columnas Calculadas de Nómina, TSS (Ley 87-01) e ISR
+    Col1_AfpLegal       = Table.AddColumn(TiparNumeros, "AFP_LEGAL_287", each Number.Round(([SUELDO_BRUTO] + [HORAS_EXTRAS_VALOR]) * 0.0287, 2), Currency.Type),
+    Col2_SfsLegal       = Table.AddColumn(Col1_AfpLegal, "SFS_LEGAL_304", each Number.Round(([SUELDO_BRUTO] + [HORAS_EXTRAS_VALOR]) * 0.0304, 2), Currency.Type),
     Col3_TotalDesc      = Table.AddColumn(Col2_SfsLegal, "TOTAL_DESCUENTOS_CALC", each [RETENCION_AFP_287] + [RETENCION_SFS_304] + [RETENCION_ISR], Currency.Type),
-    Col4_SueldoNeto     = Table.AddColumn(Col3_TotalDesc, "SUELDO_NETO_CALC", each [SUELDO_BRUTO] - [TOTAL_DESCUENTOS], Currency.Type),
-    Col5_CostoEmpleador = Table.AddColumn(Col4_SueldoNeto, "COSTO_TOTAL_EMPLEADOR", each [SUELDO_BRUTO] + [APORTE_PATRONAL_TSS], Currency.Type)
+    Col4_SueldoNeto     = Table.AddColumn(Col3_TotalDesc, "SUELDO_NETO_CALC", each ([SUELDO_BRUTO] + [HORAS_EXTRAS_VALOR]) - [TOTAL_DESCUENTOS], Currency.Type),
+    Col5_CostoEmpleador = Table.AddColumn(Col4_SueldoNeto, "COSTO_TOTAL_EMPLEADOR", each [SUELDO_BRUTO] + [HORAS_EXTRAS_VALOR] + [APORTE_PATRONAL_TSS], Currency.Type)
 in
     Col5_CostoEmpleador`
       },
@@ -7521,51 +7415,19 @@ in
           values: "Suma de MONTO_TOTAL_FACTURADO, Suma de COBERTURA_ARS, Suma de COPAGO_PACIENTE, Suma de COSTO_INSUMOS, Suma de MARGEN_CLINICA"
         },
         fullMCode: `// =========================================================================
-// SCRIPT M UNIVERSAL AUTO-DETECTABLE: 5. SALUD, CLÍNICAS PRIVADAS & COBERTURAS ARS
-// Funciona en CUALQUIER PC Windows con la carpeta ANALISIS ETL\\BD en Escritorio o Disco C: / D:
+// SCRIPT M LIMPIO Y DIRECTO: 5. SALUD, CLÍNICAS PRIVADAS & COBERTURAS ARS
+// Misma Ruta del Set 1: C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD (Cero alertas ni ventanas)
 // Consolida automaticamente todos los archivos (.xlsx, .csv, .json) al pulsar Actualizar todo
-// NOTA PRIVACIDAD FIREWALL: Si Excel muestra "Se requiere informacion sobre los niveles de privacidad",
-// ve a: Archivo -> Opciones y configuracion -> Opciones de consulta -> Global -> Privacidad -> Marca "Omitir siempre los niveles de privacidad".
-// FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
-    // PASO 1: Autodeteccion Universal de la Carpeta ANALISIS ETL\\BD en Escritorio, OneDrive o Disco C: / D:
-    RutaDirecta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
-    PerfilesWindows = List.Select(
-        {"User"} & (try
-            let
-                nombres = Table.Column(Folder.Contents("C:\\Users"), "Name")
-            in
-                if List.Count(nombres) >= 0 then nombres else {}
-        otherwise {}),
-        each not List.Contains({"Public", "Default", "Default User", "All Users", "desktop.ini"}, _)
+    // PASO 1: Carga Directa (Misma ruta autorizada del Set 1: cero advertencias)
+    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
+    OrigenCarpeta = Folder.Files(RutaCarpeta),
+    ArchivosValidos = Table.SelectRows(OrigenCarpeta, each 
+        not Text.StartsWith([Name], "~$") and 
+        not Text.Contains(Text.Upper([Name]), "CONSOLIDADA") and 
+        List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower([Extension]))
     ),
-    RutasCandidatas = List.Distinct(List.Combine({
-        {RutaDirecta, "C:\\ANALISIS ETL\\BD", "C:\\ANALISIS_ETL\\BD", "D:\\ANALISIS ETL\\BD"},
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Desktop\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\Escritorio\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Desktop\\ANALISIS ETL\\BD"),
-        List.Transform(PerfilesWindows, each "C:\\Users\\" & _ & "\\OneDrive\\Escritorio\\ANALISIS ETL\\BD")
-    })),
-    EvaluarRutas = List.Transform(RutasCandidatas, (ruta) =>
-        let
-            archivos = Table.SelectRows(Folder.Files(ruta), (f) =>
-                not Text.StartsWith(f[Name], "~$") and
-                not Text.Contains(Text.Upper(f[Name]), "CONSOLIDADA") and
-                List.Contains({".xlsx", ".xls", ".csv", ".json"}, Text.Lower(f[Extension]))
-            )
-        in
-            [
-                Ruta = ruta,
-                Archivos = archivos,
-                TieneDatos = (try Table.RowCount(archivos) > 0 otherwise false),
-                Cantidad = (try Table.RowCount(archivos) otherwise 0)
-            ]
-    ),
-    RutasConArchivos = List.Select(EvaluarRutas, each [TieneDatos] = true),
-    ArchivosValidos = if List.Count(RutasConArchivos) > 0
-                      then List.Sort(RutasConArchivos, each -[Cantidad]){0}[Archivos]
-                      else #table({"Content", "Name", "Extension"}, {}),
     ExtraerTablas = Table.AddColumn(ArchivosValidos, "TablaExtraida", each
         let
             ext = Text.Lower([Extension]),
@@ -7591,32 +7453,11 @@ let
         in
             tabla
     ),
-    TablasDelSector = List.Select(ExtraerTablas[TablaExtraida], each
-        (try (
-            List.Contains(Table.ColumnNames(_), "EXPEDIENTE_PACIENTE") and
-            not List.Contains(Table.ColumnNames(_), "COPAGO_VALIDADO") and
-            not Table.IsEmpty(_)
-        ) otherwise false)
+    // Filtro inteligente: Solo toma los archivos de Salud / Clínicas
+    TablasValidas = List.Select(ExtraerTablas[TablaExtraida], each
+        (try (List.Contains(Table.ColumnNames(_), "EXPEDIENTE_PACIENTE") and not Table.IsEmpty(_)) otherwise false)
     ),
-    ConsolidadoCarpeta = if List.Count(TablasDelSector) > 0 then Table.Combine(TablasDelSector) else #table({}, {}),
-
-    // Respaldo: Si el usuario trabaja dentro de un único libro sin carpeta, usa la tabla del libro actual
-    LibroActual = Excel.CurrentWorkbook(),
-    TablasPreparadas = Table.TransformColumns(LibroActual, {
-        {"Content", each if List.Contains(Table.ColumnNames(_), "Column1") then Table.PromoteHeaders(_, [PromoteAllScalars=true]) else _}
-    }),
-    TablasOrigenValidas = Table.SelectRows(TablasPreparadas, each
-        List.Contains(Table.ColumnNames([Content]), "EXPEDIENTE_PACIENTE") and
-        not List.Contains(Table.ColumnNames([Content]), "COPAGO_VALIDADO")
-    ),
-    Origen = if not Table.IsEmpty(ConsolidadoCarpeta) then
-                 ConsolidadoCarpeta
-             else if not Table.IsEmpty(TablasOrigenValidas) then
-                 TablasOrigenValidas{0}[Content]
-             else if (try not Table.IsEmpty(TablasPreparadas) otherwise false) then
-                 TablasPreparadas{0}[Content]
-             else
-                 #table({}, {}),
+    Origen = Table.Combine(TablasValidas),
 
     // PASO 2: Separación de Código de Expediente en EXPEDIENTE_PACIENTE antes de desinfectar (Blindaje Numérico de ID)
     DividirPaciente = Table.SplitColumn(Origen, "EXPEDIENTE_PACIENTE", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"EXPEDIENTE_PACIENTE", "CODIGO_PACIENTE"}),
@@ -7630,7 +7471,7 @@ let
     SanarCero   = Table.ReplaceValue(SanarTres, "0", "o", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
     SanarUno    = Table.ReplaceValue(SanarCero, "1", "i", Replacer.ReplaceText, {"EXPEDIENTE_PACIENTE", "MEDICO_TRATANTE"}),
 
-    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en ASEGURADORA_ARS -> "Particular Privado"
+    // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en PLAN_SEGURO
     LimpiarTexto = Table.TransformColumns(SanarUno, {
         {"SEDE_CLINICA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"EXPEDIENTE_PACIENTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
@@ -7638,11 +7479,12 @@ let
         {"MEDICO_TRATANTE", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"ESPECIALIDAD_MEDICA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"SERVICIO_PROCEDIMIENTO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"ASEGURADORA_ARS", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"FECHA_ATENCION", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"ASEGURADORA_ARS", each if _ = null or Text.Trim(Text.From(_)) = "" then "Particular Privado" else Text.Trim(Text.From(_)), type text}
+        {"PLAN_SEGURO", each if _ = null or Text.Trim(Text.From(_)) = "" then "Plan Básico de Ley" else Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text}
     }),
 
-    // PASO 4: Descomposición Blindada de Fecha Clínica y Guardia Médica (HORA_INICIAL y HORA_FINAL)
+    // PASO 5: Descomposición Blindada de Fecha Clínica (type date) y Guardia Médica (type time con AM/PM)
     DividirFecha   = Table.SplitColumn(LimpiarTexto, "FECHA_ATENCION", Splitter.SplitTextByEachDelimiter({" "}, QuoteStyle.Csv, false), {"FECHA_ATENCION", "VENTANA_HORA"}),
     SanarVentana   = Table.ReplaceValue(Table.ReplaceValue(DividirFecha, "(", "", Replacer.ReplaceText, {"VENTANA_HORA"}), ")", "", Replacer.ReplaceText, {"VENTANA_HORA"}),
     DividirHoras   = Table.SplitColumn(SanarVentana, "VENTANA_HORA", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"HORA_INICIAL", "HORA_FINAL"}),
@@ -7660,14 +7502,14 @@ let
         {"MARGEN_CLINICA", Currency.Type}
     }),
 
-    // PASO 5: Creación de las 5 Columnas Calculadas de Facturación ARS, Glosas y Margen Clínico
-    Col1_CopagoValidado = Table.AddColumn(TiparNumeros, "COPAGO_VALIDADO", each [MONTO_TOTAL_FACTURADO] - [COBERTURA_ARS], Currency.Type),
-    Col2_MargenClinica  = Table.AddColumn(Col1_CopagoValidado, "MARGEN_CLINICA_CALC", each [MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS], Currency.Type),
-    Col3_PorcCobertura  = Table.AddColumn(Col2_MargenClinica, "PORC_COBERTURA_ARS", each if [MONTO_TOTAL_FACTURADO] <> 0 then [COBERTURA_ARS] / [MONTO_TOTAL_FACTURADO] else 0, Percentage.Type),
-    Col4_IngresoClinico = Table.AddColumn(Col3_PorcCobertura, "INGRESO_EFECTIVO_CLINICA", each if [ESTATUS_RECLAMACION] = "Rechazada" then 0 else [MONTO_TOTAL_FACTURADO], Currency.Type),
-    Col5_PorcMargen     = Table.AddColumn(Col4_IngresoClinico, "PORC_MARGEN_CLINICO", each if [MONTO_TOTAL_FACTURADO] <> 0 then ([MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS]) / [MONTO_TOTAL_FACTURADO] else 0, Percentage.Type)
+    // PASO 6: Creación de las 5 Columnas Calculadas de Auditoría Clínica
+    Col1_CopagoCalc      = Table.AddColumn(TiparNumeros, "COPAGO_VALIDADO", each [MONTO_TOTAL_FACTURADO] - [COBERTURA_ARS], Currency.Type),
+    Col2_PorcCobertura   = Table.AddColumn(Col1_CopagoCalc, "PORC_COBERTURA_ARS", each if [MONTO_TOTAL_FACTURADO] <> 0 and [MONTO_TOTAL_FACTURADO] <> null then [COBERTURA_ARS] / [MONTO_TOTAL_FACTURADO] else 0, Percentage.Type),
+    Col3_MargenCalc      = Table.AddColumn(Col2_PorcCobertura, "MARGEN_CLINICA_CALC", each [MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS], Currency.Type),
+    Col4_FacturacionReal = Table.AddColumn(Col3_MargenCalc, "FACTURACION_EFECTIVA", each if [ESTATUS_RECLAMACION] = "Rechazada" then 0 else [MONTO_TOTAL_FACTURADO], Currency.Type),
+    Col5_PorcMargenMed   = Table.AddColumn(Col4_FacturacionReal, "PORC_MARGEN_MEDICO", each if [MONTO_TOTAL_FACTURADO] <> 0 and [MONTO_TOTAL_FACTURADO] <> null then ([MONTO_TOTAL_FACTURADO] - [COSTO_INSUMOS]) / [MONTO_TOTAL_FACTURADO] else 0, Percentage.Type)
 in
-    Col5_PorcMargen`
+    Col5_PorcMargenMed`
       }
     };
 
