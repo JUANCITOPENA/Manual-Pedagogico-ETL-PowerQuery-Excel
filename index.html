@@ -2933,8 +2933,10 @@
         ],
         dashboardColumns: [
           { key: "NUM_PAGARE", label: "# Pagaré", align: "left", format: "text" },
-          { key: "SUCURSAL_CARTERA", label: "Sucursal", align: "left", format: "text" },
+          { key: "SUCURSAL", label: "Sucursal", align: "left", format: "text" },
+          { key: "PROVINCIA_SUCURSAL", label: "Provincia Suc.", align: "left", format: "text" },
           { key: "NOMBRE_DEUDOR", label: "Deudor", align: "left", format: "text" },
+          { key: "PROVINCIA_DEUDOR", label: "Provincia Deudor", align: "left", format: "text" },
           { key: "OFICIAL_CREDITO", label: "Oficial", align: "left", format: "text" },
           { key: "LINEA_CREDITO", label: "Línea Crédito", align: "left", format: "text" },
           { key: "TRAMO_MORA", label: "Tramo", align: "left", format: "text" },
@@ -2960,10 +2962,14 @@
           { value: "ESTATUS_CARTERA", label: "Estatus de Cartera" }
         ],
         regions: {
-          "Sur (Baní - Azua)": { reps: ["Lic. Ramón Valdez", "Lic. Claudia Medina"], clients: ["Comercial del Valle-FIN-801", "Constructora Baní-FIN-802", "Inversiones Azuana-FIN-803"], lat: 18.4100, lon: -70.1000 },
-          "Este (Bávaro - Romana)": { reps: ["Lic. Fernando Rojas", "Lic. Altagracia Pérez"], clients: ["Hotelera Punta Cana-FIN-701", "Desarrollos La Romana-FIN-702", "Consorcio Hato Mayor-FIN-703"], lat: 18.5600, lon: -68.3600 },
-          "Norte (Puerto Plata)": { reps: ["Lic. Marcos Henríquez", "Lic. Patricia Ruiz"], clients: ["Exportadora del Norte-FIN-601", "Textilera Costera-FIN-602", "Agropecuaria Montecristi-FIN-603"], lat: 19.7900, lon: -70.6900 },
-          "Cibao (Santiago Real)": { reps: ["Lic. César Morel", "Lic. Yomaira Gómez"], clients: ["Grupo Médico Santiago-FIN-501", "Distribuidora Vegana-FIN-502", "Ferretera Moca-FIN-503"], lat: 19.4600, lon: -70.6900 }
+          "Sucursal Santiago - Santiago": { reps: ["Lic. César Morel", "Lic. Yomaira Gómez"], clients: ["Grupo Médico Santiago - Santiago", "Comercial Santiago Real - Santiago", "Industrias del Yaque - Santiago"], lat: 19.4600, lon: -70.6900 },
+          "Sucursal Moca - Espaillat": { reps: ["Lic. Marino Guzmán", "Lic. Rosa Cabrera"], clients: ["Ferretera Moca - Espaillat", "Distribuidora Avícola Moca - Espaillat", "Agropecuaria Espaillat - Espaillat"], lat: 19.3900, lon: -70.5200 },
+          "Sucursal La Vega - La Vega": { reps: ["Lic. Aridio Santos", "Lic. Carmen Vargas"], clients: ["Distribuidora Vegana - La Vega", "Cooperativa Central La Vega - La Vega", "Importadora Camú - La Vega"], lat: 19.2200, lon: -70.5300 },
+          "Sucursal Baní - Peravia": { reps: ["Lic. Ramón Valdez", "Lic. Claudia Medina"], clients: ["Constructora Baní - Peravia", "Comercial del Valle Baní - Peravia", "Inversiones Peravia - Peravia"], lat: 18.2800, lon: -70.3300 },
+          "Sucursal Azua - Azua": { reps: ["Lic. Rafael Matos", "Lic. Glenys Ramírez"], clients: ["Inversiones Azuana - Azua", "Consorcio Agrícola Azua - Azua", "Distribuidora del Sur - Azua"], lat: 18.4500, lon: -70.7300 },
+          "Sucursal Bávaro - La Altagracia": { reps: ["Lic. Manuel Cedeño", "Lic. Yaritza Cordero"], clients: ["Hotelera Punta Cana - La Altagracia", "Consorcio Turístico Bávaro - La Altagracia", "Constructora Macao - La Altagracia"], lat: 18.5600, lon: -68.3600 },
+          "Sucursal La Romana - La Romana": { reps: ["Lic. Fernando Rojas", "Lic. Altagracia Pérez"], clients: ["Desarrollos La Romana - La Romana", "Consorcio Cañero Este - La Romana", "Inmobiliaria Romana - La Romana"], lat: 18.4200, lon: -68.9700 },
+          "Sucursal Puerto Plata - Puerto Plata": { reps: ["Lic. Marcos Henríquez", "Lic. Patricia Ruiz"], clients: ["Exportadora del Norte - Puerto Plata", "Textilera Costera - Puerto Plata", "Agropecuaria Isabela - Puerto Plata"], lat: 19.7900, lon: -70.6900 }
         },
         catalog: [
           { id: "FIN-01", cat: "Pagaré Comercial", prod: "Pagaré Comercial Serie A", pCompra: 42000.0, pVenta: 50000.0 },
@@ -3562,12 +3568,12 @@
             SALDO_PENDIENTE: pending,
             DIAS_MORA: moraDays,
             ESTATUS_CARTERA: status,
-            _cleanRegion: regionKey,
+            _cleanRegion: regionKey.split(' - ')[0].trim(),
             _cleanStatus: tramoMora,
             _cleanChannel: channel || "Banca en Línea",
             _cleanDate: datePure,
             _cleanEntity: rawEntity,
-            _cleanClient: rawClient.split('-')[0].trim(),
+            _cleanClient: rawClient.split(' - ')[0].trim(),
             _categoryKey: catalogItem.cat,
             _metricPrimary: totalExigible,
             _metricSecondary: recovery,
@@ -4827,10 +4833,10 @@
             },
             {
               Fase_o_Paso: 'Paso 2 (ETL)',
-              Titulo_Operacion: 'Limpieza de Espacios en Sucursales, Deudores y Oficiales',
-              Columnas_Implicadas: 'SUCURSAL_CARTERA, NOMBRE_DEUDOR, OFICIAL_CREDITO, LINEA_CREDITO',
-              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'Aplicar Transformar -> Formato -> Recortar (Trim), Limpiar (Clean) y Poner En Mayúsculas Cada Palabra en SUCURSAL_CARTERA.',
-              Formula_M_O_Configuracion_Exacta: '= Table.TransformColumns(Origen, {{"SUCURSAL_CARTERA", each Text.Proper(Text.Trim(Text.Clean(_))), type text}, {"NOMBRE_DEUDOR", Text.Trim, type text}, {"OFICIAL_CREDITO", Text.Trim, type text}})'
+              Titulo_Operacion: 'División de Columnas Compuestas (SUCURSAL_CARTERA y NOMBRE_DEUDOR)',
+              Columnas_Implicadas: 'SUCURSAL_CARTERA -> SUCURSAL, PROVINCIA_SUCURSAL | NOMBRE_DEUDOR -> NOMBRE_DEUDOR, PROVINCIA_DEUDOR',
+              Instruccion_Paso_A_Paso_PowerQuery_Y_Excel: 'En Inicio -> Dividir columna -> Por delimitador -> " - " (Espacio, Guion, Espacio) -> Dividir SUCURSAL_CARTERA en [SUCURSAL] y [PROVINCIA_SUCURSAL]. Luego dividir NOMBRE_DEUDOR en [NOMBRE_DEUDOR] y [PROVINCIA_DEUDOR]. Esto garantiza que cada deudor pertenezca a la misma provincia de su sucursal.',
+              Formula_M_O_Configuracion_Exacta: '= Table.SplitColumn(Origen, "SUCURSAL_CARTERA", Splitter.SplitTextByEachDelimiter({" - "}, QuoteStyle.Csv, false), {"SUCURSAL", "PROVINCIA_SUCURSAL"})'
             },
             {
               Fase_o_Paso: 'Paso 3 (ETL)',
@@ -6963,13 +6969,13 @@ in
         folderPath: "Escritorio\\ANALISIS ETL\\BD (o C:\\ANALISIS ETL\\BD)",
         filePattern: "Cartera_Pagares_2026_01.xlsx ... Cartera_Pagares_2026_12.xlsx",
         primaryKey: "NUM_PAGARE (PAG-FIN-XXXXX)",
-        dirtyTextCols: ["SUCURSAL_CARTERA", "RNC_DEUDOR", "NOMBRE_DEUDOR", "OFICIAL_CREDITO", "LINEA_CREDITO"],
+        dirtyTextCols: ["SUCURSAL_CARTERA", "NOMBRE_DEUDOR", "OFICIAL_CREDITO", "LINEA_CREDITO"],
         leetspeakCols: ["NOMBRE_DEUDOR", "OFICIAL_CREDITO"],
         beforeAfterTrim: {
-          dirty1: '"  cibao (santiago real)  "',
-          clean1: '"Cibao (Santiago Real)"',
-          dirty2: '"C0m3rci@l d3l V@ll3-FIN-801"',
-          clean2: '"Comercial del Valle" | Código: "FIN-801"'
+          dirty1: '"  sucursal santiago - santiago  "',
+          clean1: '"Sucursal Santiago" | Provincia: "Santiago"',
+          dirty2: '"  gr4p0 m3d1c0 s@nt1@g0 - s@nt1@g0  "',
+          clean2: '"Grupo Médico Santiago" | Provincia: "Santiago"'
         },
         dateCol: "FECHA_EMISION / FECHA_VENCIMIENTO",
         dateRawExample: "2026-02-14 -> Vencimiento: 2026-02-28",
@@ -6980,7 +6986,7 @@ in
         typeMapping: [
           { col: "NUM_PAGARE, RNC_DEUDOR", type: "Texto (type text)", icon: "🔑", role: "Llave Primaria del pagaré e identificación tributaria RNC" },
           { col: "FECHA_EMISION, FECHA_VENCIMIENTO", type: "Fecha (type date)", icon: "📅", role: "Fechas contractuales de desembolso y vencimiento" },
-          { col: "SUCURSAL_CARTERA, NOMBRE_DEUDOR, CODIGO_DEUDOR, OFICIAL_CREDITO, LINEA_CREDITO", type: "Texto (type text)", icon: "🏦", role: "Dimensiones de banca corporativa, deudor, código ID blindado y oficial de cuentas" },
+          { col: "SUCURSAL, PROVINCIA_SUCURSAL, NOMBRE_DEUDOR, PROVINCIA_DEUDOR, OFICIAL_CREDITO, LINEA_CREDITO", type: "Texto (type text)", icon: "🏦", role: "Dimensiones de sucursal y deudor divididas con coherencia territorial provincial y oficial de cuentas" },
           { col: "CANAL_PAGO, TRAMO_MORA, ESTATUS_CARTERA", type: "Texto (type text)", icon: "📊", role: "Clasificación de riesgo crediticio (Aging 0-30, 31-60, 61-90, +90d)" },
           { col: "DIAS_MORA", type: "Número Entero (Int64.Type)", icon: "⏱️", role: "Días de atraso transcurridos tras el vencimiento" },
           { col: "TASA_INTERES_ANUAL", type: "Número Decimal / Porcentaje", icon: "📈", role: "Tasa activa anualizada pactada en el pagaré" },
@@ -7044,8 +7050,8 @@ in
           }
         ],
         pivotSetup: {
-          slicers: "SUCURSAL_CARTERA, TRAMO_MORA, CANAL_PAGO",
-          rows: "SUCURSAL_CARTERA u OFICIAL_CREDITO o LINEA_CREDITO",
+          slicers: "SUCURSAL, PROVINCIA_SUCURSAL, TRAMO_MORA, CANAL_PAGO",
+          rows: "SUCURSAL, PROVINCIA_SUCURSAL u OFICIAL_CREDITO o LINEA_CREDITO",
           values: "Suma de SALDO_TOTAL_EXIGIBLE, Suma de ABONO_RECUPERADO, Suma de SALDO_PENDIENTE, Promedio de DIAS_MORA"
         },
         fullMCode: `// =========================================================================
@@ -7093,8 +7099,9 @@ let
     ),
     Origen = Table.Combine(TablasValidas),
 
-    // PASO 2: Separación de Código ID en NOMBRE_DEUDOR antes de desinfectar (Blindaje Numérico de ID)
-    DividirDeudor = Table.SplitColumn(Origen, "NOMBRE_DEUDOR", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"NOMBRE_DEUDOR", "CODIGO_DEUDOR"}),
+    // PASO 2: División de Columnas Compuestas (SUCURSAL_CARTERA y NOMBRE_DEUDOR en 2 columnas c/u)
+    DividirSucursal = Table.SplitColumn(Origen, "SUCURSAL_CARTERA", Splitter.SplitTextByEachDelimiter({" - "}, QuoteStyle.Csv, false), {"SUCURSAL", "PROVINCIA_SUCURSAL"}),
+    DividirDeudor   = Table.SplitColumn(DividirSucursal, "NOMBRE_DEUDOR", Splitter.SplitTextByEachDelimiter({" - "}, QuoteStyle.Csv, false), {"NOMBRE_DEUDOR", "PROVINCIA_DEUDOR"}),
 
     // PASO 3: Desinfección de Símbolos Corruptos (#, $) y Caracteres Leetspeak (@->a, 4->a, 3->e, 0->o, 1->i) sobre Nombres
     SanarHash   = Table.ReplaceValue(DividirDeudor, "#", "", Replacer.ReplaceText, {"NOMBRE_DEUDOR", "OFICIAL_CREDITO"}),
@@ -7107,22 +7114,26 @@ let
 
     // PASO 4: Limpieza de Espacios Fantasmas (Trim/Clean) y Relleno de Nulos en CANAL_PAGO
     LimpiarTexto = Table.TransformColumns(SanarUno, {
-        {"SUCURSAL_CARTERA", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"SUCURSAL", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
+        {"PROVINCIA_SUCURSAL", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"NOMBRE_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
-        {"CODIGO_DEUDOR", each Text.Trim(Text.Clean(Text.From(_))), type text},
+        {"PROVINCIA_DEUDOR", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"OFICIAL_CREDITO", each Text.Trim(Text.Clean(Text.From(_))), type text},
         {"LINEA_CREDITO", each Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"CANAL_PAGO", each if _ = null or Text.Trim(Text.From(_)) = "" then "Caja Sucursal" else Text.Proper(Text.Trim(Text.Clean(Text.From(_)))), type text},
         {"TRAMO_MORA", each Text.Trim(Text.Clean(Text.From(_))), type text}
     }),
 
-    // PASO 5: Tipado Estricto de Fechas Contractuales (type date)
+    // PASO 5: Tipado Estricto de Fechas Contractuales (type date) y Campos Financieros
     TiparFechas = Table.TransformColumns(LimpiarTexto, {
         {"FECHA_EMISION", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise try Date.From(_) otherwise null, type date},
         {"FECHA_VENCIMIENTO", each try Date.FromText(Text.BeforeDelimiter(Text.Trim(Text.From(_)), " "), "en-US") otherwise try Date.From(_) otherwise null, type date}
     }),
     TiparNumeros = Table.TransformColumnTypes(TiparFechas, {
-        {"CODIGO_DEUDOR", type text},
+        {"SUCURSAL", type text},
+        {"PROVINCIA_SUCURSAL", type text},
+        {"NOMBRE_DEUDOR", type text},
+        {"PROVINCIA_DEUDOR", type text},
         {"MONTO_PRINCIPAL", Currency.Type},
         {"TASA_INTERES_ANUAL", Number.Type},
         {"INTERES_MORA", Currency.Type},
