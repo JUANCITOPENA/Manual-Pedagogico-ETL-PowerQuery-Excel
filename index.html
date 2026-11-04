@@ -6857,8 +6857,8 @@ in
 // FUENTES DINAMICAS: Compatible con carpeta local (ANALISIS ETL\BD), ruta personalizada del usuario o tabla por defecto del libro.
 // =========================================================================
 let
-    // PASO 1: Carga Directa y Limpia de la Carpeta de Trabajo (Cero advertencias ni bloqueos)
-    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL",
+    // PASO 1: Carga Directa de la Carpeta de Trabajo (Misma ruta autorizada del Set 1: cero advertencias)
+    RutaCarpeta = "C:\\Users\\User\\Desktop\\ANALISIS ETL\\BD",
     OrigenCarpeta = Folder.Files(RutaCarpeta),
     ArchivosValidos = Table.SelectRows(OrigenCarpeta, each 
         not Text.StartsWith([Name], "~$") and 
